@@ -9,6 +9,10 @@ import java.sql.Timestamp;
 @Table(name = "auth")
 public class Auth {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     @Column(nullable = false)
     private Integer user_id;
 

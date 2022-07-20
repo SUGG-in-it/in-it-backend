@@ -46,7 +46,7 @@ public class User {
     @ColumnDefault("0")
     private Integer point;
 
-    @ColumnDefault("basic")
+    @Column
     private String level;
 
     @CreationTimestamp
