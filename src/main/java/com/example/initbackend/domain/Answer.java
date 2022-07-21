@@ -26,8 +26,8 @@ public class Answer {
     private Boolean is_selected;
 
     @CreationTimestamp
-    private Timestamp createDate;
+    private Timestamp create_date;
 
     @CreationTimestamp
-    private Timestamp updateDate;
+    private Timestamp update_date;
 }

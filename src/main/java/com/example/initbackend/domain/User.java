@@ -41,7 +41,7 @@ public class User {
     private String career;
 
     @Column(nullable = false)
-    private Integer authType;
+    private Integer auth_type;
 
     @ColumnDefault("0")
     private Integer point;
@@ -50,8 +50,8 @@ public class User {
     private String level;
 
     @CreationTimestamp
-    private Timestamp createDate;
+    private Timestamp create_date;
 
     @CreationTimestamp
-    private Timestamp updateDate;
+    private Timestamp update_date;
 }

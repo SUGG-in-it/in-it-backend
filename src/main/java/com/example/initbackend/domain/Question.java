@@ -38,8 +38,8 @@ public class Question {
     private Integer views;
 
     @CreationTimestamp
-    private Timestamp createDate;
+    private Timestamp create_date;
 
     @CreationTimestamp
-    private Timestamp updateDate;
+    private Timestamp update_date;
 }
