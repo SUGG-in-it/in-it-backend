@@ -23,8 +23,8 @@ public class Comment {
     private String content;
 
     @CreationTimestamp
-    private Timestamp createDate;
+    private Timestamp create_date;
 
     @CreationTimestamp
-    private Timestamp updateDate;
+    private Timestamp update_date;
 }
