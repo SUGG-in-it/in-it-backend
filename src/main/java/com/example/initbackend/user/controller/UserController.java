@@ -1,14 +1,31 @@
 package com.example.initbackend.user.controller;
 
+import com.example.initbackend.global.response.StatusEnum;
+import com.example.initbackend.global.response.SuccessResponse;
+import com.example.initbackend.user.controller.dto.JoinRequestDto;
+import com.example.initbackend.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequestMapping("api/user")
+@RequiredArgsConstructor
 @RestController
 public class UserController {
 
+    private final UserService userService;
+
     @PostMapping({ "/join" })
-    public String login() {
-        return "Hello";
+    public SuccessResponse join(@Valid @RequestBody final JoinRequestDto requestDto) {
+        userService.join(requestDto);
+        // 실패시 로직 추가 요망
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("Success Join")
+                .build();
+
+        return res;
     }
 //    public ResponseEntity<SuccessResponse> signUp(@Valid @RequestBody SignUpRequestDto requestDto) {
 //        userService.join(requestDto);
