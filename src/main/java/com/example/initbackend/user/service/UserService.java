@@ -4,8 +4,10 @@ import com.example.initbackend.user.controller.dto.JoinRequestDto;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
+@Service
 public class UserService {
     private final UserRepository userRepository;
 
