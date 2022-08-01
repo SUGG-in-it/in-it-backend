@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 public class JoinRequestDto {
@@ -23,10 +24,6 @@ public class JoinRequestDto {
 
     private String workPosition;
 
-
-    public JoinRequestDto(){
-
-    }
     @Builder
     public JoinRequestDto(String email, String password, String nickname, String year, String workPosition) {
         this.nickname = nickname;

@@ -1,7 +1,9 @@
 package com.example.initbackend.global.response;
 
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 public class SuccessResponse {
     private StatusEnum status;
     private String message;
