@@ -4,17 +4,21 @@ import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import com.example.initbackend.user.controller.dto.JoinRequestDto;
 import com.example.initbackend.user.service.UserService;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@RequestMapping("api/user")
-@RequiredArgsConstructor
+@Getter
 @RestController
+@RequestMapping("api/user")
 public class UserController {
 
     private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping({ "/join" })
     public SuccessResponse join(@Valid @RequestBody final JoinRequestDto requestDto) {

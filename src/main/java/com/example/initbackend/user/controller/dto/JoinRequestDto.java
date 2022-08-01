@@ -23,6 +23,10 @@ public class JoinRequestDto {
 
     private String workPosition;
 
+
+    public JoinRequestDto(){
+
+    }
     @Builder
     public JoinRequestDto(String email, String password, String nickname, String year, String workPosition) {
         this.nickname = nickname;
@@ -38,7 +42,7 @@ public class JoinRequestDto {
                 .password(password)
                 .nickname(nickname)
                 .year(year)
-                .workPosition(workPosition)
+                .work_position(workPosition)
                 .build();
     }
 }
