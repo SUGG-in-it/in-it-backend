@@ -3,19 +3,22 @@ package com.example.initbackend.user.service;
 import com.example.initbackend.user.controller.dto.JoinRequestDto;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
+
 public class UserService {
     private final UserRepository userRepository;
 
-    public void join(JoinRequestDto dto){
-        if (isDuplicatedUser(dto.getEmail())){
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public void join(JoinRequestDto joinRequestDto){
+        if (isDuplicatedUser(joinRequestDto.getEmail())){
             throw new IllegalArgumentException("Duplicated User");
         }
-        User user = dto.toEntity();
+        User user = joinRequestDto.toEntity();
         userRepository.insertUser(user);
     }
 
