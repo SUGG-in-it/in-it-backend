@@ -1,6 +1,7 @@
 package com.example.initbackend.user.repository;
 
 import com.example.initbackend.user.domain.User;
+import lombok.Getter;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Getter
 public class JpaUserRepository implements UserRepository {
 
     private final EntityManager em;
@@ -30,5 +32,4 @@ public class JpaUserRepository implements UserRepository {
                 .getResultList();
         return result.stream().findAny();
     }
-
 }

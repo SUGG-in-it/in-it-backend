@@ -2,6 +2,7 @@ package com.example.initbackend.user.controller;
 
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
+import com.example.initbackend.user.controller.dto.DuplicatedUserRequestDto;
 import com.example.initbackend.user.controller.dto.JoinRequestDto;
 import com.example.initbackend.user.service.UserService;
 import lombok.Getter;
@@ -28,15 +29,18 @@ public class UserController {
                 .status(StatusEnum.OK)
                 .message("Success Join")
                 .build();
+        System.out.println(res);
+        return res;
+    }
+
+    @PostMapping({ "/duplicate-email" })
+    public SuccessResponse duplicatedEmail(@Valid @RequestBody final DuplicatedUserRequestDto requestDto) {
+        userService.duplicatedEmail(requestDto);
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("User is not duplicated")
+                .build();
 
         return res;
     }
-//    public ResponseEntity<SuccessResponse> signUp(@Valid @RequestBody SignUpRequestDto requestDto) {
-//        userService.join(requestDto);
-//        SuccessResponse res = SuccessResponse.builder()
-//                .status(StatusEnum.CREATED)
-//                .message("회원가입 성공")
-//                .build();
-//        return new ResponseEntity<>(res, HttpStatus.CREATED);
-//    }
 }
