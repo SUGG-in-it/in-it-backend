@@ -2,6 +2,7 @@ package com.example.initbackend.user.controller;
 
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
+import com.example.initbackend.user.controller.dto.ChangePasswordDto;
 import com.example.initbackend.user.controller.dto.DuplicatedUserRequestDto;
 import com.example.initbackend.user.controller.dto.JoinRequestDto;
 import com.example.initbackend.user.service.UserService;
@@ -39,6 +40,17 @@ public class UserController {
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("User is not duplicated")
+                .build();
+
+        return res;
+    }
+
+    @PostMapping({ "/password" })
+    public SuccessResponse changePassword(@Valid @RequestBody final ChangePasswordDto requestDto) {
+        userService.changePassword(requestDto);
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("change password")
                 .build();
 
         return res;
