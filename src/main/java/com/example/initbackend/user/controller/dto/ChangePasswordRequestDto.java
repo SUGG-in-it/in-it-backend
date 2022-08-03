@@ -2,12 +2,15 @@ package com.example.initbackend.user.controller.dto;
 
 import com.example.initbackend.user.domain.User;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-public class ChangePasswordDto {
-
+@Getter
+@NoArgsConstructor
+public class ChangePasswordRequestDto {
 
     @NotBlank(message = "이메일을 입력해주세요")
     @Email(message = "이메일 양식 오류")
@@ -18,7 +21,7 @@ public class ChangePasswordDto {
 
 
     @Builder
-    public ChangePasswordDto(String email, String passowrd) {
+    public ChangePasswordRequestDto(String email, String passowrd) {
 
         this.email = email;
         this.password = passowrd;
