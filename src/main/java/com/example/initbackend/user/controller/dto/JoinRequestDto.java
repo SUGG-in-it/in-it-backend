@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Getter
 public class JoinRequestDto {
     @NotBlank(message = "이메일을 입력해주세요")

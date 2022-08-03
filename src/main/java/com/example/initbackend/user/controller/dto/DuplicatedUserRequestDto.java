@@ -3,11 +3,13 @@ package com.example.initbackend.user.controller.dto;
 import com.example.initbackend.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Getter
+@NoArgsConstructor
 public class DuplicatedUserRequestDto {
     @NotBlank(message = "이메일을 입력해주세요")
     @Email(message = "이메일 양식 오류")
