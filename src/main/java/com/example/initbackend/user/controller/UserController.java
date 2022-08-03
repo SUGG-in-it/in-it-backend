@@ -2,7 +2,7 @@ package com.example.initbackend.user.controller;
 
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
-import com.example.initbackend.user.controller.dto.ChangePasswordDto;
+import com.example.initbackend.user.controller.dto.ChangePasswordRequestDto;
 import com.example.initbackend.user.controller.dto.DuplicatedUserRequestDto;
 import com.example.initbackend.user.controller.dto.JoinRequestDto;
 import com.example.initbackend.user.service.UserService;
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @PostMapping({ "/password" })
-    public SuccessResponse changePassword(@Valid @RequestBody final ChangePasswordDto requestDto) {
+    public SuccessResponse changePassword(@Valid @RequestBody final ChangePasswordRequestDto requestDto) {
         userService.changePassword(requestDto);
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)

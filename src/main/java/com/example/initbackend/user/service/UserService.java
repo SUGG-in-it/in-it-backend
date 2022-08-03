@@ -1,9 +1,8 @@
 package com.example.initbackend.user.service;
 
-import com.example.initbackend.user.controller.dto.ChangePasswordDto;
+import com.example.initbackend.user.controller.dto.ChangePasswordRequestDto;
 import com.example.initbackend.user.controller.dto.DuplicatedUserRequestDto;
 import com.example.initbackend.user.controller.dto.JoinRequestDto;
-import com.example.initbackend.user.controller.dto.UpdateUserPasswordRequestDto;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -33,8 +32,8 @@ public class UserService {
         }
     }
 
-    public void changePassword(ChangePasswordDto changePasswordDto){
-        String email = changePasswordDto.toEntity().getEmail();
+    public void changePassword(ChangePasswordRequestDto changePasswordRequestDto){
+        String email = changePasswordRequestDto.toEntity().getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent()) {
             throw new EntityNotFoundException(
@@ -42,7 +41,7 @@ public class UserService {
         }
 
         User user = optionalUser.get();
-        user.setPassword(changePasswordDto.toEntity().getPassword());
+        user.setPassword(changePasswordRequestDto.toEntity().getPassword());
         userRepository.save(user);
     }
 
