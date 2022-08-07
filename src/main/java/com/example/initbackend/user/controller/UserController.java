@@ -1,5 +1,6 @@
 package com.example.initbackend.user.controller;
 
+import com.example.initbackend.global.jwt.dto.JwtResponseDto;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import com.example.initbackend.user.controller.dto.ChangePasswordRequestDto;
@@ -59,10 +60,10 @@ public class UserController {
 
     @PostMapping({ "/login" })
     public SuccessResponse login(@Valid @RequestBody final LoginRequestDto requestDto) {
-        userService.login(requestDto);
+        JwtResponseDto.TokenInfo token = userService.login(requestDto);
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("login success")
+                .message(String.valueOf(token))
                 .build();
 
         return res;
