@@ -5,6 +5,7 @@ import com.example.initbackend.global.response.SuccessResponse;
 import com.example.initbackend.user.controller.dto.ChangePasswordRequestDto;
 import com.example.initbackend.user.controller.dto.DuplicatedUserRequestDto;
 import com.example.initbackend.user.controller.dto.JoinRequestDto;
+import com.example.initbackend.user.controller.dto.LoginRequestDto;
 import com.example.initbackend.user.service.UserService;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +52,17 @@ public class UserController {
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("change password")
+                .build();
+
+        return res;
+    }
+
+    @PostMapping({ "/login" })
+    public SuccessResponse login(@Valid @RequestBody final LoginRequestDto requestDto) {
+        userService.login(requestDto);
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("login success")
                 .build();
 
         return res;

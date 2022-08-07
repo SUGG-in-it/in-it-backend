@@ -3,6 +3,7 @@ package com.example.initbackend.user.service;
 import com.example.initbackend.user.controller.dto.ChangePasswordRequestDto;
 import com.example.initbackend.user.controller.dto.DuplicatedUserRequestDto;
 import com.example.initbackend.user.controller.dto.JoinRequestDto;
+import com.example.initbackend.user.controller.dto.LoginRequestDto;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -45,12 +46,22 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public  void login(LoginRequestDto loginRequestDto){
+        String email = loginRequestDto.toEntity().getEmail();
+        String password = loginRequestDto.toEntity().getPassword();
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (!optionalUser.isPresent()) {
+            throw new EntityNotFoundException(
+                    "User not present in the database");
+        }
+        String dbPassword = optionalUser.get().getPassword();
+        if(!dbPassword.equals(password)){
+            throw new EntityNotFoundException(
+                    "incorrect password");
+        }
+    }
+
     private boolean isDuplicatedUser(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
-
-//    public void updateUser(long id, UpdateUserPasswordRequestDto updateUserPasswordRequestDto){
-//        User user = updateUserPasswordRequestDto.toEntity(getPassword());
-//        userRepository.updateUser(user);
-//    }
 }
