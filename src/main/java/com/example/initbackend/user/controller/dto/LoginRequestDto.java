@@ -4,6 +4,7 @@ import com.example.initbackend.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -25,6 +26,10 @@ public class LoginRequestDto {
 
         this.email = email;
         this.password = passowrd;
+    }
+
+    public UsernamePasswordAuthenticationToken toAuthentication() {
+        return new UsernamePasswordAuthenticationToken(email, password);
     }
 
     public User toEntity(){
