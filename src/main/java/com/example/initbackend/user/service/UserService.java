@@ -56,7 +56,14 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent()) {
             throw new EntityNotFoundException(
-                    "User not present in the database");
+                    "User not present in the database"
+            );
+        }
+        String dbPassword = optionalUser.get().getPassword();
+        if(!dbPassword.equals(password)){
+            throw new EntityNotFoundException(
+                    "incorrect password"
+            );
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
