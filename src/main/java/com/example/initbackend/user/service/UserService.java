@@ -9,14 +9,18 @@ import com.example.initbackend.user.controller.dto.LoginRequestDto;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -42,7 +46,8 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent()) {
             throw new EntityNotFoundException(
-                    "User not present in the database");
+                    "User not present in the database"
+            );
         }
 
         User user = optionalUser.get();
@@ -50,7 +55,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public JwtResponseDto.TokenInfo login(LoginRequestDto loginRequestDto){
+    public String login(LoginRequestDto loginRequestDto){
         String email = loginRequestDto.toEntity().getEmail();
         String password = loginRequestDto.toEntity().getPassword();
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -69,8 +74,22 @@ public class UserService {
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+        return tokenInfo.getAccessToken();
 
-        return tokenInfo;
+    }
+
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> byEmail = userRepository.findByEmail(email);
+
+        User user = byEmail.orElseThrow(() -> new UsernameNotFoundException("아이디나 비밀번호가 틀립니다."));
+
+        return User.builder()
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .authority(user.getRole())
+                .enabled(user.isEnabled())
+                .build();
 
     }
 

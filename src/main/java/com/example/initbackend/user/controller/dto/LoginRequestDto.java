@@ -1,6 +1,7 @@
 package com.example.initbackend.user.controller.dto;
 
 import com.example.initbackend.user.domain.User;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class LoginRequestDto {
 
     @NotBlank(message = "이메일을 입력해주세요")
@@ -20,13 +22,6 @@ public class LoginRequestDto {
     @NotBlank(message = "비밀번호를 입력해주세요")
     private String password;
 
-
-    @Builder
-    public LoginRequestDto(String email, String passowrd) {
-
-        this.email = email;
-        this.password = passowrd;
-    }
 
     public UsernamePasswordAuthenticationToken toAuthentication() {
         return new UsernamePasswordAuthenticationToken(email, password);
