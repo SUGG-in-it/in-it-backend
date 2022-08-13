@@ -60,7 +60,7 @@ public class UserController {
 
     @PostMapping({ "/login" })
     public SuccessResponse login(@Valid @RequestBody final LoginRequestDto requestDto) {
-        JwtResponseDto.TokenInfo token = userService.login(requestDto);
+        String token = userService.login(requestDto);
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message(String.valueOf(token))
