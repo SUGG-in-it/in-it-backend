@@ -10,8 +10,8 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@NoArgsConstructor
 
 
 public class UserToken  {
