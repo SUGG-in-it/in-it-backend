@@ -1,4 +1,4 @@
-package com.example.initbackend.user.controller.dto;
+package com.example.initbackend.user.dto;
 
 import com.example.initbackend.user.domain.User;
 import javax.validation.constraints.Email;
