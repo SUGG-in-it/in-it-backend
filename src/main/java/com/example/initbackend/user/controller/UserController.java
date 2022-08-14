@@ -1,12 +1,11 @@
 package com.example.initbackend.user.controller;
 
-import com.example.initbackend.global.jwt.dto.JwtResponseDto;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
-import com.example.initbackend.user.controller.dto.ChangePasswordRequestDto;
-import com.example.initbackend.user.controller.dto.DuplicatedUserRequestDto;
-import com.example.initbackend.user.controller.dto.JoinRequestDto;
-import com.example.initbackend.user.controller.dto.LoginRequestDto;
+import com.example.initbackend.user.dto.ChangePasswordRequestDto;
+import com.example.initbackend.user.dto.DuplicatedUserRequestDto;
+import com.example.initbackend.user.dto.JoinRequestDto;
+import com.example.initbackend.user.dto.LoginRequestDto;
 import com.example.initbackend.user.service.UserService;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
