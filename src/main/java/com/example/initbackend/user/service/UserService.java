@@ -2,10 +2,10 @@ package com.example.initbackend.user.service;
 
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.dto.JwtResponseDto;
-import com.example.initbackend.user.controller.dto.ChangePasswordRequestDto;
-import com.example.initbackend.user.controller.dto.DuplicatedUserRequestDto;
-import com.example.initbackend.user.controller.dto.JoinRequestDto;
-import com.example.initbackend.user.controller.dto.LoginRequestDto;
+import com.example.initbackend.user.dto.ChangePasswordRequestDto;
+import com.example.initbackend.user.dto.DuplicatedUserRequestDto;
+import com.example.initbackend.user.dto.JoinRequestDto;
+import com.example.initbackend.user.dto.LoginRequestDto;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
