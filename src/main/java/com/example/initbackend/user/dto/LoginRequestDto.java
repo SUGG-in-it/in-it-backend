@@ -1,16 +1,19 @@
-package com.example.initbackend.user.controller.dto;
+package com.example.initbackend.user.dto;
 
 import com.example.initbackend.user.domain.User;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Getter
 @NoArgsConstructor
-public class ChangePasswordRequestDto {
+@AllArgsConstructor
+public class LoginRequestDto {
 
     @NotBlank(message = "이메일을 입력해주세요")
     @Email(message = "이메일 양식 오류")
@@ -20,11 +23,8 @@ public class ChangePasswordRequestDto {
     private String password;
 
 
-    @Builder
-    public ChangePasswordRequestDto(String email, String passowrd) {
-
-        this.email = email;
-        this.password = passowrd;
+    public UsernamePasswordAuthenticationToken toAuthentication() {
+        return new UsernamePasswordAuthenticationToken(email, password);
     }
 
     public User toEntity(){

@@ -2,12 +2,15 @@ package com.example.initbackend.user.service;
 
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.dto.JwtResponseDto;
-import com.example.initbackend.user.controller.dto.ChangePasswordRequestDto;
-import com.example.initbackend.user.controller.dto.DuplicatedUserRequestDto;
-import com.example.initbackend.user.controller.dto.JoinRequestDto;
-import com.example.initbackend.user.controller.dto.LoginRequestDto;
+import com.example.initbackend.user.dto.ChangePasswordRequestDto;
+import com.example.initbackend.user.dto.DuplicatedUserRequestDto;
+import com.example.initbackend.user.dto.JoinRequestDto;
+import com.example.initbackend.user.dto.LoginRequestDto;
 import com.example.initbackend.user.domain.User;
+import com.example.initbackend.user.dto.LoginRequestDto;
 import com.example.initbackend.user.repository.UserRepository;
+import com.example.initbackend.userToken.domain.UserToken;
+import com.example.initbackend.userToken.repository.UserTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -25,6 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final UserTokenRepository tokenRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -74,6 +78,21 @@ public class UserService {
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+
+        UserToken userToken;
+
+        Optional<UserToken> optionalToken = tokenRepository.findByUserId(optionalUser.get().getId());
+        if (!optionalToken.isPresent()) {
+            userToken = new UserToken();
+            userToken.setUserId(optionalUser.get().getId());
+        } else{
+            userToken = optionalToken.get();
+        }
+
+        userToken.setRefreshToken(tokenInfo.getRefreshToken());
+        tokenRepository.save(userToken);
+
+
         return tokenInfo.getAccessToken();
 
     }
