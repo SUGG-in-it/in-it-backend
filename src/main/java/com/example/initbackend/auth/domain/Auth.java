@@ -16,7 +16,7 @@ public class Auth {
     private int id;
 
     @Column(nullable = false, length = 30)
-    private int user_id;
+    private String email;
 
     @Column(nullable = false, length = 30)
     private String code;
@@ -28,8 +28,8 @@ public class Auth {
     private Timestamp update_date;
 
     @Builder
-    public Auth(Integer user_id, String code) {
-        this.user_id = user_id;
+    public Auth(String email, String code) {
+        this.email = email;
         this.code = code;
     }
 }

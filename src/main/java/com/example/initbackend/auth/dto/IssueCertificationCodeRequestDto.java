@@ -17,9 +17,9 @@ public class IssueCertificationCodeRequestDto {
     public IssueCertificationCodeRequestDto(String email) {
         this.email = email;
     }
-    public Auth toEntity(String certificationCode, Integer userId){
+    public Auth toEntity(String certificationCode){
         return Auth.builder()
-                .user_id(userId)
+                .email(email)
                 .code(certificationCode)
                 .build();
     }
