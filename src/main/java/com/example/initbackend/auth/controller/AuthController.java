@@ -1,6 +1,7 @@
 package com.example.initbackend.auth.controller;
 
 import com.example.initbackend.auth.dto.IssueCertificationCodeRequestDto;
+import com.example.initbackend.auth.dto.VerifyCertificationCodeRequestDto;
 import com.example.initbackend.auth.service.AuthService;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
@@ -29,6 +30,17 @@ public class AuthController {
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message(String.valueOf(certificationCode))
+                .build();
+
+        return res;
+    }
+
+    @PostMapping({ "/verify" })
+    public SuccessResponse verifyCertificationCode(@Valid @RequestBody final VerifyCertificationCodeRequestDto requestDto) {
+        authService.verifyCertificationCodeRequestDto(requestDto);
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("Verified")
                 .build();
 
         return res;
