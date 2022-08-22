@@ -24,9 +24,9 @@ public class VerifyCertificationCodeRequestDto {
         this.email = email;
         this.code = code;
     }
-    public Auth toEntity(String certificationCode, Integer userId){
+    public Auth toEntity(String certificationCode){
         return Auth.builder()
-                .user_id(userId)
+                .email(email)
                 .code(certificationCode)
                 .build();
     }
