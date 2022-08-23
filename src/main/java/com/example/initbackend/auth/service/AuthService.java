@@ -1,16 +1,16 @@
 package com.example.initbackend.auth.service;
 
 import com.example.initbackend.auth.dto.IssueCertificationCodeRequestDto;
+import com.example.initbackend.auth.dto.VerifyCertificationCodeRequestDto;
 import com.example.initbackend.auth.repository.AuthRepository;
-import com.example.initbackend.user.domain.User;
+import com.example.initbackend.auth.domain.Auth;
 import com.example.initbackend.global.util.GenerateCeritificationCode;
-import com.example.initbackend.user.dto.ChangePasswordRequestDto;
-import com.example.initbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.sql.Time;
 import java.util.Optional;
 
 @Slf4j
@@ -18,20 +18,34 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthService {
     private final AuthRepository authRepository;
-    private final UserRepository userRepository;
 
-    public void issueCertificationCode(IssueCertificationCodeRequestDto issueCertificationCodeRequestDto){
+    // 이메일 전송 로직 추가 전 일단 res로 코드 내려줌
+    public String issueCertificationCode(IssueCertificationCodeRequestDto issueCertificationCodeRequestDto){
         String certificationCode = GenerateCeritificationCode.generateCeritificationCode();
-//        String email = issueCertificationCodeRequestDto.toEntity(certificationCode);
-//        Optional<User> optionalUser = userRepository.findByEmail(email);
-//        if (!optionalUser.isPresent()) {
-//            throw new EntityNotFoundException(
-//                    "User not present in the database"
-//            );
-//        }
-//
-//        User user = optionalUser.get();
-//        user.setPassword(changePasswordRequestDto.toEntity().getPassword());
-//        authRepository.save(user);
+        Auth auth = issueCertificationCodeRequestDto.toEntity(certificationCode);
+        authRepository.save(auth);
+
+        return certificationCode;
+    }
+
+    public void verifyCertificationCodeRequestDto(VerifyCertificationCodeRequestDto verifyCertificationCodeRequestDto){
+        String certificationCode = verifyCertificationCodeRequestDto.getCode();
+        String email = verifyCertificationCodeRequestDto.getEmail();
+        Optional<Auth> optionalAuth = authRepository.findByEmail(email);
+        if (!optionalAuth.isPresent()) {
+            throw new EntityNotFoundException(
+                    "Email not present in the database"
+            );
+        }
+
+        String dbCertificationCode = optionalAuth.get().getCode();
+        if(!dbCertificationCode.equals(certificationCode)){
+            throw new EntityNotFoundException(
+                    "incorrect certificationCode"
+            );
+        }
+
+        // 시간 초과 시 에러처리 필요
+
     }
 }

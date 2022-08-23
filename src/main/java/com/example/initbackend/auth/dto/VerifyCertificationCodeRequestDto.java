@@ -24,10 +24,10 @@ public class VerifyCertificationCodeRequestDto {
         this.email = email;
         this.code = code;
     }
-    public Auth toEntity(String certificationCode, Integer userId){
+    public Auth toEntity(){
         return Auth.builder()
-                .user_id(userId)
-                .code(certificationCode)
+                .email(email)
+                .code(code)
                 .build();
     }
 }
