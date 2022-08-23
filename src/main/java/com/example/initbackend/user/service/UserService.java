@@ -7,10 +7,10 @@ import com.example.initbackend.user.dto.DuplicatedUserRequestDto;
 import com.example.initbackend.user.dto.JoinRequestDto;
 import com.example.initbackend.user.dto.LoginRequestDto;
 import com.example.initbackend.user.domain.User;
-import com.example.initbackend.user.dto.LoginRequestDto;
 import com.example.initbackend.user.repository.UserRepository;
 import com.example.initbackend.userToken.domain.UserToken;
 import com.example.initbackend.userToken.repository.UserTokenRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -24,6 +24,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @Slf4j
+@Getter
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -59,7 +60,8 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public String login(LoginRequestDto loginRequestDto){
+
+    public JwtResponseDto.TokenInfo login(LoginRequestDto loginRequestDto){
         String email = loginRequestDto.toEntity().getEmail();
         String password = loginRequestDto.toEntity().getPassword();
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -93,7 +95,7 @@ public class UserService {
         tokenRepository.save(userToken);
 
 
-        return tokenInfo.getAccessToken();
+        return tokenInfo;
 
     }
 
