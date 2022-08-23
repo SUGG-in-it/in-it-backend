@@ -1,5 +1,6 @@
 package com.example.initbackend.user.controller;
 
+import com.example.initbackend.global.jwt.dto.JwtResponseDto;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import com.example.initbackend.user.dto.ChangePasswordRequestDto;
@@ -8,13 +9,18 @@ import com.example.initbackend.user.dto.JoinRequestDto;
 import com.example.initbackend.user.dto.LoginRequestDto;
 import com.example.initbackend.user.service.UserService;
 import lombok.Getter;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @Getter
 @RestController
-@RequestMapping("api/user")
+@RequestMapping("api/users")
 public class UserController {
 
     private final UserService userService;
@@ -58,11 +64,23 @@ public class UserController {
     }
 
     @PostMapping({ "/login" })
-    public SuccessResponse login(@Valid @RequestBody final LoginRequestDto requestDto) {
-        String token = userService.login(requestDto);
+    public SuccessResponse login(@Valid @RequestBody final LoginRequestDto requestDto , HttpServletResponse response) {
+        JwtResponseDto.TokenInfo token = userService.login(requestDto);
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", token.getRefreshToken())
+                .maxAge(7 * 24 * 60 * 60)
+                .path("/")
+                .secure(true)
+                .sameSite("None")
+                .httpOnly(true)
+                .build();
+        response.setHeader("Set-Cookie", cookie.toString());
+
+
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message(String.valueOf(token))
+                .message("로그인 성공")
+                .data(token.getAccessToken())
                 .build();
 
         return res;
