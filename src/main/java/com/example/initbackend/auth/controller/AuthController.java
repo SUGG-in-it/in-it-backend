@@ -5,8 +5,6 @@ import com.example.initbackend.auth.dto.VerifyCertificationCodeRequestDto;
 import com.example.initbackend.auth.service.AuthService;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
-import com.example.initbackend.user.dto.LoginRequestDto;
-import com.example.initbackend.user.service.UserService;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +20,16 @@ public class AuthController {
     private final AuthService authService;
     public AuthController(AuthService authService) {
         this.authService = authService;
+    }
+
+    @PostMapping({ "" })
+    public SuccessResponse checkAccessToken() {
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .build();
+
+        return res;
     }
 
     @PostMapping({ "/issue" })
