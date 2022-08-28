@@ -35,6 +35,7 @@ public class AuthController {
     @PostMapping({ "/issue" })
     public SuccessResponse issueCertificationCode(@Valid @RequestBody final IssueCertificationCodeRequestDto requestDto) {
         String certificationCode = authService.issueCertificationCode(requestDto);
+        authService.sendSimpleMessage(requestDto.getEmail(), certificationCode);
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message(String.valueOf(certificationCode))
