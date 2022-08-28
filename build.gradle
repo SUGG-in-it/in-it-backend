@@ -37,6 +37,7 @@ dependencies {
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 //   implementation 'com.fasterxml.jackson.core:jackson-databind:2.8.9'
 //   testImplementation 'org.junit.platform:junit-platform-launcher:1.5.0'
 //   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.0'
