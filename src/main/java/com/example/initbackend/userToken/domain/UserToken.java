@@ -2,6 +2,7 @@ package com.example.initbackend.userToken.domain;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.stereotype.Component;
 
 
 import javax.persistence.*;
@@ -12,7 +13,7 @@ import java.sql.Timestamp;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Component
 
 public class UserToken  {
 
@@ -21,7 +22,7 @@ public class UserToken  {
     private Long id;
 
     @Column(nullable = false)
-    private Long userId;
+    private String email;
 
     @Column(length = 200)
     private String refreshToken;
@@ -35,9 +36,9 @@ public class UserToken  {
 
 
     @Builder
-    public UserToken(Long userId, String refreshToken) {
+    public UserToken(String email, String refreshToken) {
 
-        this.userId = userId;
+        this.email = email;
         this.refreshToken = refreshToken;
 
     }

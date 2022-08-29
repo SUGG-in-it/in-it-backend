@@ -86,10 +86,10 @@ public class UserService {
 
         UserToken userToken;
 
-        Optional<UserToken> optionalToken = tokenRepository.findByUserId(optionalUser.get().getId());
+        Optional<UserToken> optionalToken = tokenRepository.findByEmail(optionalUser.get().getEmail());
         if (!optionalToken.isPresent()) {
             userToken = new UserToken();
-            userToken.setUserId(optionalUser.get().getId());
+            userToken.setEmail(optionalUser.get().getEmail());
         } else{
             userToken = optionalToken.get();
         }
