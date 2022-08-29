@@ -37,6 +37,9 @@ public class UserService {
         if (isDuplicatedUser(joinRequestDto.getEmail())){
             throw new IllegalArgumentException("Duplicated User");
         }
+        if (isDuplicatedNickname(joinRequestDto.getNickname())){
+            throw new IllegalArgumentException("Duplicated Nickname");
+        }
         User user = joinRequestDto.toEntity();
         userRepository.save(user);
     }
@@ -116,5 +119,9 @@ public class UserService {
 
     private boolean isDuplicatedUser(String email) {
         return userRepository.findByEmail(email).isPresent();
+    }
+
+    private boolean isDuplicatedNickname(String nickname) {
+        return userRepository.findByNickname(nickname).isPresent();
     }
 }
