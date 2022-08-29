@@ -85,4 +85,21 @@ public class UserController {
 
         return res;
     }
+
+    @PostMapping({ "/logout" })
+    public SuccessResponse logout(HttpServletResponse response) {
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+                .path("/")
+                .build();
+        response.setHeader("Set-Cookie", cookie.toString());
+
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("로그아웃 성공")
+                .build();
+
+        return res;
+    }
 }
