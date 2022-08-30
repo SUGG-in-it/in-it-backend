@@ -16,8 +16,8 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@NoArgsConstructor
 
 
 public class User implements UserDetails {
