@@ -27,10 +27,16 @@ public class AuthService {
 
     public String issueCertificationCode(IssueCertificationCodeRequestDto issueCertificationCodeRequestDto){
         String certificationCode = GenerateCeritificationCode.generateCeritificationCode();
+        String email = issueCertificationCodeRequestDto.getEmail();
         Auth auth = issueCertificationCodeRequestDto.toEntity(certificationCode);
-        authRepository.save(auth);
-        // 이미 존재하는 이메일인 경우 update로 수정
-
+        Optional<Auth> optionalAuth = authRepository.findByEmail(email);
+        if (!optionalAuth.isPresent()) {
+            authRepository.save(auth);
+        } else {
+            Auth newAuth = optionalAuth.get();
+            newAuth.setCode(certificationCode);
+            authRepository.save(newAuth);
+        }
         return certificationCode;
     }
 
