@@ -13,6 +13,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Optional;
 
 @Slf4j
@@ -35,6 +37,7 @@ public class AuthService {
         } else {
             Auth newAuth = optionalAuth.get();
             newAuth.setCode(certificationCode);
+            newAuth.setUpdate_date(new Timestamp(System.currentTimeMillis()));
             authRepository.save(newAuth);
         }
         return certificationCode;
@@ -50,6 +53,27 @@ public class AuthService {
             );
         }
 
+        Timestamp currnetTime = new Timestamp(System.currentTimeMillis());
+        Timestamp issuedTime = optionalAuth.get().getUpdate_date();
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(issuedTime.getTime());
+
+        // add 30 seconds
+        cal.add(Calendar.MINUTE, 5);
+        issuedTime = new Timestamp(cal.getTime().getTime());
+        System.out.println("=========Current Time==========");
+        System.out.println(currnetTime);
+        System.out.println("=========Issued Time==========");
+        System.out.println(issuedTime);
+
+
+        if(currnetTime.after(issuedTime)){
+            throw new EntityNotFoundException(
+                    "Code Expired"
+            );
+        }
+
         String dbCertificationCode = optionalAuth.get().getCode();
         if(!dbCertificationCode.equals(certificationCode)){
             throw new EntityNotFoundException(
@@ -58,7 +82,6 @@ public class AuthService {
         }
 
         // 시간 초과 시 에러처리 필요
-        // 삭제 로직 필요
 
 
     }
