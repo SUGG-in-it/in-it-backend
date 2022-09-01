@@ -67,16 +67,6 @@ public class UserController {
     public SuccessResponse login(@Valid @RequestBody final LoginRequestDto requestDto , HttpServletResponse response) {
         JwtResponseDto.TokenInfo token = userService.login(requestDto);
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", token.getRefreshToken())
-                .maxAge(7 * 24 * 60 * 60)
-                .path("/")
-                .secure(true)
-                .sameSite("None")
-                .httpOnly(true)
-                .build();
-        response.setHeader("Set-Cookie", cookie.toString());
-
-
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("로그인 성공")
