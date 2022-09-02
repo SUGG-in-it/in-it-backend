@@ -52,7 +52,7 @@ public class UserController {
         return res;
     }
 
-    @PostMapping({ "/password" })
+    @PutMapping({ "/password" })
     public SuccessResponse changePassword(@Valid @RequestBody final ChangePasswordRequestDto requestDto) {
         userService.changePassword(requestDto);
         SuccessResponse res = SuccessResponse.builder()
