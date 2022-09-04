@@ -22,9 +22,7 @@ public class QuestionController {
     @PostMapping({ "" })
     public SuccessResponse issueQuestionId() {
         // token 까서 userid 넘겨주기
-        Long questionId = questionService.issueQuestionId(12);
-
-        IssueQuestionIdResponseVo issueQuestionIdResponse = new IssueQuestionIdResponseVo(questionId);
+        IssueQuestionIdResponseVo issueQuestionIdResponse = questionService.issueQuestionId(1);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
