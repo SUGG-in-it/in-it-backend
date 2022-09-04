@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class QuestionService {
     private final QuestionRepository questionRepository;
 
-    public Integer issueQuestionId(Integer userId){
+    public Long issueQuestionId(Integer userId){
         Question question = IssueQuestionIdRequestDto.toEntity(userId);
         Question newQuestion = questionRepository.save(question);
 
