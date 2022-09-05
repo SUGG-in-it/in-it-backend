@@ -1,5 +1,6 @@
 package com.example.initbackend.userToken.service;
 
+import com.example.initbackend.userToken.dto.RefreshTokenDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,6 @@ import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import com.example.initbackend.userToken.domain.UserToken;
 import com.example.initbackend.userToken.repository.UserTokenRepository;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -39,50 +39,36 @@ public class UserTokenService {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public JwtResponseDto.TokenInfo reIssueToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public JwtResponseDto.TokenInfo reIssueToken(HttpServletRequest request, RefreshTokenDto requestDto) throws IOException {
         try {
             String token = jwtTokenProvider.resolveAccessToken(request);
             // 만료된 Access Token을 디코딩하여 Payload 값을 가져옴
-            HashMap<String, String> payloadMap = JwtUtil.getPayloadByToken(token);
-            String email = payloadMap.get("sub");
+            HashMap<String, ?> payloadMap = JwtUtil.getPayloadByToken(token);
+            Long userId = Long.valueOf(String.valueOf(payloadMap.get("user_id")));
+            UserToken userToken = tokenRepository.findById(userId);
 
-            Optional<UserToken> refreshToken = tokenRepository.findByEmail(email);
-            refreshToken.orElseThrow(
-                    () -> new CustomException(ErrorCode.UNAUTHORIZED)
-            );
+            // 리프레시가 만료됐는지
+            boolean isTokenValid = jwtTokenProvider.validateToken(userToken.getRefreshToken());
+            // 리프레시가 만료가 되지 않은 경우 && 디비에 저장되어있을 경우
+            String oldRefreshToken = requestDto.toEntity().getRefreshToken();
 
-            // Refresh Token이 만료가 된 토큰인지 확인합니다
-            boolean isTokenValid = jwtTokenProvider.validateToken(refreshToken.get().getRefreshToken());
-
-            // Refresh Token이 만료가 되지 않은 경우
-            if(isTokenValid) {
-                Optional<User> user = userRepository.findByEmail(email);
+            if(isTokenValid && (oldRefreshToken.equals(userToken.getRefreshToken()))) {
+                Optional<User> user = userRepository.findById(userId);
 
                 if(user.isPresent()) {
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, user.get().getPassword());
-                    Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-                    JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
-                    UserToken userToken;
-
-                    Optional<UserToken> optionalToken = tokenRepository.findByEmail(user.get().getEmail());
-                    if (!optionalToken.isPresent()) {
-                        userToken = new UserToken();
-                        userToken.setEmail(user.get().getEmail());
-                    } else{
-                        userToken = optionalToken.get();
-                    }
-
-                    userToken.setRefreshToken(tokenInfo.getRefreshToken());
+                    Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                    System.out.println("UserTokenService 58");
+                    System.out.println(authentication);
+                    JwtResponseDto.TokenInfo newTokenInfo = jwtTokenProvider.generateToken(user.get().getId(), authentication);
+                    userToken.setRefreshToken(newTokenInfo.getRefreshToken());
                     tokenRepository.save(userToken);
-
-
-                    return tokenInfo;
+                    return newTokenInfo;
                 }
             }
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
         } catch(ExpiredJwtException e) {
             // Refresh Token 만료 Exception
             throw new CustomException(ErrorCode.JWT_REFRESH_TOKEN_EXPIRED);
         }
-        return null;
     }
 }

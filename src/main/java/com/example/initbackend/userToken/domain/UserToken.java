@@ -22,7 +22,7 @@ public class UserToken  {
     private Long id;
 
     @Column(nullable = false)
-    private String email;
+    private Long userId;
 
     @Column(length = 200)
     private String refreshToken;
@@ -33,12 +33,10 @@ public class UserToken  {
     @CreationTimestamp
     private Timestamp update_date;
 
-
-
     @Builder
-    public UserToken(String email, String refreshToken) {
+    public UserToken(Long userId, String refreshToken) {
 
-        this.email = email;
+        this.userId = userId;
         this.refreshToken = refreshToken;
 
     }
