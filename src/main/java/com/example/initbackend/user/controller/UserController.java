@@ -8,11 +8,10 @@ import com.example.initbackend.user.dto.DuplicatedUserRequestDto;
 import com.example.initbackend.user.dto.JoinRequestDto;
 import com.example.initbackend.user.dto.LoginRequestDto;
 import com.example.initbackend.user.service.UserService;
+import com.example.initbackend.user.vo.LoginResponseVo;
 import lombok.Getter;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -64,13 +63,13 @@ public class UserController {
     }
 
     @PostMapping({ "/login" })
-    public SuccessResponse login(@Valid @RequestBody final LoginRequestDto requestDto , HttpServletResponse response) {
-        JwtResponseDto.TokenInfo token = userService.login(requestDto);
+    public SuccessResponse login(@Valid @RequestBody final LoginRequestDto requestDto) {
+        LoginResponseVo loginResponseVo = userService.login(requestDto);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("로그인 성공")
-                .data(token.getAccessToken())
+                .data(loginResponseVo)
                 .build();
 
         return res;
