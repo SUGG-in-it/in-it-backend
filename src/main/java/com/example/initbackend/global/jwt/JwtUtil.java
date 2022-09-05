@@ -12,7 +12,7 @@ import java.util.HashMap;
 @Component
 public class JwtUtil {
 
-    public static HashMap<String, String> getPayloadByToken(String token) {
+    public static HashMap<String, ?> getPayloadByToken(String token) {
         try {
             String[] splitJwt = token.split("\\.");
 
