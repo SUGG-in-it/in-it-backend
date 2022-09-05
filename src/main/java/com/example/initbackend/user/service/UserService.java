@@ -8,6 +8,7 @@ import com.example.initbackend.user.dto.JoinRequestDto;
 import com.example.initbackend.user.dto.LoginRequestDto;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
+import com.example.initbackend.user.vo.LoginResponseVo;
 import com.example.initbackend.userToken.domain.UserToken;
 import com.example.initbackend.userToken.repository.UserTokenRepository;
 import lombok.Getter;
@@ -21,6 +22,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -64,7 +66,8 @@ public class UserService {
     }
 
 
-    public JwtResponseDto.TokenInfo login(LoginRequestDto loginRequestDto){
+    public LoginResponseVo login(LoginRequestDto loginRequestDto){
+
         String email = loginRequestDto.toEntity().getEmail();
         String password = loginRequestDto.toEntity().getPassword();
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -82,23 +85,24 @@ public class UserService {
 
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.get().getId(), authentication);
 
         UserToken userToken;
-
-        Optional<UserToken> optionalToken = tokenRepository.findByEmail(optionalUser.get().getEmail());
-        if (!optionalToken.isPresent()) {
-            userToken = new UserToken();
-            userToken.setEmail(optionalUser.get().getEmail());
-        } else{
-            userToken = optionalToken.get();
+        userToken = tokenRepository.findById(optionalUser.get().getId());
+        if (Objects.isNull(userToken)){
+            userToken = new UserToken(optionalUser.get().getId(),tokenInfo.getRefreshToken());
+        } else {
+            userToken.setRefreshToken(tokenInfo.getRefreshToken());
         }
 
-        userToken.setRefreshToken(tokenInfo.getRefreshToken());
         tokenRepository.save(userToken);
 
+        LoginResponseVo loginResponseVo = new LoginResponseVo(
+                tokenInfo.getAccessToken(),
+                tokenInfo.getRefreshToken()
+        );
 
-        return tokenInfo;
+        return loginResponseVo;
 
     }
 
