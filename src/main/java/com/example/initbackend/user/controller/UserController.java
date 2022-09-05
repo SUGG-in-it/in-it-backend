@@ -3,10 +3,7 @@ package com.example.initbackend.user.controller;
 import com.example.initbackend.global.jwt.dto.JwtResponseDto;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
-import com.example.initbackend.user.dto.ChangePasswordRequestDto;
-import com.example.initbackend.user.dto.DuplicatedUserRequestDto;
-import com.example.initbackend.user.dto.JoinRequestDto;
-import com.example.initbackend.user.dto.LoginRequestDto;
+import com.example.initbackend.user.dto.*;
 import com.example.initbackend.user.service.UserService;
 import com.example.initbackend.user.vo.LoginResponseVo;
 import lombok.Getter;
@@ -51,7 +48,18 @@ public class UserController {
         return res;
     }
 
-    @PutMapping({ "/password" })
+    @PostMapping({ "/duplicate-nickname" })
+    public SuccessResponse duplicatedNickname(@Valid @RequestBody final DuplicatedNicknameRequestDto requestDto) {
+        userService.duplicatedNickname(requestDto);
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("Nickname is not duplicated")
+                .build();
+
+        return res;
+    }
+
+    @PostMapping({ "/password" })
     public SuccessResponse changePassword(@Valid @RequestBody final ChangePasswordRequestDto requestDto) {
         userService.changePassword(requestDto);
         SuccessResponse res = SuccessResponse.builder()

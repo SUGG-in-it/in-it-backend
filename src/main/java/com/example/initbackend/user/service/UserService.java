@@ -2,10 +2,7 @@ package com.example.initbackend.user.service;
 
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.dto.JwtResponseDto;
-import com.example.initbackend.user.dto.ChangePasswordRequestDto;
-import com.example.initbackend.user.dto.DuplicatedUserRequestDto;
-import com.example.initbackend.user.dto.JoinRequestDto;
-import com.example.initbackend.user.dto.LoginRequestDto;
+import com.example.initbackend.user.dto.*;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import com.example.initbackend.user.vo.LoginResponseVo;
@@ -39,15 +36,19 @@ public class UserService {
         if (isDuplicatedUser(joinRequestDto.getEmail())){
             throw new IllegalArgumentException("Duplicated User");
         }
-        if (isDuplicatedNickname(joinRequestDto.getNickname())){
-            throw new IllegalArgumentException("Duplicated Nickname");
-        }
+
         User user = joinRequestDto.toEntity();
         userRepository.save(user);
     }
     public void duplicatedEmail(DuplicatedUserRequestDto duplicatedUserRequestDto){
         if (isDuplicatedUser(duplicatedUserRequestDto.getEmail())){
             throw new IllegalArgumentException("Duplicated User");
+        }
+    }
+
+    public void duplicatedNickname(DuplicatedNicknameRequestDto duplicatedNicknameRequestDto){
+        if (isDuplicatedNickname(duplicatedNicknameRequestDto.getNickname())){
+            throw new IllegalArgumentException("Duplicated Nickname");
         }
     }
 
