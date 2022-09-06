@@ -1,6 +1,7 @@
 package com.example.initbackend.userToken.service;
 
 import com.example.initbackend.userToken.dto.RefreshTokenDto;
+import com.example.initbackend.userToken.vo.ReIssueTokenResponseVo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,10 +40,10 @@ public class UserTokenService {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public JwtResponseDto.TokenInfo reIssueToken(HttpServletRequest request, RefreshTokenDto requestDto) throws IOException {
+    public ReIssueTokenResponseVo reIssueToken(HttpServletRequest request, RefreshTokenDto requestDto) throws IOException {
         try {
             String token = jwtTokenProvider.resolveAccessToken(request);
-            // 만료된 Access Token을 디코딩하여 Payload 값을 가져옴
+            // Access Token을 디코딩하여 Payload 값을 가져옴
             HashMap<String, ?> payloadMap = JwtUtil.getPayloadByToken(token);
             Long userId = Long.valueOf(String.valueOf(payloadMap.get("user_id")));
             UserToken userToken = tokenRepository.findById(userId);
@@ -57,12 +58,12 @@ public class UserTokenService {
 
                 if(user.isPresent()) {
                     Authentication authentication = jwtTokenProvider.getAuthentication(token);
-                    System.out.println("UserTokenService 58");
-                    System.out.println(authentication);
                     JwtResponseDto.TokenInfo newTokenInfo = jwtTokenProvider.generateToken(user.get().getId(), authentication);
                     userToken.setRefreshToken(newTokenInfo.getRefreshToken());
                     tokenRepository.save(userToken);
-                    return newTokenInfo;
+
+                    ReIssueTokenResponseVo reIssueTokenResponseVo = new ReIssueTokenResponseVo(newTokenInfo.getAccessToken());
+                    return reIssueTokenResponseVo;
                 }
             }
             throw new CustomException(ErrorCode.UNAUTHORIZED);
