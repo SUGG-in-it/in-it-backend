@@ -6,6 +6,7 @@ import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import com.example.initbackend.userToken.dto.RefreshTokenDto;
 import com.example.initbackend.userToken.service.UserTokenService;
+import com.example.initbackend.userToken.vo.ReIssueTokenResponseVo;
 import lombok.Getter;
 import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +30,12 @@ public class UserTokenController {
     @PostMapping({ "/refresh-token" })
     public SuccessResponse reIssueToken (HttpServletRequest request,@Valid @RequestBody RefreshTokenDto requestDto) throws IOException {
 
-        JwtResponseDto.TokenInfo token = userTokenService.reIssueToken(request, requestDto);
+        ReIssueTokenResponseVo reIssueTokenResponseVo = userTokenService.reIssueToken(request, requestDto);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("Verified")
+                .message("re-issue token")
+                .data(reIssueTokenResponseVo)
                 .build();
 
         return res;
