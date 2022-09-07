@@ -4,6 +4,8 @@ import com.example.initbackend.auth.domain.Auth;
 import com.example.initbackend.auth.dto.IssueCertificationCodeRequestDto;
 import com.example.initbackend.auth.dto.VerifyCertificationCodeRequestDto;
 import com.example.initbackend.auth.repository.AuthRepository;
+import com.example.initbackend.global.handler.CustomException;
+import com.example.initbackend.global.response.ErrorCode;
 import com.example.initbackend.global.util.GenerateCeritificationCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +50,10 @@ public class AuthService {
         String email = verifyCertificationCodeRequestDto.getEmail();
         Optional<Auth> optionalAuth = authRepository.findByEmail(email);
         if (!optionalAuth.isPresent()) {
-            throw new EntityNotFoundException(
-                    "Email not present in the database"
-            );
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+//            throw new EntityNotFoundException(
+//                    "Email not present in the database"
+//            );
         }
 
         Timestamp currnetTime = new Timestamp(System.currentTimeMillis());
@@ -69,16 +72,18 @@ public class AuthService {
 
 
         if(currnetTime.after(issuedTime)){
-            throw new EntityNotFoundException(
-                    "Code Expired"
-            );
+            throw new CustomException(ErrorCode.CERTIFICATION_CODE_EXPIRED);
+//            throw new EntityNotFoundException(
+//                    "Code Expired"
+//            );
         }
 
         String dbCertificationCode = optionalAuth.get().getCode();
         if(!dbCertificationCode.equals(certificationCode)){
-            throw new EntityNotFoundException(
-                    "incorrect certificationCode"
-            );
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CERTIFICATION_CODE);
+//            throw new EntityNotFoundException(
+//                    "incorrect certificationCode"
+//            );
         }
 
         // 시간 초과 시 에러처리 필요

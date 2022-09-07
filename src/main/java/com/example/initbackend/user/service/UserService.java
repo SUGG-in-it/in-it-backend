@@ -1,7 +1,9 @@
 package com.example.initbackend.user.service;
 
+import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.dto.JwtResponseDto;
+import com.example.initbackend.global.response.ErrorCode;
 import com.example.initbackend.user.dto.*;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
@@ -32,33 +34,36 @@ public class UserService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void join(JoinRequestDto joinRequestDto){
-        if (isDuplicatedUser(joinRequestDto.getEmail())){
-            throw new IllegalArgumentException("Duplicated User");
+    public void join(JoinRequestDto joinRequestDto) {
+        if (isDuplicatedUser(joinRequestDto.getEmail())) {
+            throw new CustomException(ErrorCode.CONFLICT);
+//                    IllegalArgumentException("Duplicated User");
         }
 
         User user = joinRequestDto.toEntity();
         userRepository.save(user);
     }
-    public void duplicatedEmail(DuplicatedUserRequestDto duplicatedUserRequestDto){
-        if (isDuplicatedUser(duplicatedUserRequestDto.getEmail())){
-            throw new IllegalArgumentException("Duplicated User");
+
+    public void duplicatedEmail(DuplicatedUserRequestDto duplicatedUserRequestDto) {
+        if (isDuplicatedUser(duplicatedUserRequestDto.getEmail())) {
+            throw new CustomException(ErrorCode.CONFLICT);
+//            throw new IllegalArgumentException("Duplicated User");
         }
     }
 
-    public void duplicatedNickname(DuplicatedNicknameRequestDto duplicatedNicknameRequestDto){
-        if (isDuplicatedNickname(duplicatedNicknameRequestDto.getNickname())){
-            throw new IllegalArgumentException("Duplicated Nickname");
+    public void duplicatedNickname(DuplicatedNicknameRequestDto duplicatedNicknameRequestDto) {
+        if (isDuplicatedNickname(duplicatedNicknameRequestDto.getNickname())) {
+            throw new CustomException(ErrorCode.CONFLICT);
+//            throw new IllegalArgumentException("Duplicated Nickname");
         }
     }
 
-    public void changePassword(ChangePasswordRequestDto changePasswordRequestDto){
+    public void changePassword(ChangePasswordRequestDto changePasswordRequestDto) {
         String email = changePasswordRequestDto.toEntity().getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent()) {
-            throw new EntityNotFoundException(
-                    "User not present in the database"
-            );
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+//            throw new EntityNotFoundException("User not present in the database");
         }
 
         User user = optionalUser.get();
@@ -67,21 +72,19 @@ public class UserService {
     }
 
 
-    public LoginResponseVo login(LoginRequestDto loginRequestDto){
+    public LoginResponseVo login(LoginRequestDto loginRequestDto) {
 
         String email = loginRequestDto.toEntity().getEmail();
         String password = loginRequestDto.toEntity().getPassword();
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent()) {
-            throw new EntityNotFoundException(
-                    "User not present in the database"
-            );
+            throw new CustomException(ErrorCode.CONFLICT);
+//            throw new EntityNotFoundException("User not present in the database");
         }
         String dbPassword = optionalUser.get().getPassword();
-        if(!dbPassword.equals(password)){
-            throw new EntityNotFoundException(
-                    "incorrect password"
-            );
+        if (!dbPassword.equals(password)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_PASSWORD);
+//            throw new EntityNotFoundException("incorrect password");
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
@@ -90,8 +93,8 @@ public class UserService {
 
         UserToken userToken;
         userToken = tokenRepository.findById(optionalUser.get().getId());
-        if (Objects.isNull(userToken)){
-            userToken = new UserToken(optionalUser.get().getId(),tokenInfo.getRefreshToken());
+        if (Objects.isNull(userToken)) {
+            userToken = new UserToken(optionalUser.get().getId(), tokenInfo.getRefreshToken());
         } else {
             userToken.setRefreshToken(tokenInfo.getRefreshToken());
         }
