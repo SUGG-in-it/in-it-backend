@@ -1,4 +1,4 @@
-package com.example.initbackend.user.vo;
+package com.example.initbackend.userToken.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -8,9 +8,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponseVo {
+public class ReIssueTokenResponseVo {
 
     private String accessToken;
 
-    private String refreshToken;
 }
