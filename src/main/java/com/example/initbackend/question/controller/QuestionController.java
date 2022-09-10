@@ -5,8 +5,9 @@ import com.example.initbackend.global.response.SuccessResponse;
 import com.example.initbackend.question.service.QuestionService;
 import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
 import lombok.Getter;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Getter
 @RestController
@@ -27,18 +28,6 @@ public class QuestionController {
                 .status(StatusEnum.OK)
                 .message("Issued QuestionId")
                 .data(issueQuestionIdResponse)
-                .build();
-
-        return res;
-    }
-
-    @PostMapping({"/image"})
-    // dto 로 수정
-    public SuccessResponse uploadImage(@RequestParam("id") String category, @RequestPart(value = "image") MultipartFile multipartFile) {
-        questionService.uploadImage(category, multipartFile);
-        SuccessResponse res = SuccessResponse.builder()
-                .status(StatusEnum.OK)
-                .message("Uploaded Image")
                 .build();
 
         return res;
