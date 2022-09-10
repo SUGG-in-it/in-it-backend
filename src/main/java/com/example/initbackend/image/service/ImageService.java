@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.response.ErrorCode;
+import com.example.initbackend.image.vo.UploadImageResponseVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +27,7 @@ public class ImageService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public String uploadImage(String category, MultipartFile multipartFile) {
+    public UploadImageResponseVo uploadImage(String category, MultipartFile multipartFile) {
         validateFileExists(multipartFile);
 
         String fileName = buildFileName(category, multipartFile.getOriginalFilename());
@@ -41,7 +42,8 @@ public class ImageService {
             throw new CustomException(ErrorCode.AWS_S3_UPLOAD_FAIL); // upload fail
         }
 
-        return amazonS3Client.getUrl(bucketName, fileName).toString();
+        UploadImageResponseVo UploadImageResponse = new UploadImageResponseVo(amazonS3Client.getUrl(bucketName, fileName).toString());
+        return UploadImageResponse;
     }
 
     private void validateFileExists(MultipartFile multipartFile) {

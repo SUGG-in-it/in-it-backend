@@ -3,6 +3,7 @@ package com.example.initbackend.image.controller;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import com.example.initbackend.image.service.ImageService;
+import com.example.initbackend.image.vo.UploadImageResponseVo;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,10 +21,11 @@ public class ImageController {
     @PostMapping({"/upload"})
     // dto 로 수정
     public SuccessResponse uploadImage(@RequestParam("id") String category, @RequestPart(value = "image") MultipartFile multipartFile) {
-        imageService.uploadImage(category, multipartFile);
+        UploadImageResponseVo uploadImageResponse = imageService.uploadImage(category, multipartFile);
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("Uploaded Image")
+                .data(uploadImageResponse)
                 .build();
 
         return res;

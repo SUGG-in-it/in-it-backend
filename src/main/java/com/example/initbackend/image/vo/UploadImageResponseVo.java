@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class IssueQuestionIdResponseVo {
+public class UploadImageResponseVo {
         @JsonProperty
-        private Long questionId;
-        public IssueQuestionIdResponseVo(Long questionId) {
-            this.questionId = questionId;
+        private String url;
+        public UploadImageResponseVo(String url) {
+            this.url = url;
         }
 }
