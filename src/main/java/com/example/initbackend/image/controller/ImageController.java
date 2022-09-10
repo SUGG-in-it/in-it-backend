@@ -18,9 +18,9 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-    @PostMapping({"/upload"})
+    @PostMapping({"/upload/{id}"})
     // dto 로 수정
-    public SuccessResponse uploadImage(@RequestParam("id") String category, @RequestPart(value = "image") MultipartFile multipartFile) {
+    public SuccessResponse uploadImage(@PathVariable("id") String category, @RequestPart(value = "image") MultipartFile multipartFile) {
         UploadImageResponseVo uploadImageResponse = imageService.uploadImage(category, multipartFile);
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
