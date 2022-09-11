@@ -21,10 +21,10 @@ public class ChangePasswordRequestDto {
 
 
     @Builder
-    public ChangePasswordRequestDto(String email, String passowrd) {
+    public ChangePasswordRequestDto(String email, String password) {
 
         this.email = email;
-        this.password = passowrd;
+        this.password = password;
     }
 
     public User toEntity(){
