@@ -28,7 +28,7 @@ public class Question {
     private Integer point;
 
     @Column
-    private Integer user_id;
+    private Long user_id;
 
     @Column
     private Integer selected_user_id;
@@ -46,7 +46,7 @@ public class Question {
     private Timestamp update_date;
 
     @Builder
-    public Question(String title, String content, Boolean is_completed, Integer point, Integer user_id, Integer selected_user_id, String tag_list, Integer views) {
+    public Question(String title, String content, Boolean is_completed, Integer point, Long user_id, Integer selected_user_id, String tag_list, Integer views) {
         this.title = title;
         this.content = content;
         this.is_completed = is_completed;
