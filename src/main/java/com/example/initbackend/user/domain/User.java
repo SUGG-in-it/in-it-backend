@@ -116,7 +116,7 @@ public class User implements UserDetails {
 
 
     @Builder
-    public User(String email, String password, String year, String work_position, String nickname, String authority, boolean enabled) {
+    public User(String email, String password, String year, String work_position, String nickname, String authority, boolean enabled, String github_account, String introduction, String career, String company, Integer point, String level) {
 
         this.email = email;
         this.password = password;
@@ -125,6 +125,13 @@ public class User implements UserDetails {
         this.work_position = work_position;
         this.authority = authority;
         this.enabled = enabled;
+        this.github_account = github_account;
+        this.introduction = introduction;
+        this.career= career;
+        this.company = company;
+        this.point= point;
+        this.level = level;
+
     }
 
 

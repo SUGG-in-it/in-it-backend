@@ -7,6 +7,7 @@ import com.example.initbackend.global.response.ErrorCode;
 import com.example.initbackend.user.dto.*;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
+import com.example.initbackend.user.vo.GetProfileResponseVo;
 import com.example.initbackend.user.vo.LoginResponseVo;
 import com.example.initbackend.userToken.domain.UserToken;
 import com.example.initbackend.userToken.repository.UserTokenRepository;
@@ -123,6 +124,48 @@ public class UserService {
                 .enabled(user.isEnabled())
                 .build();
 
+    }
+
+    public GetProfileResponseVo getUserByNickname(String nickname) {
+
+        Optional<User> byNickname = userRepository.findByNickname(nickname);
+
+        if (!byNickname.isPresent()) {
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
+        User user = byNickname.get();
+        GetProfileResponseVo getProfileResponse = new GetProfileResponseVo(
+                user.getEmail(),
+                user.getNickname(),
+                user.getGithub_account(),
+                user.getIntroduction(),
+                user.getWork_position(),
+                user.getCareer(),
+                user.getCompany(),
+                user.getPoint(),
+                user.getLevel()
+                );
+
+        return getProfileResponse;
+    }
+
+    public void updateUser(UpdateProfileRequestDto updateProfileRequestDto) {
+
+        Optional<User> optionalUser = userRepository.findByEmail(updateProfileRequestDto.getEmail());
+        if (!optionalUser.isPresent()) {
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
+
+        user.setNickname(updateProfileRequestDto.getNickname());
+        user.setGithub_account(updateProfileRequestDto.getGithubAccount());
+        user.setIntroduction(updateProfileRequestDto.getIntroduction());
+        user.setWork_position(updateProfileRequestDto.getWorkPosition());
+        user.setCareer(updateProfileRequestDto.getCareer());
+        user.setCompany(updateProfileRequestDto.getCompany());
+
+        userRepository.save(user);
     }
 
     private boolean isDuplicatedUser(String email) {

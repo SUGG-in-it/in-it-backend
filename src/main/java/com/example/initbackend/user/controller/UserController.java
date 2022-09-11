@@ -3,8 +3,10 @@ package com.example.initbackend.user.controller;
 import com.example.initbackend.global.jwt.dto.JwtResponseDto;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
+import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
 import com.example.initbackend.user.dto.*;
 import com.example.initbackend.user.service.UserService;
+import com.example.initbackend.user.vo.GetProfileResponseVo;
 import com.example.initbackend.user.vo.LoginResponseVo;
 import lombok.Getter;
 
@@ -95,6 +97,34 @@ public class UserController {
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("로그아웃 성공")
+                .build();
+
+        return res;
+    }
+
+
+    @GetMapping({"/profiles/{nickname}"})
+    public SuccessResponse getProfile(@PathVariable("nickname") String nickname){
+
+        GetProfileResponseVo getProfileResponse = userService.getUserByNickname(nickname);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("get profile")
+                .data(getProfileResponse)
+                .build();
+
+        return res;
+    }
+
+    @PutMapping({"/profiles"})
+    public SuccessResponse updateProfile(@Valid @RequestBody final UpdateProfileRequestDto requestDto){
+
+        userService.updateUser(requestDto);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("update profile")
                 .build();
 
         return res;
