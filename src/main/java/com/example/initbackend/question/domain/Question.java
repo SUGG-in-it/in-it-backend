@@ -34,7 +34,7 @@ public class Question {
     private Integer selected_user_id;
 
     @Column
-    private String tag_list;
+    private String tagList;
 
     @Column
     private Integer views;
@@ -46,14 +46,14 @@ public class Question {
     private Timestamp update_date;
 
     @Builder
-    public Question(String title, String content, Boolean is_completed, Integer point, Long user_id, Integer selected_user_id, String tag_list, Integer views) {
+    public Question(String title, String content, Boolean is_completed, Integer point, Long user_id, Integer selected_user_id, String tagList, Integer views) {
         this.title = title;
         this.content = content;
         this.is_completed = is_completed;
         this.point = point;
         this.user_id = user_id;
         this.selected_user_id = selected_user_id;
-        this.tag_list = tag_list;
+        this.tagList = tagList;
         this.views = views;
     }
 }

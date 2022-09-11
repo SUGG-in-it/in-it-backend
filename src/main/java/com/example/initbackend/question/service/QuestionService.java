@@ -32,20 +32,17 @@ public class QuestionService {
     }
 
     public void UpdateQuestion(Long questionId, UpdateQuestionRequestDto updateQuestionRequestDto){
-        String email = updateQuestionRequestDto.getEmail();
-        Optional<User> optionalUser = userRepository.findByEmail(email);
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
-        Long userId = optionalUser.get().getId();
-        System.out.println("=====================");
-        System.out.println(userId);
-        System.out.println("=====================");
-        // 이렇게 update 하는게 맞을까요? 아닌가봅니다...
-        Question question = optionalQuestion.get();
-        question.setTitle(UpdateQuestionRequestDto.toEntity(userId).getTitle());
-        question.setContent(UpdateQuestionRequestDto.toEntity(userId).getContent());
-        question.setTag_list(UpdateQuestionRequestDto.toEntity(userId).getTag_list());
-        question.setPoint(UpdateQuestionRequestDto.toEntity(userId).getPoint());
 
-        questionRepository.save(question);
+        optionalQuestion.ifPresent(selectQuestion->{
+            selectQuestion.setTitle(updateQuestionRequestDto.getTitle());
+            selectQuestion.setContent(updateQuestionRequestDto.getContent());
+            selectQuestion.setTagList(updateQuestionRequestDto.getTagList());
+            selectQuestion.setPoint(updateQuestionRequestDto.getPoint());
+
+            questionRepository.save(selectQuestion);
+        });
+
+
     }
 }

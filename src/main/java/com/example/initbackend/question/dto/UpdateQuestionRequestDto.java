@@ -13,18 +13,18 @@ import javax.validation.constraints.NotBlank;
 public class UpdateQuestionRequestDto {
 
     @NotBlank
-    private static String title;
+    private String title;
 
     @NotBlank
-    private static String content;
+    private String content;
     @NotBlank
-    private static String tagList;
+    private String tagList;
 
     @NotBlank(message = "이메일을 입력해주세요")
     @Email(message = "이메일 양식 오류")
     private String email;
 
-    private static Integer point;
+    private  Integer point;
 
 
 
@@ -37,13 +37,13 @@ public class UpdateQuestionRequestDto {
         this.point = point;
     }
 
-    public static Question toEntity(Long userId){
+    public Question toEntity(){
         return Question.builder()
                 .title(title)
                 .content(content)
-                .tag_list(tagList)
-                .user_id(userId)
+                .tagList(tagList)
                 .point(point)
                 .build();
     }
+
 }
