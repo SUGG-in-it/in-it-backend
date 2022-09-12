@@ -86,7 +86,7 @@ public class QuestionController {
 
         return res;
     }
-    @GetMapping({ "" })
+    @GetMapping({ "/main" })
     public SuccessResponse getBannerQuestion(@RequestParam("type") String type) {
         GetBannerQuestionIdResponseVo getBannerQuestionIdResponse = questionService.GetBannerQuestionId(type);
 
