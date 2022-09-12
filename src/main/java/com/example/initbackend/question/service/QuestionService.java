@@ -1,14 +1,10 @@
 package com.example.initbackend.question.service;
 
 import com.example.initbackend.question.domain.Question;
-import com.example.initbackend.question.dto.GetQuestionsRequestDto;
-import com.example.initbackend.question.dto.IssueQuestionIdRequestDto;
-import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
-import com.example.initbackend.question.repository.QuestionRepository;
-import com.example.initbackend.question.vo.GetQuestionResponseVo;
-import com.example.initbackend.question.vo.GetQuestionsResponseVo;
-import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
+import com.example.initbackend.question.dto.*;
+import com.example.initbackend.question.vo.*;
 import com.example.initbackend.user.domain.User;
+import com.example.initbackend.question.repository.QuestionRepository;
 import com.example.initbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -120,5 +116,16 @@ public class QuestionService {
                 questionRepository.deleteById(questionId);
             });
         }
+    }
+
+    public GetBannerQuestionIdResponseVo GetBannerQuestionId(String type){
+//        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+//        String status = optionalQuestion.get().getType();
+//        if(status.equals("completed")){
+//            optionalQuestion.ifPresent(selectQuestion->{
+//                questionRepository.deleteById(questionId);
+//            });
+//        }
+        return new GetBannerQuestionIdResponseVo(1L);
     }
 }

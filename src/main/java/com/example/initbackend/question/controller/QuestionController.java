@@ -5,6 +5,7 @@ import com.example.initbackend.global.response.SuccessResponse;
 import com.example.initbackend.question.dto.GetQuestionsRequestDto;
 import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
 import com.example.initbackend.question.service.QuestionService;
+import com.example.initbackend.question.vo.GetBannerQuestionIdResponseVo;
 import com.example.initbackend.question.vo.GetQuestionResponseVo;
 import com.example.initbackend.question.vo.GetQuestionsResponseVo;
 import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
@@ -81,6 +82,18 @@ public class QuestionController {
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("Question Deleted")
+                .build();
+
+        return res;
+    }
+    @GetMapping({ "" })
+    public SuccessResponse getBannerQuestion(@RequestParam("type") String type) {
+        GetBannerQuestionIdResponseVo getBannerQuestionIdResponse = questionService.GetBannerQuestionId(type);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("Get Question")
+                .data(getBannerQuestionIdResponse)
                 .build();
 
         return res;
