@@ -73,4 +73,16 @@ public class QuestionController {
 
         return res;
     }
+
+    @DeleteMapping({ "/{questionId}" })
+    public SuccessResponse deleteQuestion(@PathVariable("questionId") Long questionId) {
+        questionService.DeleteQuestion(questionId);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("Question Deleted")
+                .build();
+
+        return res;
+    }
 }
