@@ -1,11 +1,11 @@
 package com.example.initbackend.auth.dto;
 
 import com.example.initbackend.auth.domain.Auth;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 @NoArgsConstructor
 @Getter
@@ -14,8 +14,12 @@ public class IssueCertificationCodeRequestDto {
     @Email(message = "이메일 양식 오류")
     private String email;
 
-    public IssueCertificationCodeRequestDto(String email) {
+    @NotBlank
+    private String type;
+
+    public IssueCertificationCodeRequestDto(String email, String type) {
         this.email = email;
+        this.type = type;
     }
     public Auth toEntity(String certificationCode){
         return Auth.builder()

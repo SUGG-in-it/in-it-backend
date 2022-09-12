@@ -7,6 +7,8 @@ import com.example.initbackend.auth.repository.AuthRepository;
 import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.response.ErrorCode;
 import com.example.initbackend.global.util.GenerateCeritificationCode;
+import com.example.initbackend.user.domain.User;
+import com.example.initbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Optional;
@@ -26,14 +27,22 @@ import java.util.Optional;
 
 public class AuthService {
     private final AuthRepository authRepository;
+    private final UserRepository userRepository;
     @Autowired
     private final JavaMailSender emailSender;
 
     public String issueCertificationCode(IssueCertificationCodeRequestDto issueCertificationCodeRequestDto){
+        String type = issueCertificationCodeRequestDto.getType();
         String certificationCode = GenerateCeritificationCode.generateCeritificationCode();
         String email = issueCertificationCodeRequestDto.getEmail();
         Auth auth = issueCertificationCodeRequestDto.toEntity(certificationCode);
         Optional<Auth> optionalAuth = authRepository.findByEmail(email);
+        if(type.equals("password")) {
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if (!optionalUser.isPresent()) {
+                throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+            }
+        }
         if (!optionalAuth.isPresent()) {
             authRepository.save(auth);
         } else {
