@@ -12,4 +12,6 @@ import java.util.Optional;
 public interface AnswerRepository  extends JpaRepository<Answer,String> {
 
     Optional<Answer> findByUserIdAndQuestionId(Long userId, Long QuestionId);
+    Optional<Answer> findById(Long answerId);
+
 }
