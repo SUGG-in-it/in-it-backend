@@ -33,9 +33,7 @@ public class QuestionService {
         Question question = IssueQuestionIdRequestDto.toEntity(userId);
         Question newQuestion = questionRepository.save(question);
 
-        IssueQuestionIdResponseVo issueQuestionIdResponse = new IssueQuestionIdResponseVo(newQuestion.getId());
-
-        return issueQuestionIdResponse;
+        return new IssueQuestionIdResponseVo(newQuestion.getId());
     }
 
     public void UpdateQuestion(Long questionId, UpdateQuestionRequestDto updateQuestionRequestDto){
@@ -57,7 +55,7 @@ public class QuestionService {
         Long userId = question.getUserId();
         Optional<User> user = userRepository.findById(userId);
 
-        GetQuestionResponseVo getQuestionResponse = new GetQuestionResponseVo(
+        return new GetQuestionResponseVo(
                 question.getId(),
                 question.getTitle(),
                 question.getContent(),
@@ -68,8 +66,6 @@ public class QuestionService {
                 question.getCreateDate(),
                 question.getUpdateDate()
         );
-
-        return getQuestionResponse;
     }
 
     public GetQuestionsResponseVo GetQuestions(GetQuestionsRequestDto getQuestionsRequestDto){
@@ -77,15 +73,26 @@ public class QuestionService {
         Integer count = getQuestionsRequestDto.getCount();
         Integer page = getQuestionsRequestDto.getPage();
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
+        Page<Question> questions = null;
         if (type.equals("total")){
-            Page<Question> questions = questionRepository.findAll(PageRequest.of(page-1, count));
-            questions.stream().forEach(
-                    it -> {
-                        Optional<Question> optionalQuestion = questionRepository.findById(it.getId());
-                        Question question = optionalQuestion.get();
-                        Long userId = question.getUserId();
-                        Optional<User> user = userRepository.findById(userId);
-                        GetQuestionResponseVo getQuestionResponse = new GetQuestionResponseVo(
+            System.out.println("====total====");
+            questions = questionRepository.findAll(PageRequest.of(page-1, count));
+        }
+        else if (type.equals("doing")){
+            System.out.println("====doing====");
+            questions = questionRepository.findByType("doing", PageRequest.of(page-1, count));
+        }
+        else if (type.equals("completed")){
+            System.out.println("====completed====");
+            questions = questionRepository.findByType("completed", PageRequest.of(page-1, count));
+        }
+        questions.stream().forEach(
+                it -> {
+                    Optional<Question> optionalQuestion = questionRepository.findById(it.getId());
+                    Question question = optionalQuestion.get();
+                    Long userId = question.getUserId();
+                    Optional<User> user = userRepository.findById(userId);
+                    GetQuestionResponseVo getQuestionResponse = new GetQuestionResponseVo(
                             question.getId(),
                             question.getTitle(),
                             question.getContent(),
@@ -95,15 +102,13 @@ public class QuestionService {
                             question.getTagList(),
                             question.getCreateDate(),
                             question.getUpdateDate()
-                        );
-                        System.out.println(question.getContent() + " " + user.get().getId());
-                        questionList.add(getQuestionResponse);
-                        System.out.println("====3====");
-                    }
-            );
-        }
+                    );
+                    System.out.println(question.getContent() + " " + user.get().getId());
+                    questionList.add(getQuestionResponse);
+                    System.out.println("====3====");
+                }
+        );
 
-        GetQuestionsResponseVo getQuestionsResponse = new GetQuestionsResponseVo(questionList);
-        return getQuestionsResponse;
+        return new GetQuestionsResponseVo(questionList);
     }
 }

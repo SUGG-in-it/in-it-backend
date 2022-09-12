@@ -23,7 +23,7 @@ public class Question {
     private String content;
 
     @Column
-    private Boolean isCompleted;
+    private String type;
 
     @Column
     private Integer point;
@@ -47,10 +47,10 @@ public class Question {
     private Timestamp updateDate;
 
     @Builder
-    public Question(String title, String content, Boolean isCompleted, Integer point, Long userId, Integer selectedUserId, String tagList, Integer views) {
+    public Question(String title, String content, String type, Integer point, Long userId, Integer selectedUserId, String tagList, Integer views) {
         this.title = title;
         this.content = content;
-        this.isCompleted = isCompleted;
+        this.type = type;
         this.point = point;
         this.userId = userId;
         this.selectedUserId = selectedUserId;
