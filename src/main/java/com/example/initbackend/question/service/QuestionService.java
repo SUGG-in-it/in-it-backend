@@ -111,4 +111,14 @@ public class QuestionService {
 
         return new GetQuestionsResponseVo(questionList);
     }
+
+    public void DeleteQuestion(Long questionId){
+        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        String status = optionalQuestion.get().getType();
+        if(status.equals("completed")){
+            optionalQuestion.ifPresent(selectQuestion->{
+                questionRepository.deleteById(questionId);
+            });
+        }
+    }
 }
