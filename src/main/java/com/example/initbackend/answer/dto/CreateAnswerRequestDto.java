@@ -11,14 +11,12 @@ import lombok.NoArgsConstructor;
 public class CreateAnswerRequestDto {
 
     private Long questionId;
-    private Long userId;
     private String content;
 
 
     public Answer toEntity(){
         return Answer.builder()
                 .questionId(questionId)
-                .userId(userId)
                 .content(content)
                 .build();
     }

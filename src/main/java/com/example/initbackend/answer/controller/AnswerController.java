@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Component
@@ -22,9 +23,10 @@ public class AnswerController {
 
     private final AnswerService answerService;
 
+    // 확인 아직 안됨.
     @PostMapping
-    public SuccessResponse createAnswer(@Valid @RequestBody CreateAnswerRequestDto requestDto){
-        answerService.createAnswer(requestDto);
+    public SuccessResponse createAnswer(HttpServletRequest request,  @Valid @RequestBody CreateAnswerRequestDto requestDto){
+        answerService.createAnswer(request, requestDto);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
