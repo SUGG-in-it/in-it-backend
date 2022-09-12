@@ -21,7 +21,7 @@ public class Question {
     @Column
     private String content;
 
-    @Column(nullable = false)
+    @Column
     private Boolean is_completed;
 
     @Column
