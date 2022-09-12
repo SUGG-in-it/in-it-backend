@@ -44,8 +44,7 @@ public class UserTokenService {
         try {
             String token = jwtTokenProvider.resolveAccessToken(request);
             // Access Token을 디코딩하여 Payload 값을 가져옴
-            HashMap<String, ?> payloadMap = JwtUtil.getPayloadByToken(token);
-            Long userId = Long.valueOf(String.valueOf(payloadMap.get("user_id")));
+            Long userId  = JwtUtil.getPayloadByToken(token);
             UserToken userToken = tokenRepository.findById(userId);
 
             // 리프레시가 만료됐는지
