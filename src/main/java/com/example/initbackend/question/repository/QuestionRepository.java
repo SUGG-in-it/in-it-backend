@@ -13,4 +13,7 @@ import java.util.Optional;
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     Optional<Question> findById(Long questionId);
     Page<Question> findByType(String type, Pageable pageable);
+
+    Question findFirstByOrderByPointDesc();
+    Question findFirstByOrderByUpdateDateDesc();
 }
