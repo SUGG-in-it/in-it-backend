@@ -12,14 +12,16 @@ import java.util.HashMap;
 @Component
 public class JwtUtil {
 
-    public static HashMap<String, ?> getPayloadByToken(String token) {
+    public static Long getPayloadByToken(String token) {
         try {
             String[] splitJwt = token.split("\\.");
 
             Base64.Decoder decoder = Base64.getDecoder();
             String payload = new String(decoder.decode(splitJwt[1] .getBytes()));
+            HashMap<String,?> payloadMap = new ObjectMapper().readValue(payload, HashMap.class);
+            Long userId = Long.valueOf(String.valueOf(payloadMap.get("user_id")));
 
-            return new ObjectMapper().readValue(payload, HashMap.class);
+            return userId;
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
             return null;
