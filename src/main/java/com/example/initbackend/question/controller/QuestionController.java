@@ -2,9 +2,11 @@ package com.example.initbackend.question.controller;
 
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
+import com.example.initbackend.question.dto.GetQuestionsRequestDto;
 import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
 import com.example.initbackend.question.service.QuestionService;
 import com.example.initbackend.question.vo.GetQuestionResponseVo;
+import com.example.initbackend.question.vo.GetQuestionsResponseVo;
 import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +56,19 @@ public class QuestionController {
                 .status(StatusEnum.OK)
                 .message("Get Question")
                 .data(getQuestionResponse)
+                .build();
+
+        return res;
+    }
+
+    @GetMapping({ "" })
+    public SuccessResponse getQuestions(@Valid @RequestBody final GetQuestionsRequestDto requestDto) {
+        GetQuestionsResponseVo getQuestionsResponse = questionService.GetQuestions(requestDto);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("Get Question")
+                .data(getQuestionsResponse)
                 .build();
 
         return res;
