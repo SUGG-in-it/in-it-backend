@@ -1,6 +1,7 @@
 package com.example.initbackend.question.domain;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -22,16 +23,16 @@ public class Question {
     private String content;
 
     @Column
-    private Boolean is_completed;
+    private String type;
 
     @Column
     private Integer point;
 
     @Column
-    private Long user_id;
+    private Long userId;
 
     @Column
-    private Integer selected_user_id;
+    private Integer selectedUserId;
 
     @Column
     private String tagList;
@@ -40,19 +41,19 @@ public class Question {
     private Integer views;
 
     @CreationTimestamp
-    private Timestamp create_date;
+    private Timestamp createDate;
 
-    @CreationTimestamp
-    private Timestamp update_date;
+    @UpdateTimestamp
+    private Timestamp updateDate;
 
     @Builder
-    public Question(String title, String content, Boolean is_completed, Integer point, Long user_id, Integer selected_user_id, String tagList, Integer views) {
+    public Question(String title, String content, String type, Integer point, Long userId, Integer selectedUserId, String tagList, Integer views) {
         this.title = title;
         this.content = content;
-        this.is_completed = is_completed;
+        this.type = type;
         this.point = point;
-        this.user_id = user_id;
-        this.selected_user_id = selected_user_id;
+        this.userId = userId;
+        this.selectedUserId = selectedUserId;
         this.tagList = tagList;
         this.views = views;
     }

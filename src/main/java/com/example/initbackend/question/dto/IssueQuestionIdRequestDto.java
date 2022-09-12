@@ -18,7 +18,7 @@ public class IssueQuestionIdRequestDto {
 
     public static Question toEntity(Long userId){
         return Question.builder()
-                .user_id(userId)
+                .userId(userId)
                 .build();
     }
 }
