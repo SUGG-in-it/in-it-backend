@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateAnswerRequestDto {
+public class UpdateAnswerRequestDto {
 
     private Long questionId;
     private String content;
