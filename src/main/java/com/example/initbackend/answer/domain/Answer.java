@@ -35,6 +35,9 @@ public class Answer {
     @UpdateTimestamp
     private Timestamp updateDate;
 
+    public Answer(Long userId) {
+        this.userId = userId;
+    }
     @Builder
     public Answer(Long id, Long questionId, Long userId, String content, boolean isSelected){
         this.id = id;
@@ -43,5 +46,6 @@ public class Answer {
         this.content = content;
         this.isSelected = isSelected;
     }
+
 
 }
