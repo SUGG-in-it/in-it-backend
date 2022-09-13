@@ -2,6 +2,7 @@ package com.example.initbackend.answer.service;
 
 import com.example.initbackend.answer.domain.Answer;
 import com.example.initbackend.answer.dto.DeleteAnswerRequestDto;
+import com.example.initbackend.answer.dto.SelectAnswerRequestDto;
 import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.repository.AnswerRepository;
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
@@ -84,6 +85,25 @@ public class AnswerService {
                 () -> {
                     throw new CustomException(ErrorCode.DATA_NOT_FOUND);
                 });
+    }
+
+
+    public void selectAnswer(HttpServletRequest request, SelectAnswerRequestDto selectAnswerRequestDto){
+
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId  = jwtUtil.getPayloadByToken(token);
+        Long questionId = selectAnswerRequestDto.getQuestionId();
+
+        Optional<Answer> optionalAnswer = answerRepository.findByUserIdAndQuestionId(userId,questionId);
+        optionalAnswer.ifPresentOrElse(
+                selectAnswer ->{
+                    selectAnswer.setSelected(true);
+                    answerRepository.save(selectAnswer);
+                },
+                () -> {
+                    throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+                });
+
     }
 
     private boolean isDuplicatedAnswer(Long userId, Long questionId ) {

@@ -2,6 +2,7 @@ package com.example.initbackend.answer.controller;
 
 
 import com.example.initbackend.answer.dto.DeleteAnswerRequestDto;
+import com.example.initbackend.answer.dto.SelectAnswerRequestDto;
 import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.service.AnswerService;
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
@@ -26,7 +27,6 @@ public class AnswerController {
 
     @PostMapping
     public SuccessResponse issueAnswerId(HttpServletRequest request) {
-        // token 까서 userid 넘겨주기
         IssueAnswerIdResponseVo issueAnswerIdResponse = answerService.issueAnswerId(request);
 
         SuccessResponse res = SuccessResponse.builder()
@@ -66,6 +66,19 @@ public class AnswerController {
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .build();
+        return res;
+    }
+
+    @PostMapping("/select/{answerId}")
+    public SuccessResponse selectAnswer(HttpServletRequest request, @Valid @RequestBody SelectAnswerRequestDto requestDto) {
+
+        answerService.selectAnswer(request, requestDto);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("Issued answerId")
+                .build();
+
         return res;
     }
 }
