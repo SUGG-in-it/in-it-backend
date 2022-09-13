@@ -27,6 +27,8 @@ public enum ErrorCode {
     //JWT
     JWT_ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "TOKEN-0001", "Access token has expired"),
     JWT_REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "TOKEN-0002", "Refresh token has expired"),
+    JWT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "TOKEN-0003", "Token unauthorized"),
+
 
     // CERTIFICATION
     CERTIFICATION_CODE_EXPIRED(HttpStatus.UNAUTHORIZED, "CERTIFICATION-0001", "Certification code has expired"),

@@ -1,5 +1,6 @@
 package com.example.initbackend.question.service;
 
+import com.example.initbackend.global.util.GenerateRandomNumber;
 import com.example.initbackend.question.domain.Question;
 import com.example.initbackend.question.dto.*;
 import com.example.initbackend.question.vo.*;
@@ -119,13 +120,25 @@ public class QuestionService {
     }
 
     public GetBannerQuestionIdResponseVo GetBannerQuestionId(String type){
-//        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
-//        String status = optionalQuestion.get().getType();
-//        if(status.equals("completed")){
-//            optionalQuestion.ifPresent(selectQuestion->{
-//                questionRepository.deleteById(questionId);
-//            });
-//        }
-        return new GetBannerQuestionIdResponseVo(1L);
+        Question question = null;
+        List<Question> questions = null;
+        if(type.equals("popular")){
+
+        }
+        else if(type.equals("recent")){
+            question = questionRepository.findFirstByOrderByUpdateDateDesc();
+        }
+        else if(type.equals("point")){
+            question = questionRepository.findFirstByOrderByPointDesc();
+        }
+        else if(type.equals("random")){
+            questions = questionRepository.findAll();
+            Long count = questions.stream().count();
+            System.out.println(count);
+            Long randomId = GenerateRandomNumber.generateRandomNumber(count);
+            // 이게 가끔 에러가 뜨는데 원인 파악을 좀 해봐야할듯..!
+            return new GetBannerQuestionIdResponseVo(questionRepository.findById(randomId).get().getId());
+        }
+        return new GetBannerQuestionIdResponseVo(question.getId());
     }
 }
