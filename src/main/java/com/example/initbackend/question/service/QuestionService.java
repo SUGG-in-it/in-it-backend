@@ -3,7 +3,6 @@ package com.example.initbackend.question.service;
 import com.example.initbackend.answer.repository.AnswerRepository;
 import com.example.initbackend.global.util.GenerateRandomNumber;
 import com.example.initbackend.question.domain.Question;
-import com.example.initbackend.question.dto.GetQuestionsRequestDto;
 import com.example.initbackend.question.dto.IssueQuestionIdRequestDto;
 import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
 import com.example.initbackend.question.repository.QuestionRepository;
@@ -72,10 +71,7 @@ public class QuestionService {
         );
     }
 
-    public GetQuestionsResponseVo GetQuestions(GetQuestionsRequestDto getQuestionsRequestDto){
-        String type = getQuestionsRequestDto.getType();
-        Integer count = getQuestionsRequestDto.getCount();
-        Integer page = getQuestionsRequestDto.getPage();
+    public GetQuestionsResponseVo GetQuestions(Integer page, Integer count, String type){
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
         Page<Question> questions = null;
         if (type.equals("total")){
