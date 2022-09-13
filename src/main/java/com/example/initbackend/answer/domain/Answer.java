@@ -36,11 +36,12 @@ public class Answer {
     private Timestamp updateDate;
 
     @Builder
-    public Answer(Long id, Long questionId, Long userId, String content){
+    public Answer(Long id, Long questionId, Long userId, String content, boolean isSelected){
         this.id = id;
         this.questionId = questionId;
         this.userId = userId;
         this.content = content;
+        this.isSelected = isSelected;
     }
 
 }
