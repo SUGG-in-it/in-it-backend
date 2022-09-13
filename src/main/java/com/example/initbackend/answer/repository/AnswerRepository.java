@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AnswerRepository  extends JpaRepository<Answer,String> {
+public interface AnswerRepository  extends JpaRepository<Answer,Long> {
 
     Optional<Answer> findByUserIdAndQuestionId(Long userId, Long QuestionId);
     Optional<Answer> findById(Long answerId);
