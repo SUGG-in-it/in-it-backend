@@ -5,13 +5,16 @@ import com.example.initbackend.answer.dto.CreateAnswerRequestDto;
 import com.example.initbackend.answer.dto.GetAnswerRequestDto;
 import com.example.initbackend.answer.repository.AnswerRepository;
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
+import com.example.initbackend.answer.vo.IssueAnswerIdResponseVo;
 import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.JwtUtil;
 import com.example.initbackend.global.response.ErrorCode;
 import com.example.initbackend.question.controller.QuestionController;
 import com.example.initbackend.question.domain.Question;
+import com.example.initbackend.question.dto.IssueQuestionIdRequestDto;
 import com.example.initbackend.question.repository.QuestionRepository;
+import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +36,16 @@ public class AnswerService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
+
+    public IssueAnswerIdResponseVo issueAnswerId(HttpServletRequest request){
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId  = jwtUtil.getPayloadByToken(token);
+        Answer newAnswer = new Answer(userId);
+        answerRepository.save(newAnswer);
+
+        return new IssueAnswerIdResponseVo(newAnswer.getId());
+    }
+
     public void createAnswer(HttpServletRequest request, CreateAnswerRequestDto createAnswerRequestDto){
 
         String token = jwtTokenProvider.resolveAccessToken(request);
