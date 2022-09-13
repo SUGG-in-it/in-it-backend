@@ -3,27 +3,23 @@ package com.example.initbackend.comment.service;
 import com.example.initbackend.answer.domain.Answer;
 import com.example.initbackend.answer.repository.AnswerRepository;
 import com.example.initbackend.comment.domain.Comment;
+import com.example.initbackend.comment.dto.GetCommentsRequestDto;
 import com.example.initbackend.comment.dto.RegisterCommentRequestDto;
 import com.example.initbackend.comment.repository.CommentRepository;
+import com.example.initbackend.comment.vo.GetCommentsResponseVo;
 import com.example.initbackend.global.handler.CustomException;
-import com.example.initbackend.global.jwt.dto.JwtResponseDto;
 import com.example.initbackend.global.response.ErrorCode;
 import com.example.initbackend.user.domain.User;
-import com.example.initbackend.user.dto.*;
 import com.example.initbackend.user.repository.UserRepository;
-import com.example.initbackend.user.vo.GetProfileResponseVo;
-import com.example.initbackend.user.vo.LoginResponseVo;
-import com.example.initbackend.userToken.domain.UserToken;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -48,6 +44,23 @@ public class CommentService {
 
         commentRepository.save(comment);
 
+    }
+
+    public GetCommentsResponseVo getComments(Pageable pageable) {
+        Page<Comment> optionalComment = commentRepository.findAll(pageable);
+        GetCommentsResponseVo comments = new GetCommentsResponseVo(optionalComment.getContent());
+
+        return comments;
+    }
+
+    public void deleteComment(Long commentId) {
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+
+        if (!optionalComment.isPresent()){
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
+
+        commentRepository.deleteById(commentId);
     }
 
 }
