@@ -18,27 +18,27 @@ public class Comment {
     private Long id;
 
     @Column(nullable = false)
-    private Long answer_id;
+    private Long answerId;
 
     @Column(nullable = false)
-    private Long user_id;
+    private Long userId;
 
     @Column(nullable = false)
     private String content;
 
     @CreationTimestamp
-    private Timestamp created_at;
+    private Timestamp createdAt;
 
     @CreationTimestamp
-    private Timestamp updated_at;
+    private Timestamp updatedAt;
 
     @CreationTimestamp
-    private Timestamp deleted_at;
+    private Timestamp deletedAt;
 
     @Builder
-    public Comment(String content, Long user_id, Long answer_id) {
+    public Comment(String content, Long userId, Long answerId) {
         this.content = content;
-        this.user_id = user_id;
-        this.answer_id = answer_id;
+        this.userId = userId;
+        this.answerId = answerId;
     }
 }
