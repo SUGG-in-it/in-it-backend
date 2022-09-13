@@ -79,7 +79,7 @@ public class UserService {
         String password = loginRequestDto.toEntity().getPassword();
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent()) {
-            throw new CustomException(ErrorCode.CONFLICT);
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
 //            throw new EntityNotFoundException("User not present in the database");
         }
         String dbPassword = optionalUser.get().getPassword();

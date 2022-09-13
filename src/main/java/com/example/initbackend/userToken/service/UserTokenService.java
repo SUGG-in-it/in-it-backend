@@ -65,7 +65,7 @@ public class UserTokenService {
                     return reIssueTokenResponseVo;
                 }
             }
-            throw new CustomException(ErrorCode.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.JWT_UNAUTHORIZED);
         } catch(ExpiredJwtException e) {
             // Refresh Token 만료 Exception
             throw new CustomException(ErrorCode.JWT_REFRESH_TOKEN_EXPIRED);
