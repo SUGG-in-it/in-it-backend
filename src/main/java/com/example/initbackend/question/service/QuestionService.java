@@ -1,11 +1,17 @@
 package com.example.initbackend.question.service;
 
+import com.example.initbackend.answer.repository.AnswerRepository;
 import com.example.initbackend.global.util.GenerateRandomNumber;
 import com.example.initbackend.question.domain.Question;
-import com.example.initbackend.question.dto.*;
-import com.example.initbackend.question.vo.*;
-import com.example.initbackend.user.domain.User;
+import com.example.initbackend.question.dto.GetQuestionsRequestDto;
+import com.example.initbackend.question.dto.IssueQuestionIdRequestDto;
+import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
 import com.example.initbackend.question.repository.QuestionRepository;
+import com.example.initbackend.question.vo.GetBannerQuestionIdResponseVo;
+import com.example.initbackend.question.vo.GetQuestionResponseVo;
+import com.example.initbackend.question.vo.GetQuestionsResponseVo;
+import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
+import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +30,7 @@ import java.util.Optional;
 @PropertySource("classpath:application.properties")
 public class QuestionService {
     private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
 
     public IssueQuestionIdResponseVo issueQuestionId(Long userId){
@@ -123,7 +130,8 @@ public class QuestionService {
         Question question = null;
         List<Question> questions = null;
         if(type.equals("popular")){
-
+            List<Object[]> counts = answerRepository.countTotalAnswersByQuestionIdByOrderByCountDesc();
+            return new GetBannerQuestionIdResponseVo((Long) counts.get(0)[0]);
         }
         else if(type.equals("recent")){
             question = questionRepository.findFirstByOrderByUpdateDateDesc();
@@ -139,6 +147,6 @@ public class QuestionService {
             // 이게 가끔 에러가 뜨는데 원인 파악을 좀 해봐야할듯..!
             return new GetBannerQuestionIdResponseVo(questionRepository.findById(randomId).get().getId());
         }
-        return new GetBannerQuestionIdResponseVo(question.getId());
+        return new GetBannerQuestionIdResponseVo();
     }
 }
