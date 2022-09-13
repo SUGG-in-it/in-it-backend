@@ -2,7 +2,6 @@ package com.example.initbackend.question.controller;
 
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
-import com.example.initbackend.question.dto.GetQuestionsRequestDto;
 import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
 import com.example.initbackend.question.service.QuestionService;
 import com.example.initbackend.question.vo.GetBannerQuestionIdResponseVo;
@@ -63,8 +62,8 @@ public class QuestionController {
     }
 
     @GetMapping({ "" })
-    public SuccessResponse getQuestions(@Valid @RequestBody final GetQuestionsRequestDto requestDto) {
-        GetQuestionsResponseVo getQuestionsResponse = questionService.GetQuestions(requestDto);
+    public SuccessResponse getQuestions(@RequestParam("page") Integer page, @RequestParam("count") Integer count, @RequestParam("type") String type) {
+        GetQuestionsResponseVo getQuestionsResponse = questionService.GetQuestions(page, count, type);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
