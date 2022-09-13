@@ -9,17 +9,12 @@ import com.example.initbackend.answer.vo.GetAnswerResponseVo;
 import com.example.initbackend.answer.vo.IssueAnswerIdResponseVo;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
-import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -31,12 +26,12 @@ public class AnswerController {
     @PostMapping({ "" })
     public SuccessResponse issueAnswerId(HttpServletRequest request) {
         // token 까서 userid 넘겨주기
-        IssueAnswerIdResponseVo issueAnswerIdResponseVo = answerService.issueAnswerId(request);
+        IssueAnswerIdResponseVo issueAnswerIdResponse = answerService.issueAnswerId(request);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("Issued AnswerId")
-                .data(issueAnswerIdResponseVo)
+                .message("Issued answerId")
+                .data(issueAnswerIdResponse)
                 .build();
 
         return res;
