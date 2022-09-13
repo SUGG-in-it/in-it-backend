@@ -27,13 +27,13 @@ public class Answer {
     private String content;
 
     @Column
-    private boolean is_selected;
+    private boolean isSelected;
 
     @CreationTimestamp
-    private Timestamp create_date;
+    private Timestamp createDate;
 
     @UpdateTimestamp
-    private Timestamp update_date;
+    private Timestamp updateDate;
 
     @Builder
     public Answer(Long id, Long questionId, Long userId, String content){
