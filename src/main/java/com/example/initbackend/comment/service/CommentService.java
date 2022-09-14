@@ -6,6 +6,7 @@ import com.example.initbackend.comment.domain.Comment;
 import com.example.initbackend.comment.dto.GetCommentsRequestDto;
 import com.example.initbackend.comment.dto.RegisterCommentRequestDto;
 import com.example.initbackend.comment.repository.CommentRepository;
+import com.example.initbackend.comment.vo.CommentVo;
 import com.example.initbackend.comment.vo.GetCommentsResponseVo;
 import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.response.ErrorCode;
@@ -47,10 +48,24 @@ public class CommentService {
     }
 
     public GetCommentsResponseVo getComments(Pageable pageable) {
-        Page<Comment> optionalComment = commentRepository.findAll(pageable);
-        GetCommentsResponseVo comments = new GetCommentsResponseVo(optionalComment.getContent());
+        List<CommentVo> comments = new ArrayList<>();
+        Page<Comment> optionalComments = commentRepository.findAll(pageable);
 
-        return comments;
+        optionalComments.stream().forEach(
+                comment -> {
+                    Optional<User> optionalUser = userRepository.findById(comment.getUserId());
+                    CommentVo commentVo = new CommentVo(
+                            comment.getAnswerId(),
+                            comment.getId(),
+                            optionalUser.get().getNickname(),
+                            comment.getContent(),
+                            comment.getUpdatedAt()
+                    );
+                    comments.add(commentVo);
+                }
+        );
+
+       return new GetCommentsResponseVo(comments);
     }
 
     public void deleteComment(Long commentId) {

@@ -12,6 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 public class GetCommentsResponseVo {
 
-    private List<Comment> comments;
+    private List<CommentVo> comments;
 }
 
