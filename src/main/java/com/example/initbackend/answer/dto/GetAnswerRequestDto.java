@@ -10,6 +10,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetAnswerRequestDto {
-    private int page;
-    private int count;
+    private Long questionId;
 }

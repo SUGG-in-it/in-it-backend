@@ -44,12 +44,8 @@ public class AnswerService {
     }
 
 
-    public GetAnswerResponseVo getAnswer(HttpServletRequest request, Pageable pageable){
-
-        String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId  = jwtUtil.getPayloadByToken(token);
-
-        Page<Answer> optionalAnswer = answerRepository.findAllByQuestionIdOrderByCreateDateDesc(userId, pageable);
+    public GetAnswerResponseVo getAnswer(Pageable pageable, Long questionId){
+        Page<Answer> optionalAnswer = answerRepository.findAllByQuestionIdOrderByCreateDateDesc(questionId, pageable);
         GetAnswerResponseVo answerList = new GetAnswerResponseVo(optionalAnswer.getContent());
         return answerList;
     }
