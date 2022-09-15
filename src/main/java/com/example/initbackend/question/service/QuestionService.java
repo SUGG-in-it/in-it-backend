@@ -61,6 +61,9 @@ public class QuestionService {
 
     public GetQuestionResponseVo GetQuestion(Long questionId){
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        if (!optionalQuestion.isPresent()) {
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
         Question question = optionalQuestion.get();
         Long userId = question.getUserId();
         Optional<User> user = userRepository.findById(userId);
