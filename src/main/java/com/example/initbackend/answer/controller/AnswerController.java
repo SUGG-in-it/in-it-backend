@@ -2,7 +2,6 @@ package com.example.initbackend.answer.controller;
 
 
 import com.example.initbackend.answer.dto.DeleteAnswerRequestDto;
-import com.example.initbackend.answer.dto.SelectAnswerRequestDto;
 import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.service.AnswerService;
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
@@ -70,13 +69,13 @@ public class AnswerController {
     }
 
     @PostMapping("/select/{answerId}")
-    public SuccessResponse selectAnswer(HttpServletRequest request, @Valid @RequestBody SelectAnswerRequestDto requestDto) {
+    public SuccessResponse selectAnswer(@PathVariable("answerId") Long answerId) {
 
-        answerService.selectAnswer(request, requestDto);
+        answerService.selectAnswer(answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("Issued answerId")
+                .message("Answer is selected Successfully")
                 .build();
 
         return res;
