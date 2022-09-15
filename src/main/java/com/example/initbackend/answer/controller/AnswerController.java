@@ -49,12 +49,13 @@ public class AnswerController {
         return res;
     }
 
-    @PutMapping
-    public SuccessResponse updateAnswer(HttpServletRequest request,  @Valid @RequestBody UpdateAnswerRequestDto requestDto){
-        answerService.updateAnswer(request, requestDto);
+    @PutMapping({ "/{answerId}" })
+    public SuccessResponse updateAnswer( @Valid @RequestBody UpdateAnswerRequestDto requestDto, @PathVariable("answerId") Long answerId){
+        answerService.updateAnswer(requestDto, answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
+                .message("Update Answer Success")
                 .build();
         return res;
     }
