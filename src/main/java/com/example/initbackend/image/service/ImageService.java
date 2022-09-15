@@ -5,6 +5,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.initbackend.global.handler.CustomException;
+import com.example.initbackend.global.jwt.JwtTokenProvider;
+import com.example.initbackend.global.jwt.JwtUtil;
 import com.example.initbackend.global.response.ErrorCode;
 import com.example.initbackend.image.vo.UploadImageResponseVo;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -23,14 +26,17 @@ import java.io.InputStream;
 @PropertySource("classpath:application.properties")
 public class ImageService {
     private final AmazonS3Client amazonS3Client;
+    private final JwtUtil jwtUtil;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public UploadImageResponseVo uploadImage(String category, MultipartFile multipartFile) {
+    public UploadImageResponseVo uploadImage(HttpServletRequest request, MultipartFile multipartFile) {
         validateFileExists(multipartFile);
-
-        String fileName = buildFileName(category, multipartFile.getOriginalFilename());
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId  = jwtUtil.getPayloadByToken(token);
+        String fileName = buildFileName(userId, multipartFile.getOriginalFilename());
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(multipartFile.getContentType());
@@ -53,12 +59,12 @@ public class ImageService {
     }
     private static final String FILE_EXTENSION_SEPARATOR = ".";
 
-    public static String buildFileName(String category, String originalFileName) {
+    public static String buildFileName(Long userId, String originalFileName) {
         int fileExtensionIndex = originalFileName.lastIndexOf(FILE_EXTENSION_SEPARATOR);
         String fileExtension = originalFileName.substring(fileExtensionIndex);
         String fileName = originalFileName.substring(0, fileExtensionIndex);
         String now = String.valueOf(System.currentTimeMillis());
 
-        return category + fileName + now + fileExtension;
+        return userId + "_" + fileName + "_"  + now + fileExtension;
     }
 }
