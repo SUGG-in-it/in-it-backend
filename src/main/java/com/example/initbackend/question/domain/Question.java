@@ -19,7 +19,7 @@ public class Question {
     @Column
     private String title;
 
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     @Column
