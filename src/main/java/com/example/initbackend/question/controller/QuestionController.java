@@ -9,6 +9,7 @@ import com.example.initbackend.question.vo.GetQuestionResponseVo;
 import com.example.initbackend.question.vo.GetQuestionsResponseVo;
 import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
 import lombok.Getter;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,8 +64,8 @@ public class QuestionController {
     }
 
     @GetMapping({ "" })
-    public SuccessResponse getQuestions(@RequestParam("page") Integer page, @RequestParam("count") Integer count, @RequestParam("type") String type) {
-        GetQuestionsResponseVo getQuestionsResponse = questionService.GetQuestions(page, count, type);
+    public SuccessResponse getQuestions(Pageable pageable, @RequestParam("type") String type) {
+        GetQuestionsResponseVo getQuestionsResponse = questionService.GetQuestions(pageable, type);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
