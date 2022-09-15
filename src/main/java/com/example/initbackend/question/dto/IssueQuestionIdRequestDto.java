@@ -19,6 +19,7 @@ public class IssueQuestionIdRequestDto {
     public static Question toEntity(Long userId){
         return Question.builder()
                 .userId(userId)
+                .type("init")
                 .build();
     }
 }
