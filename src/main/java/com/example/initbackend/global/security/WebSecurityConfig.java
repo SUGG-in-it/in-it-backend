@@ -6,6 +6,7 @@ import com.example.initbackend.global.jwt.JwtAuthenticationFilter;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -33,8 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/user/login", "/api/user/password").permitAll()
-                .antMatchers("/api/auth", "/api/user","/api/user/{nickname}", "api/comments").authenticated()
-//                .antMatchers("/api/v1/users/adminTest").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/api/answers/**","/api/answers").authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         // JwtAuthenticationFilter를 UsernamePasswordAuthentictaionFilter 전에 적용시킨다.
