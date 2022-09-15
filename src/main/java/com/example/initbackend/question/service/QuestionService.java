@@ -1,8 +1,10 @@
 package com.example.initbackend.question.service;
 
 import com.example.initbackend.answer.repository.AnswerRepository;
+import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.JwtUtil;
+import com.example.initbackend.global.response.ErrorCode;
 import com.example.initbackend.global.util.GenerateRandomNumber;
 import com.example.initbackend.question.domain.Question;
 import com.example.initbackend.question.dto.IssueQuestionIdRequestDto;
@@ -46,9 +48,14 @@ public class QuestionService {
         return new IssueQuestionIdResponseVo(newQuestion.getId());
     }
 
-    public void UpdateQuestion(Long questionId, UpdateQuestionRequestDto updateQuestionRequestDto){
-        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+    public void UpdateQuestion(HttpServletRequest request, Long questionId, UpdateQuestionRequestDto updateQuestionRequestDto){
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId  = jwtUtil.getPayloadByToken(token);
 
+        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        if(!userId.equals(optionalQuestion.get().getUserId())){
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
         optionalQuestion.ifPresent(selectQuestion->{
             selectQuestion.setTitle(updateQuestionRequestDto.getTitle());
             selectQuestion.setContent(updateQuestionRequestDto.getContent());
