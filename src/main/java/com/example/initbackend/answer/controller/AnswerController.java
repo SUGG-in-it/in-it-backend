@@ -39,8 +39,8 @@ public class AnswerController {
     }
 
     @GetMapping
-    public SuccessResponse getAnswer(HttpServletRequest request, Pageable pageable){
-        GetAnswerResponseVo getAnswerResponseVo = answerService.getAnswer(request, pageable);
+    public SuccessResponse getAnswer(Pageable pageable, @RequestParam Long questionId){
+        GetAnswerResponseVo getAnswerResponseVo = answerService.getAnswer(pageable, questionId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
