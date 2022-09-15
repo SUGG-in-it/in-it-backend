@@ -1,7 +1,6 @@
 package com.example.initbackend.answer.service;
 
 import com.example.initbackend.answer.domain.Answer;
-import com.example.initbackend.answer.dto.DeleteAnswerRequestDto;
 import com.example.initbackend.answer.dto.SelectAnswerRequestDto;
 import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.repository.AnswerRepository;
@@ -11,7 +10,6 @@ import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.JwtUtil;
 import com.example.initbackend.global.response.ErrorCode;
-import com.example.initbackend.question.domain.Question;
 import com.example.initbackend.question.repository.QuestionRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -68,12 +66,9 @@ public class AnswerService {
 
     }
 
-    public void deleteAnswer(HttpServletRequest request, DeleteAnswerRequestDto deleteAnswerRequestDto){
+    public void deleteAnswer(Long answerId){
 
-        String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId  = jwtUtil.getPayloadByToken(token);
-        Long questionId = deleteAnswerRequestDto.getQuestionId();
-        Optional<Answer> optionalAnswer = answerRepository.findByUserIdAndQuestionId(userId, questionId);
+        Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
         optionalAnswer.ifPresentOrElse(
                 selectAnswer ->{
                     answerRepository.deleteById(optionalAnswer.get().getId());
