@@ -20,20 +20,15 @@ public class UpdateQuestionRequestDto {
     @NotBlank
     private String tagList;
 
-    @NotBlank(message = "이메일을 입력해주세요")
-    @Email(message = "이메일 양식 오류")
-    private String email;
-
     private  Integer point;
 
 
 
     @Builder
-    public UpdateQuestionRequestDto(String title, String content, String tagList, String email, Integer point) {
+    public UpdateQuestionRequestDto(String title, String content, String tagList, Integer point) {
         this.title = title;
         this.content = content;
         this.tagList = tagList;
-        this.email = email;
         this.point = point;
     }
 
