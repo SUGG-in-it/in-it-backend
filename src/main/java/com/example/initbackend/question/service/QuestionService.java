@@ -1,6 +1,8 @@
 package com.example.initbackend.question.service;
 
 import com.example.initbackend.answer.repository.AnswerRepository;
+import com.example.initbackend.global.jwt.JwtTokenProvider;
+import com.example.initbackend.global.jwt.JwtUtil;
 import com.example.initbackend.global.util.GenerateRandomNumber;
 import com.example.initbackend.question.domain.Question;
 import com.example.initbackend.question.dto.IssueQuestionIdRequestDto;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,11 +31,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @PropertySource("classpath:application.properties")
 public class QuestionService {
+    private final JwtUtil jwtUtil;
+    private final JwtTokenProvider jwtTokenProvider;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
 
-    public IssueQuestionIdResponseVo issueQuestionId(Long userId){
+    public IssueQuestionIdResponseVo issueQuestionId(HttpServletRequest request){
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId  = jwtUtil.getPayloadByToken(token);
         Question question = IssueQuestionIdRequestDto.toEntity(userId);
         Question newQuestion = questionRepository.save(question);
 

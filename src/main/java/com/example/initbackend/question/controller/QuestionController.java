@@ -11,6 +11,7 @@ import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Getter
@@ -24,9 +25,9 @@ public class QuestionController {
     }
 
     @PostMapping({ "" })
-    public SuccessResponse issueQuestionId() {
+    public SuccessResponse issueQuestionId(HttpServletRequest request) {
         // token 까서 userid 넘겨주기
-        IssueQuestionIdResponseVo issueQuestionIdResponse = questionService.issueQuestionId(Long.valueOf(1));
+        IssueQuestionIdResponseVo issueQuestionIdResponse = questionService.issueQuestionId(request);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
