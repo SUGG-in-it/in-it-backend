@@ -100,15 +100,15 @@ public class QuestionService {
         Page<Question> questions = null;
         if (type.equals("total")){
             System.out.println("====total====");
-            questions = questionRepository.findByTypeNot("init", pageable);
+            questions = questionRepository.findByTypeNotOrderByCreateDateDesc("init", pageable);
         }
         else if (type.equals("doing")){
             System.out.println("====doing====");
-            questions = questionRepository.findByType("doing", pageable);
+            questions = questionRepository.findByTypeOrderByCreateDateDesc("doing", pageable);
         }
         else if (type.equals("completed")){
             System.out.println("====completed====");
-            questions = questionRepository.findByType("completed", pageable);
+            questions = questionRepository.findByTypeOrderByCreateDateDesc("completed", pageable);
         }
         questions.stream().forEach(
                 it -> {
