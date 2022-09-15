@@ -61,7 +61,9 @@ public class QuestionService {
             selectQuestion.setContent(updateQuestionRequestDto.getContent());
             selectQuestion.setTagList(updateQuestionRequestDto.getTagList());
             selectQuestion.setPoint(updateQuestionRequestDto.getPoint());
-
+            if(!selectQuestion.getType().equals("completed")) {
+                selectQuestion.setType("doing");
+            }
             questionRepository.save(selectQuestion);
         });
     }
