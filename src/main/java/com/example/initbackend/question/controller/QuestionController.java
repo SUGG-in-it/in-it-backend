@@ -11,6 +11,7 @@ import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Getter
@@ -75,8 +76,8 @@ public class QuestionController {
     }
 
     @DeleteMapping({ "/{questionId}" })
-    public SuccessResponse deleteQuestion(@PathVariable("questionId") Long questionId) {
-        questionService.DeleteQuestion(questionId);
+    public SuccessResponse deleteQuestion(HttpServletRequest request, @PathVariable("questionId") Long questionId) {
+        questionService.DeleteQuestion(request, questionId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
