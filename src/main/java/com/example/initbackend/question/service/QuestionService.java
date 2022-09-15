@@ -89,6 +89,7 @@ public class QuestionService {
                 user.get().getLevel(),
                 question.getPoint(),
                 question.getTagList(),
+                question.getType(),
                 question.getCreateDate(),
                 question.getUpdateDate()
         );
@@ -127,6 +128,7 @@ public class QuestionService {
                             user.get().getLevel(),
                             user.get().getPoint(),
                             question.getTagList(),
+                            question.getType(),
                             question.getCreateDate(),
                             question.getUpdateDate()
                     );

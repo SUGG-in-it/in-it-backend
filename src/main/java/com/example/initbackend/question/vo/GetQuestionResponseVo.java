@@ -26,6 +26,9 @@ public class GetQuestionResponseVo {
     private String tagList;
 
     @JsonProperty
+    private String type;
+
+    @JsonProperty
     private Timestamp createDate;
 
     @JsonProperty
@@ -33,7 +36,7 @@ public class GetQuestionResponseVo {
 
     @JsonProperty
     private Integer point;
-    public GetQuestionResponseVo(Long questionId, Long userId, String title, String content, String nickname, String level, Integer point, String tagList, Timestamp createDate, Timestamp updateDate) {
+    public GetQuestionResponseVo(Long questionId, Long userId, String title, String content, String nickname, String level, Integer point, String tagList, String type, Timestamp createDate, Timestamp updateDate) {
         this.questionId = questionId;
         this.userId = userId;
         this.title = title;
@@ -42,6 +45,7 @@ public class GetQuestionResponseVo {
         this.level = level;
         this.tagList = tagList;
         this.point = point;
+        this.type = type;
         this.createDate = createDate;
         this.updateDate = updateDate;
     }
