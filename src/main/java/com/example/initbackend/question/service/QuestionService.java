@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,6 +68,9 @@ public class QuestionService {
 
     public GetQuestionResponseVo GetQuestion(Long questionId){
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        if (!optionalQuestion.isPresent()) {
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
         Question question = optionalQuestion.get();
         Long userId = question.getUserId();
         Optional<User> user = userRepository.findById(userId);
@@ -86,20 +89,20 @@ public class QuestionService {
         );
     }
 
-    public GetQuestionsResponseVo GetQuestions(Integer page, Integer count, String type){
+    public GetQuestionsResponseVo GetQuestions(Pageable pageable, String type){
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
         Page<Question> questions = null;
         if (type.equals("total")){
             System.out.println("====total====");
-            questions = questionRepository.findAll(PageRequest.of(page-1, count));
+            questions = questionRepository.findAll(pageable);
         }
         else if (type.equals("doing")){
             System.out.println("====doing====");
-            questions = questionRepository.findByType("doing", PageRequest.of(page-1, count));
+            questions = questionRepository.findByType("doing", pageable);
         }
         else if (type.equals("completed")){
             System.out.println("====completed====");
-            questions = questionRepository.findByType("completed", PageRequest.of(page-1, count));
+            questions = questionRepository.findByType("completed", pageable);
         }
         questions.stream().forEach(
                 it -> {
@@ -107,6 +110,9 @@ public class QuestionService {
                     Question question = optionalQuestion.get();
                     Long userId = question.getUserId();
                     Optional<User> user = userRepository.findById(userId);
+                    if (!user.isPresent()) {
+                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+                    }
                     GetQuestionResponseVo getQuestionResponse = new GetQuestionResponseVo(
                             question.getId(),
                             user.get().getId(),
