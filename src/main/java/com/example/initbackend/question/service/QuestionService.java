@@ -56,6 +56,9 @@ public class QuestionService {
         if(!userId.equals(optionalQuestion.get().getUserId())){
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
+        if(!optionalQuestion.isPresent()){
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
         optionalQuestion.ifPresent(selectQuestion->{
             selectQuestion.setTitle(updateQuestionRequestDto.getTitle());
             selectQuestion.setContent(updateQuestionRequestDto.getContent());
