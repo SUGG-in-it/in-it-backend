@@ -60,11 +60,12 @@ public class QuestionService {
 
         return new GetQuestionResponseVo(
                 question.getId(),
+                user.get().getId(),
                 question.getTitle(),
                 question.getContent(),
                 user.get().getNickname(),
                 user.get().getLevel(),
-                user.get().getPoint(),
+                question.getPoint(),
                 question.getTagList(),
                 question.getCreateDate(),
                 question.getUpdateDate()
@@ -94,6 +95,7 @@ public class QuestionService {
                     Optional<User> user = userRepository.findById(userId);
                     GetQuestionResponseVo getQuestionResponse = new GetQuestionResponseVo(
                             question.getId(),
+                            user.get().getId(),
                             question.getTitle(),
                             question.getContent(),
                             user.get().getNickname(),
