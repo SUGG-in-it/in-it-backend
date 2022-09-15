@@ -39,16 +39,23 @@ public class QuestionService {
     private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
 
-    public IssueQuestionIdResponseVo issueQuestionId(Long userId){
+    public IssueQuestionIdResponseVo issueQuestionId(HttpServletRequest request){
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId  = jwtUtil.getPayloadByToken(token);
         Question question = IssueQuestionIdRequestDto.toEntity(userId);
         Question newQuestion = questionRepository.save(question);
 
         return new IssueQuestionIdResponseVo(newQuestion.getId());
     }
 
-    public void UpdateQuestion(Long questionId, UpdateQuestionRequestDto updateQuestionRequestDto){
-        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+    public void UpdateQuestion(HttpServletRequest request, Long questionId, UpdateQuestionRequestDto updateQuestionRequestDto){
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId  = jwtUtil.getPayloadByToken(token);
 
+        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        if(!userId.equals(optionalQuestion.get().getUserId())){
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
         optionalQuestion.ifPresent(selectQuestion->{
             selectQuestion.setTitle(updateQuestionRequestDto.getTitle());
             selectQuestion.setContent(updateQuestionRequestDto.getContent());

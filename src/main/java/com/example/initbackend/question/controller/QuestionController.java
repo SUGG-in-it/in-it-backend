@@ -25,9 +25,8 @@ public class QuestionController {
     }
 
     @PostMapping({ "" })
-    public SuccessResponse issueQuestionId() {
-        // token 까서 userid 넘겨주기
-        IssueQuestionIdResponseVo issueQuestionIdResponse = questionService.issueQuestionId(Long.valueOf(1));
+    public SuccessResponse issueQuestionId(HttpServletRequest request) {
+        IssueQuestionIdResponseVo issueQuestionIdResponse = questionService.issueQuestionId(request);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
@@ -38,8 +37,8 @@ public class QuestionController {
         return res;
     }
     @PutMapping({ "/{questionId}" })
-    public SuccessResponse updateQuestion(@PathVariable("questionId") Long questionId, @Valid @RequestBody final UpdateQuestionRequestDto requestDto) {
-        questionService.UpdateQuestion(questionId, requestDto);
+    public SuccessResponse updateQuestion(HttpServletRequest request, @PathVariable("questionId") Long questionId, @Valid @RequestBody final UpdateQuestionRequestDto requestDto) {
+        questionService.UpdateQuestion(request, questionId, requestDto);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
