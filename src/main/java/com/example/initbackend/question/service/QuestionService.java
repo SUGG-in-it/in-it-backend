@@ -99,7 +99,7 @@ public class QuestionService {
         Page<Question> questions = null;
         if (type.equals("total")){
             System.out.println("====total====");
-            questions = questionRepository.findAll(pageable);
+            questions = questionRepository.findByTypeNot("init", pageable);
         }
         else if (type.equals("doing")){
             System.out.println("====doing====");
