@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface AnswerRepository  extends JpaRepository<Answer,Long> {
 
-    Optional<Answer> findByUserIdAndQuestionId(Long userId, Long QuestionId);
+    Optional<Answer> findByUserIdAndQuestionId(Long userId, Long questionId);
     Optional<Answer> findById(Long answerId);
     
     @Query("SELECT questionId, COUNT(questionId) as cnt FROM Answer GROUP BY questionId order by cnt desc")

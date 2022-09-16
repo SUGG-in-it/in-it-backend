@@ -10,13 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateAnswerRequestDto {
 
-    private Long questionId;
     private String content;
-
 
     public Answer toEntity(){
         return Answer.builder()
-                .questionId(questionId)
                 .content(content)
                 .build();
     }
