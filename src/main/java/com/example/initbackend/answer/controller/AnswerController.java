@@ -48,12 +48,13 @@ public class AnswerController {
         return res;
     }
 
-    @PutMapping
-    public SuccessResponse updateAnswer(HttpServletRequest request,  @Valid @RequestBody UpdateAnswerRequestDto requestDto){
-        answerService.updateAnswer(request, requestDto);
+    @PutMapping({ "/{answerId}" })
+    public SuccessResponse updateAnswer( @Valid @RequestBody UpdateAnswerRequestDto requestDto, @PathVariable("answerId") Long answerId){
+        answerService.updateAnswer(requestDto, answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
+                .message("Update Answer Success")
                 .build();
         return res;
     }
@@ -70,13 +71,13 @@ public class AnswerController {
     }
 
     @PostMapping("/select/{answerId}")
-    public SuccessResponse selectAnswer(HttpServletRequest request, @Valid @RequestBody SelectAnswerRequestDto requestDto) {
+    public SuccessResponse selectAnswer(@PathVariable("answerId") Long answerId) {
 
-        answerService.selectAnswer(request, requestDto);
+        answerService.selectAnswer(answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("Issued answerId")
+                .message("Answer is selected Successfully")
                 .build();
 
         return res;

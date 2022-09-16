@@ -48,13 +48,9 @@ public class AnswerService {
         return answerList;
     }
 
-    public void updateAnswer(HttpServletRequest request, UpdateAnswerRequestDto updateAnswerRequestDto){
+    public void updateAnswer(UpdateAnswerRequestDto updateAnswerRequestDto, Long answerId){
 
-        String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId  = jwtUtil.getPayloadByToken(token);
-        Long questionId = updateAnswerRequestDto.getQuestionId();
-
-        Optional<Answer> optionalAnswer = answerRepository.findByUserIdAndQuestionId(userId,questionId);
+        Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
         optionalAnswer.ifPresentOrElse(
                 selectAnswer ->{
                     selectAnswer.setContent(updateAnswerRequestDto.getContent());
@@ -79,13 +75,9 @@ public class AnswerService {
     }
 
 
-    public void selectAnswer(HttpServletRequest request, SelectAnswerRequestDto selectAnswerRequestDto){
+    public void selectAnswer(Long answerId){
 
-        String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId  = jwtUtil.getPayloadByToken(token);
-        Long questionId = selectAnswerRequestDto.getQuestionId();
-
-        Optional<Answer> optionalAnswer = answerRepository.findByUserIdAndQuestionId(userId,questionId);
+        Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
         optionalAnswer.ifPresentOrElse(
                 selectAnswer ->{
                     selectAnswer.setSelected(true);
