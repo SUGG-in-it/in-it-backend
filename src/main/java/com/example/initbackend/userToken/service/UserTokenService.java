@@ -57,7 +57,7 @@ public class UserTokenService {
 
                 if(user.isPresent()) {
                     Authentication authentication = jwtTokenProvider.getAuthentication(token);
-                    JwtResponseDto.TokenInfo newTokenInfo = jwtTokenProvider.generateToken(user.get().getId(), authentication);
+                    JwtResponseDto.TokenInfo newTokenInfo = jwtTokenProvider.generateToken(user.get().getId(), user.get().getNickname(),authentication);
                     userToken.setRefreshToken(newTokenInfo.getRefreshToken());
                     tokenRepository.save(userToken);
 

@@ -90,7 +90,7 @@ public class UserService {
 
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.get().getId(), authentication);
+        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.get().getId(), optionalUser.get().getNickname(),authentication);
 
         UserToken userToken;
         userToken = tokenRepository.findById(optionalUser.get().getId());
