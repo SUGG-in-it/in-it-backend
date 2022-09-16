@@ -1,7 +1,7 @@
 package com.example.initbackend.answer.controller;
 
 
-import com.example.initbackend.answer.dto.DeleteAnswerRequestDto;
+import com.example.initbackend.answer.dto.SelectAnswerRequestDto;
 import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.service.AnswerService;
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
@@ -59,12 +59,13 @@ public class AnswerController {
         return res;
     }
 
-    @DeleteMapping
-    public SuccessResponse deleteAnswer(HttpServletRequest request,  @Valid @RequestBody DeleteAnswerRequestDto requestDto){
-        answerService.deleteAnswer(request, requestDto);
+    @DeleteMapping({ "/{answerId}" })
+    public SuccessResponse deleteAnswer(@PathVariable("answerId") Long answerId){
+        answerService.deleteAnswer(answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
+                .message("Delete Answer Success")
                 .build();
         return res;
     }
