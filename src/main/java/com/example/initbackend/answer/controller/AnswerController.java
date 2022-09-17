@@ -1,7 +1,6 @@
 package com.example.initbackend.answer.controller;
 
 
-import com.example.initbackend.answer.dto.SelectAnswerRequestDto;
 import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.service.AnswerService;
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
