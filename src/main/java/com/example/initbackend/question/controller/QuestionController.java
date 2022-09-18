@@ -4,10 +4,7 @@ import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
 import com.example.initbackend.question.service.QuestionService;
-import com.example.initbackend.question.vo.GetBannerQuestionIdResponseVo;
-import com.example.initbackend.question.vo.GetQuestionResponseVo;
-import com.example.initbackend.question.vo.GetQuestionsResponseVo;
-import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
+import com.example.initbackend.question.vo.*;
 import lombok.Getter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -94,6 +91,19 @@ public class QuestionController {
                 .status(StatusEnum.OK)
                 .message("Get Question")
                 .data(getBannerQuestionIdResponse)
+                .build();
+
+        return res;
+    }
+
+    @GetMapping({ "/page" })
+    public SuccessResponse getQuestionsTotalPageNum(Pageable pageable, @RequestParam("type") String type) {
+        GetQuestionsTotalPageNumResponseVo getQuestionsTotalPageNumResponse = questionService.GetQuestionsTotalPageNum(pageable, type);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("get questions total page number")
+                .data(getQuestionsTotalPageNumResponse)
                 .build();
 
         return res;
