@@ -8,6 +8,7 @@ import com.example.initbackend.comment.dto.RegisterCommentRequestDto;
 import com.example.initbackend.comment.repository.CommentRepository;
 import com.example.initbackend.comment.vo.CommentVo;
 import com.example.initbackend.comment.vo.GetCommentsResponseVo;
+import com.example.initbackend.comment.vo.GetCommentsTotalPageNumResponseVo;
 import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.response.ErrorCode;
 import com.example.initbackend.user.domain.User;
@@ -47,9 +48,9 @@ public class CommentService {
 
     }
 
-    public GetCommentsResponseVo getComments(Pageable pageable) {
+    public GetCommentsResponseVo getComments(Pageable pageable, Long answerId) {
         List<CommentVo> comments = new ArrayList<>();
-        Page<Comment> optionalComments = commentRepository.findAll(pageable);
+        Page<Comment> optionalComments = commentRepository.findAllByAnswerId(answerId, pageable);
 
         optionalComments.stream().forEach(
                 comment -> {
@@ -76,6 +77,15 @@ public class CommentService {
         }
 
         commentRepository.deleteById(commentId);
+    }
+
+    public GetCommentsTotalPageNumResponseVo getCommentsTotalPageNum(Pageable pageable, Long answerId) {
+        Page<Comment> optionalComments = commentRepository.findAllByAnswerId(answerId, pageable);
+
+        GetCommentsTotalPageNumResponseVo getCommentsTotalPageNumResponse = new GetCommentsTotalPageNumResponseVo(optionalComments.getTotalPages());
+
+        return getCommentsTotalPageNumResponse;
+
     }
 
 }
