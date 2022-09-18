@@ -4,6 +4,7 @@ import com.example.initbackend.answer.domain.Answer;
 import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.repository.AnswerRepository;
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
+import com.example.initbackend.answer.vo.GetAnswersTotalPageNumResponseVo;
 import com.example.initbackend.answer.vo.IssueAnswerIdResponseVo;
 import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
@@ -86,6 +87,12 @@ public class AnswerService {
                     throw new CustomException(ErrorCode.DATA_NOT_FOUND);
                 });
 
+    }
+
+    public GetAnswersTotalPageNumResponseVo getAnswersTotalPageNum(Pageable pageable, Long questionId){
+        Page<Answer> optionalAnswer = answerRepository.findAllByQuestionIdOrderByCreateDateDesc(questionId, pageable);
+        GetAnswersTotalPageNumResponseVo getAnswersTotalPageNumResponse = new GetAnswersTotalPageNumResponseVo(optionalAnswer.getTotalPages());
+        return getAnswersTotalPageNumResponse;
     }
 
     private boolean isDuplicatedAnswer(Long userId, Long questionId ) {

@@ -10,10 +10,7 @@ import com.example.initbackend.question.domain.Question;
 import com.example.initbackend.question.dto.IssueQuestionIdRequestDto;
 import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
 import com.example.initbackend.question.repository.QuestionRepository;
-import com.example.initbackend.question.vo.GetBannerQuestionIdResponseVo;
-import com.example.initbackend.question.vo.GetQuestionResponseVo;
-import com.example.initbackend.question.vo.GetQuestionsResponseVo;
-import com.example.initbackend.question.vo.IssueQuestionIdResponseVo;
+import com.example.initbackend.question.vo.*;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -179,4 +176,24 @@ public class QuestionService {
         }
         return new GetBannerQuestionIdResponseVo();
     }
+
+    public GetQuestionsTotalPageNumResponseVo GetQuestionsTotalPageNum(Pageable pageable, String type){
+        List<GetQuestionResponseVo> questionList = new ArrayList<>();
+        Page<Question> questions = null;
+        if (type.equals("total")){
+            questions = questionRepository.findByTypeNotOrderByCreateDateDesc("init", pageable);
+        }
+        else if (type.equals("doing")){
+            questions = questionRepository.findByTypeOrderByCreateDateDesc("doing", pageable);
+        }
+        else if (type.equals("completed")){
+            questions = questionRepository.findByTypeOrderByCreateDateDesc("completed", pageable);
+        }
+
+        GetQuestionsTotalPageNumResponseVo getQuestionsTotalPageNumResponse = new GetQuestionsTotalPageNumResponseVo(questions.getTotalPages());
+
+        return getQuestionsTotalPageNumResponse;
+
+    }
+
 }

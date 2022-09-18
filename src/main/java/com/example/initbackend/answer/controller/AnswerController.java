@@ -4,7 +4,9 @@ package com.example.initbackend.answer.controller;
 import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.service.AnswerService;
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
+import com.example.initbackend.answer.vo.GetAnswersTotalPageNumResponseVo;
 import com.example.initbackend.answer.vo.IssueAnswerIdResponseVo;
+import com.example.initbackend.comment.vo.GetCommentsResponseVo;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import lombok.AllArgsConstructor;
@@ -77,6 +79,19 @@ public class AnswerController {
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("Answer is selected Successfully")
+                .build();
+
+        return res;
+    }
+
+    @GetMapping({"/page"})
+    public SuccessResponse getAnswersTotalPageNum(Pageable pageable, @RequestParam Long questionId) {
+        GetAnswersTotalPageNumResponseVo getAnswersTotalPageNumResponse = answerService.getAnswersTotalPageNum(pageable, questionId);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("get answers total page number")
+                .data(getAnswersTotalPageNumResponse)
                 .build();
 
         return res;
