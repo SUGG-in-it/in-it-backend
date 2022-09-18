@@ -1,9 +1,9 @@
 package com.example.initbackend.comment.controller;
 
-import com.example.initbackend.comment.dto.GetCommentsRequestDto;
 import com.example.initbackend.comment.dto.RegisterCommentRequestDto;
 import com.example.initbackend.comment.service.CommentService;
 import com.example.initbackend.comment.vo.GetCommentsResponseVo;
+import com.example.initbackend.comment.vo.GetCommentsTotalPageNumResponseVo;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import lombok.Getter;
@@ -36,8 +36,8 @@ public class CommentController {
     }
 
     @GetMapping
-    public SuccessResponse getComments(Pageable pageable) {
-        GetCommentsResponseVo getCommentsResponse = commentService.getComments(pageable);
+    public SuccessResponse getComments(Pageable pageable,@Valid @RequestParam final Long answerId) {
+        GetCommentsResponseVo getCommentsResponse = commentService.getComments(pageable, answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
@@ -55,6 +55,19 @@ public class CommentController {
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("comment successfully deleted")
+                .build();
+
+        return res;
+    }
+
+    @GetMapping({"/page"})
+    public SuccessResponse getCommentsTotalPageNum(Pageable pageable,@Valid @RequestParam final Long answerId) {
+        GetCommentsTotalPageNumResponseVo getCommentsTotalPageNumResponse = commentService.getCommentsTotalPageNum(pageable, answerId);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("get comments total page number")
+                .data(getCommentsTotalPageNumResponse)
                 .build();
 
         return res;
