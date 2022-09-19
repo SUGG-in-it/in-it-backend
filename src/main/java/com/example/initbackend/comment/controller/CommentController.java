@@ -10,6 +10,7 @@ import lombok.Getter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Getter
@@ -68,6 +69,19 @@ public class CommentController {
                 .status(StatusEnum.OK)
                 .message("get comments total page number")
                 .data(getCommentsTotalPageNumResponse)
+                .build();
+
+        return res;
+    }
+
+    @GetMapping({"/manage"})
+    public SuccessResponse getManagedComments(HttpServletRequest servletRequest, Pageable pageable) {
+        GetCommentsResponseVo getCommentsResponse = commentService.getManagedComments(servletRequest, pageable);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("get my comments")
+                .data(getCommentsResponse)
                 .build();
 
         return res;

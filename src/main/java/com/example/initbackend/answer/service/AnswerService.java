@@ -95,6 +95,16 @@ public class AnswerService {
         return getAnswersTotalPageNumResponse;
     }
 
+    public GetAnswerResponseVo getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable){
+        String token = jwtTokenProvider.resolveAccessToken(servletRequest);
+        Long userId = JwtUtil.getPayloadByToken(token);
+
+        Page<Answer> optionalAnswer = answerRepository.findAllByUserIdOrderByCreateDateDesc(userId, pageable);
+        GetAnswerResponseVo answerList = new GetAnswerResponseVo(optionalAnswer.getContent());
+        return answerList;
+    }
+
+
     private boolean isDuplicatedAnswer(Long userId, Long questionId ) {
         return answerRepository.findByUserIdAndQuestionId(userId,questionId).isPresent();
     }

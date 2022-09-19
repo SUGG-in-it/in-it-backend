@@ -14,6 +14,8 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     Optional<Question> findById(Long questionId);
     Page<Question> findByTypeOrderByCreateDateDesc(String type, Pageable pageable);
     Page<Question> findByTypeNotOrderByCreateDateDesc(String type, Pageable pageable);
+    Page<Question> findByUserIdOrderByCreateDateDesc(Long userId, Pageable pageable);
+
     Page<Question> findAll (Pageable pageable);
 
     Question findFirstByOrderByPointDesc();

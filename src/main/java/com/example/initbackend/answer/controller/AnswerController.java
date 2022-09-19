@@ -96,4 +96,17 @@ public class AnswerController {
 
         return res;
     }
+
+    @GetMapping({"/manage"})
+    public SuccessResponse getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable) {
+        GetAnswerResponseVo getAnswerResponse = answerService.getManagedAnswers(servletRequest, pageable);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("get my answers")
+                .data(getAnswerResponse)
+                .build();
+
+        return res;
+    }
 }
