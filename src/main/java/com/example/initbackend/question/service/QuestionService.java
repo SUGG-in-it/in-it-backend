@@ -157,8 +157,16 @@ public class QuestionService {
         Question question = null;
         List<Question> questions = null;
         if(type.equals("popular")){
-            List<Object[]> counts = answerRepository.countTotalAnswersByQuestionIdByOrderByCountDesc();
-            return new GetBannerQuestionIdResponseVo((Long) counts.get(0)[0]);
+            try {
+                List<Object[]> counts = answerRepository.countTotalAnswersByQuestionIdByOrderByCountDesc();
+                System.out.println("========================");
+                System.out.println((Long) counts.get(0)[0]);
+                System.out.println("========================");
+                return new GetBannerQuestionIdResponseVo((Long) counts.get(0)[0]);
+            } catch (IndexOutOfBoundsException e) {
+                throw new CustomException(ErrorCode.StatusGone);
+            }
+
         }
         else if(type.equals("recent")){
             question = questionRepository.findFirstByOrderByUpdateDateDesc();
