@@ -196,4 +196,42 @@ public class QuestionService {
 
     }
 
+    public GetQuestionsResponseVo getManagedQuestions(HttpServletRequest servletRequest, Pageable pageable){
+        String token = jwtTokenProvider.resolveAccessToken(servletRequest);
+        Long userId = JwtUtil.getPayloadByToken(token);
+
+        List<GetQuestionResponseVo> questionList = new ArrayList<>();
+        Page<Question> questions = null;
+
+        questions = questionRepository.findByUserIdOrderByCreateDateDesc(userId, pageable);
+
+        questions.stream().forEach(
+                it -> {
+                    Optional<Question> optionalQuestion = questionRepository.findById(it.getId());
+                    Question question = optionalQuestion.get();
+                    Optional<User> user = userRepository.findById(question.getUserId());
+                    if (!user.isPresent()) {
+                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+                    }
+                    GetQuestionResponseVo getQuestionResponse = new GetQuestionResponseVo(
+                            question.getId(),
+                            user.get().getId(),
+                            question.getTitle(),
+                            question.getContent(),
+                            user.get().getNickname(),
+                            user.get().getLevel(),
+                            user.get().getPoint(),
+                            question.getTagList(),
+                            question.getType(),
+                            question.getCreateDate(),
+                            question.getUpdateDate()
+                    );
+                    questionList.add(getQuestionResponse);
+                }
+        );
+
+        return new GetQuestionsResponseVo(questionList);
+    }
+
+
 }

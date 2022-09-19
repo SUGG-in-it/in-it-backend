@@ -19,8 +19,9 @@ public interface AnswerRepository  extends JpaRepository<Answer,Long> {
     
     @Query("SELECT questionId, COUNT(questionId) as cnt FROM Answer GROUP BY questionId order by cnt desc")
     List<Object[]> countTotalAnswersByQuestionIdByOrderByCountDesc();
-    
+
     Page<Answer> findAllByQuestionIdOrderByCreateDateDesc(Long questionId, Pageable pageable);
+    Page<Answer> findAllByUserIdOrderByCreateDateDesc(Long UserId, Pageable pageable);
 
 
 }

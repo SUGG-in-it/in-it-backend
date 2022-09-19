@@ -1,5 +1,6 @@
 package com.example.initbackend.question.controller;
 
+import com.example.initbackend.answer.vo.GetAnswerResponseVo;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
@@ -104,6 +105,19 @@ public class QuestionController {
                 .status(StatusEnum.OK)
                 .message("get questions total page number")
                 .data(getQuestionsTotalPageNumResponse)
+                .build();
+
+        return res;
+    }
+
+    @GetMapping({"/manage"})
+    public SuccessResponse getManagedQuestions(HttpServletRequest servletRequest, Pageable pageable) {
+        GetQuestionsResponseVo getQuestionsResponse = questionService.getManagedQuestions(servletRequest, pageable);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("get my answers")
+                .data(getQuestionsResponse)
                 .build();
 
         return res;
