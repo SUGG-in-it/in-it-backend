@@ -13,13 +13,11 @@ public class QuestionTag {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "question_id")
-    @Column(nullable = false)
+    @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 
     @ManyToOne
-    @JoinColumn(name = "tag_id")
-    @Column(nullable = false)
+    @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 
 }
