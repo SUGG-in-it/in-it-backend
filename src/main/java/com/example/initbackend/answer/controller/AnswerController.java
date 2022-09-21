@@ -1,6 +1,7 @@
 package com.example.initbackend.answer.controller;
 
 
+import com.example.initbackend.answer.dto.IssueAnswerIdDto;
 import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.service.AnswerService;
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
@@ -26,8 +27,8 @@ public class AnswerController {
     private final AnswerService answerService;
 
     @PostMapping
-    public SuccessResponse issueAnswerId(HttpServletRequest request) {
-        IssueAnswerIdResponseVo issueAnswerIdResponse = answerService.issueAnswerId(request);
+    public SuccessResponse issueAnswerId(HttpServletRequest request, @RequestBody IssueAnswerIdDto requestDto) {
+        IssueAnswerIdResponseVo issueAnswerIdResponse = answerService.issueAnswerId(request, requestDto);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)

@@ -33,7 +33,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(jwtAccessDeniedHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/user/login", "/api/user/password").permitAll()
                 .antMatchers(HttpMethod.POST,"/api/answers/**").authenticated()
                 .antMatchers(HttpMethod.DELETE,"/api/answers/**").authenticated()
                 .antMatchers(HttpMethod.PUT,"/api/answers/**").authenticated()
