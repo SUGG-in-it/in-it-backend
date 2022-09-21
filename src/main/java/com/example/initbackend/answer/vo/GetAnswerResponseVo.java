@@ -12,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetAnswerResponseVo {
-    private List<Answer> answerList;
+    private List<Answer> answers;
 }

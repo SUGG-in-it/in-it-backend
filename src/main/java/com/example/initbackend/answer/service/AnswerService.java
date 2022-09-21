@@ -1,11 +1,13 @@
 package com.example.initbackend.answer.service;
 
 import com.example.initbackend.answer.domain.Answer;
+import com.example.initbackend.answer.dto.IssueAnswerIdDto;
 import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.repository.AnswerRepository;
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
 import com.example.initbackend.answer.vo.GetAnswersTotalPageNumResponseVo;
 import com.example.initbackend.answer.vo.IssueAnswerIdResponseVo;
+import com.example.initbackend.comment.repository.CommentRepository;
 import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.JwtUtil;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Slf4j
@@ -29,13 +32,18 @@ public class AnswerService {
 
     private final JwtUtil jwtUtil;
     private final JwtTokenProvider jwtTokenProvider;
-    private final AnswerRepository answerRepository;
-    private final QuestionRepository questionRepository;
 
-    public IssueAnswerIdResponseVo issueAnswerId(HttpServletRequest request){
+    private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
+    private final CommentRepository commentRepository;
+
+    public IssueAnswerIdResponseVo issueAnswerId(HttpServletRequest request, IssueAnswerIdDto issueAnswerIdDto){
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId  = jwtUtil.getPayloadByToken(token);
-        Answer newAnswer = new Answer(userId);
+        Long questionId = issueAnswerIdDto.getQuestionId();
+        Answer newAnswer = new Answer();
+        newAnswer.setUserId(userId);
+        newAnswer.setQuestionId(questionId);
         answerRepository.save(newAnswer);
 
         return new IssueAnswerIdResponseVo(newAnswer.getId());
@@ -44,8 +52,8 @@ public class AnswerService {
 
     public GetAnswerResponseVo getAnswer(Pageable pageable, Long questionId){
         Page<Answer> optionalAnswer = answerRepository.findAllByQuestionIdOrderByCreateDateDesc(questionId, pageable);
-        GetAnswerResponseVo answerList = new GetAnswerResponseVo(optionalAnswer.getContent());
-        return answerList;
+        GetAnswerResponseVo answers = new GetAnswerResponseVo(optionalAnswer.getContent());
+        return answers;
     }
 
     public void updateAnswer(UpdateAnswerRequestDto updateAnswerRequestDto, Long answerId){
@@ -61,17 +69,29 @@ public class AnswerService {
                 });
 
     }
-
+//    @Transactional
     public void deleteAnswer(Long answerId){
 
         Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
-        optionalAnswer.ifPresentOrElse(
-                selectAnswer ->{
-                    answerRepository.deleteById(optionalAnswer.get().getId());
-                },
-                () -> {
-                    throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-                });
+//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("");
+//        EntityManager em = emf.createEntityManager();
+//        EntityTransaction tx = em.getTransaction();
+//        tx.begin();
+
+//        try {
+            optionalAnswer.ifPresentOrElse(
+                    selectAnswer ->{
+                        answerRepository.deleteById(answerId);
+//                        commentRepository.deleteAllByAnswerId(answerId);
+                    },
+                    () -> {
+                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+                    });
+//            tx.commit();
+//        } catch (Exception e){
+//            tx.rollback();
+//        }
+
     }
 
 
