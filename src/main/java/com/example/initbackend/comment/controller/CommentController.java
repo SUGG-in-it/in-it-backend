@@ -25,8 +25,8 @@ public class CommentController {
     }
 
     @PostMapping
-    public SuccessResponse registerComment(@Valid @RequestBody final RegisterCommentRequestDto requestDto) {
-        commentService.registerComment(requestDto);
+    public SuccessResponse registerComment(HttpServletRequest servletRequest, @Valid @RequestBody final RegisterCommentRequestDto requestDto) {
+        commentService.registerComment(servletRequest, requestDto);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
@@ -37,7 +37,7 @@ public class CommentController {
     }
 
     @GetMapping
-    public SuccessResponse getComments(Pageable pageable,@Valid @RequestParam final Long answerId) {
+    public SuccessResponse getComments(Pageable pageable, @Valid @RequestParam final Long answerId) {
         GetCommentsResponseVo getCommentsResponse = commentService.getComments(pageable, answerId);
 
         SuccessResponse res = SuccessResponse.builder()
@@ -50,8 +50,8 @@ public class CommentController {
     }
 
     @DeleteMapping({"/{commentId}"})
-    public SuccessResponse deleteComment(@PathVariable("commentId") Long commentId) {
-        commentService.deleteComment(commentId);
+    public SuccessResponse deleteComment(HttpServletRequest servletRequest, @PathVariable("commentId") Long commentId) {
+        commentService.deleteComment(servletRequest, commentId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
@@ -62,7 +62,7 @@ public class CommentController {
     }
 
     @GetMapping({"/page"})
-    public SuccessResponse getCommentsTotalPageNum(Pageable pageable,@Valid @RequestParam final Long answerId) {
+    public SuccessResponse getCommentsTotalPageNum(Pageable pageable, @Valid @RequestParam final Long answerId) {
         GetCommentsTotalPageNumResponseVo getCommentsTotalPageNumResponse = commentService.getCommentsTotalPageNum(pageable, answerId);
 
         SuccessResponse res = SuccessResponse.builder()
