@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class RegisterCommentRequestDto {
-
-    private Long userId;
     private Long answerId;
     private String content;
 
@@ -16,7 +14,6 @@ public class RegisterCommentRequestDto {
         return Comment.builder()
                 .content(content)
                 .answerId(answerId)
-                .userId(userId)
                 .build();
     }
 }
