@@ -36,14 +36,17 @@ public class CommentService {
     private final UserRepository userRepository;
     private final AnswerRepository answerRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
 
 
+    public void registerComment(HttpServletRequest servletRequest, RegisterCommentRequestDto registerCommentRequestDto) {
+        String token = jwtTokenProvider.resolveAccessToken(servletRequest);
+        Long userId = jwtUtil.getPayloadByToken(token);
 
-    public void registerComment(RegisterCommentRequestDto registerCommentRequestDto) {
-        Optional<User> optionalUser = userRepository.findById(registerCommentRequestDto.getUserId());
+        Optional<User> optionalUser = userRepository.findById(userId);
         Optional<Answer> optionalAnswer = answerRepository.findById(registerCommentRequestDto.getAnswerId());
 
-        if (!optionalUser.isPresent() || !optionalAnswer.isPresent()){
+        if (!optionalUser.isPresent() || !optionalAnswer.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
         }
 
@@ -71,14 +74,22 @@ public class CommentService {
                 }
         );
 
-       return new GetCommentsResponseVo(comments);
+        return new GetCommentsResponseVo(comments);
     }
 
-    public void deleteComment(Long commentId) {
+    public void deleteComment(HttpServletRequest servletRequest, Long commentId) {
+        String token = jwtTokenProvider.resolveAccessToken(servletRequest);
+        Long userId = jwtUtil.getPayloadByToken(token);
+
+        Optional<User> optionalUser = userRepository.findById(userId);
         Optional<Comment> optionalComment = commentRepository.findById(commentId);
 
-        if (!optionalComment.isPresent()){
+        if (!optionalUser.isPresent() || !optionalComment.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
+
+        if(!userId.equals(optionalComment.get().getUserId())){
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
 
         commentRepository.deleteById(commentId);
