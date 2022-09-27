@@ -62,8 +62,8 @@ public class AnswerController {
     }
 
     @DeleteMapping({ "/{answerId}" })
-    public SuccessResponse deleteAnswer(@PathVariable("answerId") Long answerId){
-        answerService.deleteAnswer(answerId);
+    public SuccessResponse deleteAnswer(HttpServletRequest request, @PathVariable("answerId") Long answerId){
+        answerService.deleteAnswer(request, answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
