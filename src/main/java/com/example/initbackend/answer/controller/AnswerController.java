@@ -51,8 +51,8 @@ public class AnswerController {
     }
 
     @PutMapping({ "/{answerId}" })
-    public SuccessResponse updateAnswer( @Valid @RequestBody UpdateAnswerRequestDto requestDto, @PathVariable("answerId") Long answerId){
-        answerService.updateAnswer(requestDto, answerId);
+    public SuccessResponse updateAnswer(HttpServletRequest request, @Valid @RequestBody UpdateAnswerRequestDto requestDto, @PathVariable("answerId") Long answerId){
+        answerService.updateAnswer(request, requestDto, answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)

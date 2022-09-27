@@ -56,19 +56,28 @@ public class AnswerService {
         return answers;
     }
 
-    public void updateAnswer(UpdateAnswerRequestDto updateAnswerRequestDto, Long answerId){
+    public void updateAnswer(HttpServletRequest request, UpdateAnswerRequestDto updateAnswerRequestDto, Long answerId){
+
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId  = jwtUtil.getPayloadByToken(token);
 
         Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
-        optionalAnswer.ifPresentOrElse(
-                selectAnswer ->{
+
+        if (!optionalAnswer.isPresent()) {
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
+
+        if (!userId.equals(optionalAnswer.get().getUserId())) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        optionalAnswer.ifPresent(selectAnswer ->{
                     selectAnswer.setContent(updateAnswerRequestDto.getContent());
                     answerRepository.save(selectAnswer);
-                    },
-                () -> {
-                    throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-                });
+        });
 
     }
+
 //    @Transactional
     public void deleteAnswer(Long answerId){
 
