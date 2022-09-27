@@ -19,6 +19,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -36,39 +37,39 @@ public class QuestionService {
     private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
 
-    public IssueQuestionIdResponseVo issueQuestionId(HttpServletRequest request){
+    public IssueQuestionIdResponseVo issueQuestionId(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId  = jwtUtil.getPayloadByToken(token);
+        Long userId = jwtUtil.getPayloadByToken(token);
         Question question = IssueQuestionIdRequestDto.toEntity(userId);
         Question newQuestion = questionRepository.save(question);
 
         return new IssueQuestionIdResponseVo(newQuestion.getId());
     }
 
-    public void UpdateQuestion(HttpServletRequest request, Long questionId, UpdateQuestionRequestDto updateQuestionRequestDto){
+    public void UpdateQuestion(HttpServletRequest request, Long questionId, UpdateQuestionRequestDto updateQuestionRequestDto) {
         String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId  = jwtUtil.getPayloadByToken(token);
+        Long userId = jwtUtil.getPayloadByToken(token);
 
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
-        if(!userId.equals(optionalQuestion.get().getUserId())){
+        if (!userId.equals(optionalQuestion.get().getUserId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
-        if(!optionalQuestion.isPresent()){
+        if (!optionalQuestion.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
         }
-        optionalQuestion.ifPresent(selectQuestion->{
+        optionalQuestion.ifPresent(selectQuestion -> {
             selectQuestion.setTitle(updateQuestionRequestDto.getTitle());
             selectQuestion.setContent(updateQuestionRequestDto.getContent());
             selectQuestion.setTagList(updateQuestionRequestDto.getTagList());
             selectQuestion.setPoint(updateQuestionRequestDto.getPoint());
-            if(!selectQuestion.getType().equals("completed")) {
+            if (!selectQuestion.getType().equals("completed")) {
                 selectQuestion.setType("doing");
             }
             questionRepository.save(selectQuestion);
         });
     }
 
-    public GetQuestionResponseVo GetQuestion(Long questionId){
+    public GetQuestionResponseVo GetQuestion(Long questionId) {
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
         if (!optionalQuestion.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
@@ -92,18 +93,16 @@ public class QuestionService {
         );
     }
 
-    public GetQuestionsResponseVo GetQuestions(Pageable pageable, String type){
+    public GetQuestionsResponseVo GetQuestions(Pageable pageable, String type) {
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
         Page<Question> questions = null;
-        if (type.equals("total")){
+        if (type.equals("total")) {
             System.out.println("====total====");
             questions = questionRepository.findByTypeNotOrderByCreateDateDesc("init", pageable);
-        }
-        else if (type.equals("doing")){
+        } else if (type.equals("doing")) {
             System.out.println("====doing====");
             questions = questionRepository.findByTypeOrderByCreateDateDesc("doing", pageable);
-        }
-        else if (type.equals("completed")){
+        } else if (type.equals("completed")) {
             System.out.println("====completed====");
             questions = questionRepository.findByTypeOrderByCreateDateDesc("completed", pageable);
         }
@@ -138,25 +137,25 @@ public class QuestionService {
         return new GetQuestionsResponseVo(questionList);
     }
 
-    public void DeleteQuestion(HttpServletRequest request, Long questionId){
+    public void DeleteQuestion(HttpServletRequest request, Long questionId) {
         String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId  = jwtUtil.getPayloadByToken(token);
+        Long userId = jwtUtil.getPayloadByToken(token);
 
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
-        if(!userId.equals(optionalQuestion.get().getUserId())){
+        if (!userId.equals(optionalQuestion.get().getUserId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
 
-        optionalQuestion.ifPresent(selectQuestion->{
+        optionalQuestion.ifPresent(selectQuestion -> {
             questionRepository.deleteById(questionId);
         });
 
     }
 
-    public GetBannerQuestionIdResponseVo GetBannerQuestionId(String type){
+    public GetBannerQuestionIdResponseVo GetBannerQuestionId(String type) {
         Question question = null;
         List<Question> questions = null;
-        if(type.equals("popular")){
+        if (type.equals("popular")) {
             try {
                 List<Object[]> counts = answerRepository.countTotalAnswersByQuestionIdByOrderByCountDesc();
                 System.out.println("========================");
@@ -167,14 +166,11 @@ public class QuestionService {
                 throw new CustomException(ErrorCode.StatusGone);
             }
 
-        }
-        else if(type.equals("recent")){
+        } else if (type.equals("recent")) {
             question = questionRepository.findFirstByOrderByUpdateDateDesc();
-        }
-        else if(type.equals("point")){
+        } else if (type.equals("point")) {
             question = questionRepository.findFirstByOrderByPointDesc();
-        }
-        else if(type.equals("random")){
+        } else if (type.equals("random")) {
             questions = questionRepository.findAll();
             Long count = questions.stream().count();
             System.out.println(count);
@@ -185,16 +181,14 @@ public class QuestionService {
         return new GetBannerQuestionIdResponseVo();
     }
 
-    public GetQuestionsTotalPageNumResponseVo GetQuestionsTotalPageNum(Pageable pageable, String type){
+    public GetQuestionsTotalPageNumResponseVo GetQuestionsTotalPageNum(Pageable pageable, String type) {
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
         Page<Question> questions = null;
-        if (type.equals("total")){
+        if (type.equals("total")) {
             questions = questionRepository.findByTypeNotOrderByCreateDateDesc("init", pageable);
-        }
-        else if (type.equals("doing")){
+        } else if (type.equals("doing")) {
             questions = questionRepository.findByTypeOrderByCreateDateDesc("doing", pageable);
-        }
-        else if (type.equals("completed")){
+        } else if (type.equals("completed")) {
             questions = questionRepository.findByTypeOrderByCreateDateDesc("completed", pageable);
         }
 
@@ -204,7 +198,7 @@ public class QuestionService {
 
     }
 
-    public GetQuestionsResponseVo getManagedQuestions(HttpServletRequest servletRequest, Pageable pageable){
+    public GetQuestionsResponseVo getManagedQuestions(HttpServletRequest servletRequest, Pageable pageable) {
         String token = jwtTokenProvider.resolveAccessToken(servletRequest);
         Long userId = JwtUtil.getPayloadByToken(token);
 
@@ -241,5 +235,32 @@ public class QuestionService {
         return new GetQuestionsResponseVo(questionList);
     }
 
+
+    public SearchQuestionsResponseVo searchQuestions(String query, String type, Pageable pageable, String tag) {
+        List<SearchQuestionVo> questionList = new ArrayList<>();
+        Page<Question> questions = null;
+        if (type.equals("total")) {
+            questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("init", query, pageable);
+        } else if (type.equals("doing")) {
+            questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("doing", query, pageable);
+        } else if (type.equals("completed")) {
+            questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("completed", query, pageable);
+        }
+        questions.stream().forEach(
+                question -> {
+                    SearchQuestionVo searchQuestionVo = new SearchQuestionVo(
+                            question.getId(),
+                            question.getTitle(),
+                            question.getContent(),
+                            question.getUpdateDate(),
+                            question.getType()
+                    );
+                    questionList.add(searchQuestionVo);
+                }
+        );
+
+        return new SearchQuestionsResponseVo(questionList);
+
+    }
 
 }
