@@ -20,6 +20,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -78,29 +82,26 @@ public class AnswerService {
 
     }
 
-//    @Transactional
-    public void deleteAnswer(Long answerId){
+    @Transactional
+    public void deleteAnswer(HttpServletRequest request, Long answerId){
+
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId  = jwtUtil.getPayloadByToken(token);
 
         Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
-//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("");
-//        EntityManager em = emf.createEntityManager();
-//        EntityTransaction tx = em.getTransaction();
-//        tx.begin();
 
-//        try {
-            optionalAnswer.ifPresentOrElse(
-                    selectAnswer ->{
-                        answerRepository.deleteById(answerId);
-//                        commentRepository.deleteAllByAnswerId(answerId);
-                    },
-                    () -> {
-                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-                    });
-//            tx.commit();
-//        } catch (Exception e){
-//            tx.rollback();
-//        }
+        if (!optionalAnswer.isPresent()) {
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
 
+        if (!userId.equals(optionalAnswer.get().getUserId())) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        optionalAnswer.ifPresent(selectAnswer ->{
+                answerRepository.deleteById(answerId);
+                commentRepository.deleteAllByAnswerId(answerId);
+        });
     }
 
 
