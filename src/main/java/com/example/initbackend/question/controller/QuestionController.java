@@ -1,6 +1,7 @@
 package com.example.initbackend.question.controller;
 
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
+import com.example.initbackend.comment.vo.GetCommentsResponseVo;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
@@ -118,6 +119,19 @@ public class QuestionController {
                 .status(StatusEnum.OK)
                 .message("get my answers")
                 .data(getQuestionsResponse)
+                .build();
+
+        return res;
+    }
+
+    @GetMapping({"/search"})
+    public SuccessResponse searchQuestions(@RequestParam String query, @RequestParam String type, Pageable pageable, @RequestParam(required = false) String tag) {
+        SearchQuestionsResponseVo searchQuestionsResponse = questionService.searchQuestions(query, type, pageable, tag);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("search successfully")
+                .data(searchQuestionsResponse)
                 .build();
 
         return res;

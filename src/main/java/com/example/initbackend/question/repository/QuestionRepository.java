@@ -18,6 +18,8 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     Page<Question> findAll (Pageable pageable);
 
+    Page<Question> findByTypeAndTitleContainingIgnoreCase(String type, String title, Pageable pageable);
+
     Question findFirstByOrderByPointDesc();
     Question findFirstByOrderByUpdateDateDesc();
 }
