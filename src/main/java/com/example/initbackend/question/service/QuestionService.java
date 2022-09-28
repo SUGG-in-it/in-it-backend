@@ -97,10 +97,11 @@ public class QuestionService {
         if (!optionalQuestion.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
         }
+
         Question question = optionalQuestion.get();
         Long userId = question.getUserId();
         Optional<User> user = userRepository.findById(userId);
-
+        Long answerCount = answerRepository.countByQuestionId(question.getId());
         return new GetQuestionResponseVo(
                 question.getId(),
                 user.get().getId(),
@@ -112,7 +113,8 @@ public class QuestionService {
                 question.getTagList(),
                 question.getType(),
                 question.getCreateDate(),
-                question.getUpdateDate()
+                question.getUpdateDate(),
+                Math.toIntExact(answerCount)
         );
     }
 
@@ -149,7 +151,8 @@ public class QuestionService {
                             question.getTagList(),
                             question.getType(),
                             question.getCreateDate(),
-                            question.getUpdateDate()
+                            question.getUpdateDate(),
+                            0
                     );
                     System.out.println(question.getContent() + " " + user.get().getId());
                     questionList.add(getQuestionResponse);
@@ -258,7 +261,8 @@ public class QuestionService {
                             question.getTagList(),
                             question.getType(),
                             question.getCreateDate(),
-                            question.getUpdateDate()
+                            question.getUpdateDate(),
+                            0
                     );
                     questionList.add(getQuestionResponse);
                 }
