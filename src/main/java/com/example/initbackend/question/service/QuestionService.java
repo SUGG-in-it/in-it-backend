@@ -1,6 +1,8 @@
 package com.example.initbackend.question.service;
 
+import com.example.initbackend.answer.domain.Answer;
 import com.example.initbackend.answer.repository.AnswerRepository;
+import com.example.initbackend.comment.repository.CommentRepository;
 import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.JwtUtil;
@@ -37,6 +39,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionTagRepository questionTagRepository;
     private final AnswerRepository answerRepository;
+    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
     public IssueQuestionIdResponseVo issueQuestionId(HttpServletRequest request) {
@@ -156,6 +159,7 @@ public class QuestionService {
         return new GetQuestionsResponseVo(questionList);
     }
 
+//    @Transactional
     public void DeleteQuestion(HttpServletRequest request, Long questionId) {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
@@ -166,9 +170,17 @@ public class QuestionService {
         }
 
         optionalQuestion.ifPresent(selectQuestion -> {
+            List<Answer> optionalAnswer = answerRepository.findAllByQuestionId(questionId);
+            optionalAnswer.stream().forEach(
+                    answer -> {
+                        System.out.println("==============");
+                        System.out.println(answer.getId()); // answer id
+                        System.out.println("==============");
+                        commentRepository.deleteAllByAnswerId(answer.getId());
+                    });
+            answerRepository.deleteAllByQuestionId(questionId);
             questionRepository.deleteById(questionId);
         });
-
     }
 
     public GetBannerQuestionIdResponseVo GetBannerQuestionId(String type) {
