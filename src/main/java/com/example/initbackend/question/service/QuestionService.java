@@ -11,6 +11,8 @@ import com.example.initbackend.question.dto.IssueQuestionIdRequestDto;
 import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
 import com.example.initbackend.question.repository.QuestionRepository;
 import com.example.initbackend.question.vo.*;
+import com.example.initbackend.questionTag.domain.QuestionTag;
+import com.example.initbackend.questionTag.repository.QuestionTagRepository;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class QuestionService {
     private final JwtUtil jwtUtil;
     private final JwtTokenProvider jwtTokenProvider;
     private final QuestionRepository questionRepository;
+    private final QuestionTagRepository questionTagRepository;
     private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
 
@@ -57,6 +59,23 @@ public class QuestionService {
         if (!optionalQuestion.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
         }
+
+        String tag = updateQuestionRequestDto.getTagList();
+        tag = tag.replace("{", "");
+        tag = tag.replace("}", "");
+        tag = tag.replace(" ", "");
+        System.out.println(tag);
+
+        String[] tagList = tag.split(",");
+
+        for (int i = 0; i < tagList.length; i++) {
+            System.out.println(tagList[i]);
+            QuestionTag questionTag = new QuestionTag();
+            questionTag.setQuestionId(optionalQuestion.get().getId());
+            questionTag.setTagId(Long.valueOf(tagList[i]));
+            questionTagRepository.save(questionTag);
+        }
+
         optionalQuestion.ifPresent(selectQuestion -> {
             selectQuestion.setTitle(updateQuestionRequestDto.getTitle());
             selectQuestion.setContent(updateQuestionRequestDto.getContent());
