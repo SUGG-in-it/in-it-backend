@@ -80,20 +80,17 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-//            throw new EntityNotFoundException("User not present in the database");
         }
         String dbPassword = optionalUser.get().getPassword();
         if (!dbPassword.equals(password)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_PASSWORD);
-//            throw new EntityNotFoundException("incorrect password");
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.get().getId(), optionalUser.get().getNickname(),authentication);
 
-        UserToken userToken;
-        userToken = tokenRepository.findById(optionalUser.get().getId());
+        UserToken userToken = tokenRepository.findById(optionalUser.get().getId());
         if (Objects.isNull(userToken)) {
             userToken = new UserToken(optionalUser.get().getId(), tokenInfo.getRefreshToken());
         } else {
