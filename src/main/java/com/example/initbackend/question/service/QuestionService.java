@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -159,7 +160,7 @@ public class QuestionService {
         return new GetQuestionsResponseVo(questionList);
     }
 
-//    @Transactional
+    @Transactional
     public void DeleteQuestion(HttpServletRequest request, Long questionId) {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
