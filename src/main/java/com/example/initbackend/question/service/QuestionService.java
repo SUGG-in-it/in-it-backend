@@ -1,6 +1,8 @@
 package com.example.initbackend.question.service;
 
+import com.example.initbackend.answer.domain.Answer;
 import com.example.initbackend.answer.repository.AnswerRepository;
+import com.example.initbackend.comment.repository.CommentRepository;
 import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.JwtUtil;
@@ -11,6 +13,8 @@ import com.example.initbackend.question.dto.IssueQuestionIdRequestDto;
 import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
 import com.example.initbackend.question.repository.QuestionRepository;
 import com.example.initbackend.question.vo.*;
+import com.example.initbackend.questionTag.domain.QuestionTag;
+import com.example.initbackend.questionTag.repository.QuestionTagRepository;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +23,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +38,9 @@ public class QuestionService {
     private final JwtUtil jwtUtil;
     private final JwtTokenProvider jwtTokenProvider;
     private final QuestionRepository questionRepository;
+    private final QuestionTagRepository questionTagRepository;
     private final AnswerRepository answerRepository;
+    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
     public IssueQuestionIdResponseVo issueQuestionId(HttpServletRequest request) {
@@ -57,6 +63,23 @@ public class QuestionService {
         if (!optionalQuestion.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
         }
+
+        String tag = updateQuestionRequestDto.getTagList();
+        tag = tag.replace("{", "");
+        tag = tag.replace("}", "");
+        tag = tag.replace(" ", "");
+        System.out.println(tag);
+
+        String[] tagList = tag.split(",");
+
+        for (int i = 0; i < tagList.length; i++) {
+            System.out.println(tagList[i]);
+            QuestionTag questionTag = new QuestionTag();
+            questionTag.setQuestionId(optionalQuestion.get().getId());
+            questionTag.setTagId(Long.valueOf(tagList[i]));
+            questionTagRepository.save(questionTag);
+        }
+
         optionalQuestion.ifPresent(selectQuestion -> {
             selectQuestion.setTitle(updateQuestionRequestDto.getTitle());
             selectQuestion.setContent(updateQuestionRequestDto.getContent());
@@ -74,10 +97,11 @@ public class QuestionService {
         if (!optionalQuestion.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
         }
+
         Question question = optionalQuestion.get();
         Long userId = question.getUserId();
         Optional<User> user = userRepository.findById(userId);
-
+        Long answerCount = answerRepository.countByQuestionId(question.getId());
         return new GetQuestionResponseVo(
                 question.getId(),
                 user.get().getId(),
@@ -89,7 +113,8 @@ public class QuestionService {
                 question.getTagList(),
                 question.getType(),
                 question.getCreateDate(),
-                question.getUpdateDate()
+                question.getUpdateDate(),
+                Math.toIntExact(answerCount)
         );
     }
 
@@ -126,7 +151,8 @@ public class QuestionService {
                             question.getTagList(),
                             question.getType(),
                             question.getCreateDate(),
-                            question.getUpdateDate()
+                            question.getUpdateDate(),
+                            0
                     );
                     System.out.println(question.getContent() + " " + user.get().getId());
                     questionList.add(getQuestionResponse);
@@ -137,6 +163,7 @@ public class QuestionService {
         return new GetQuestionsResponseVo(questionList);
     }
 
+    @Transactional
     public void DeleteQuestion(HttpServletRequest request, Long questionId) {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
@@ -147,9 +174,17 @@ public class QuestionService {
         }
 
         optionalQuestion.ifPresent(selectQuestion -> {
+            List<Answer> optionalAnswer = answerRepository.findAllByQuestionId(questionId);
+            optionalAnswer.stream().forEach(
+                    answer -> {
+                        System.out.println("==============");
+                        System.out.println(answer.getId()); // answer id
+                        System.out.println("==============");
+                        commentRepository.deleteAllByAnswerId(answer.getId());
+                    });
+            answerRepository.deleteAllByQuestionId(questionId);
             questionRepository.deleteById(questionId);
         });
-
     }
 
     public GetBannerQuestionIdResponseVo GetBannerQuestionId(String type) {
@@ -226,7 +261,8 @@ public class QuestionService {
                             question.getTagList(),
                             question.getType(),
                             question.getCreateDate(),
-                            question.getUpdateDate()
+                            question.getUpdateDate(),
+                            0
                     );
                     questionList.add(getQuestionResponse);
                 }

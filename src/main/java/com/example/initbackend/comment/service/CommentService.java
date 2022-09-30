@@ -51,6 +51,7 @@ public class CommentService {
         }
 
         Comment comment = registerCommentRequestDto.toEntity();
+        comment.setUserId(userId);
 
         commentRepository.save(comment);
 

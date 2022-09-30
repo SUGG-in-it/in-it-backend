@@ -2,11 +2,10 @@ package com.example.initbackend.answer.repository;
 
 import com.example.initbackend.answer.domain.Answer;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +15,7 @@ public interface AnswerRepository  extends JpaRepository<Answer,Long> {
 
     Optional<Answer> findByUserIdAndQuestionId(Long userId, Long questionId);
     Optional<Answer> findById(Long answerId);
+    List<Answer> findAllByQuestionId(Long questionId);
     
     @Query("SELECT questionId, COUNT(questionId) as cnt FROM Answer GROUP BY questionId order by cnt desc")
     List<Object[]> countTotalAnswersByQuestionIdByOrderByCountDesc();
@@ -23,5 +23,7 @@ public interface AnswerRepository  extends JpaRepository<Answer,Long> {
     Page<Answer> findAllByQuestionIdOrderByCreateDateDesc(Long questionId, Pageable pageable);
     Page<Answer> findAllByUserIdOrderByCreateDateDesc(Long UserId, Pageable pageable);
 
+    void deleteAllByQuestionId(Long answerId);
 
+    Long countByQuestionId(Long questionId);
 }
