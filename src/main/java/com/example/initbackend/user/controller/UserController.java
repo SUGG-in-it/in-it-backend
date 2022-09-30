@@ -78,7 +78,7 @@ public class UserController {
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("로그인 성공")
+                .message("Login success")
                 .data(loginResponseVo)
                 .build();
 
@@ -96,7 +96,7 @@ public class UserController {
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("로그아웃 성공")
+                .message("Logout success")
                 .build();
 
         return res;
