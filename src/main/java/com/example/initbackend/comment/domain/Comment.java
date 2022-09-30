@@ -20,7 +20,7 @@ public class Comment {
     @Column(nullable = false)
     private Long answerId;
 
-    @Column(nullable = false)
+    @Column
     private Long userId;
 
     @Column(nullable = false)
