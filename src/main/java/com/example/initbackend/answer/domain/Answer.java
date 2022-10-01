@@ -23,7 +23,7 @@ public class Answer {
     @Column
     private Long userId;
 
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     @Column
