@@ -274,13 +274,16 @@ public class QuestionService {
 
     public SearchQuestionsResponseVo searchQuestions(String query, String type, Pageable pageable, String tag) {
         List<SearchQuestionVo> questionList = new ArrayList<>();
+        List<String> tags = new ArrayList<>();
+        tags.add("java");
+//        tagList.add("2");
         Page<Question> questions = null;
         if (type.equals("total")) {
-            questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("init", query, pageable);
+            questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags("init", query, tags, pageable);
         } else if (type.equals("doing")) {
-            questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("doing", query, pageable);
+            questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags("doing", query,tags, pageable);
         } else if (type.equals("completed")) {
-            questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("completed", query, pageable);
+            questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags("completed", query,tags, pageable);
         }
         questions.stream().forEach(
                 question -> {
