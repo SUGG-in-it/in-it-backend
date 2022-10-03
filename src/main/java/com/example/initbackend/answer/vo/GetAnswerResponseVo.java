@@ -16,6 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetAnswerResponseVo {
+    private Long answerId;
+
     private String nickname;
 
     private String content;
