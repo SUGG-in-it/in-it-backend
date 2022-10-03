@@ -26,9 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -274,16 +272,15 @@ public class QuestionService {
 
     public SearchQuestionsResponseVo searchQuestions(String query, String type, Pageable pageable, String tag) {
         List<SearchQuestionVo> questionList = new ArrayList<>();
-        List<String> tags = new ArrayList<>();
-        tags.add("java");
-//        tagList.add("2");
+        List<String> tags = Arrays.asList(tag.split(","));
+
         Page<Question> questions = null;
         if (type.equals("total")) {
-            questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags("init", query, tags, pageable);
+            questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCase(tags, tags.size(), "init", query, pageable);
         } else if (type.equals("doing")) {
-            questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags("doing", query,tags, pageable);
+            questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(),"doing", query, pageable);
         } else if (type.equals("completed")) {
-            questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags("completed", query,tags, pageable);
+            questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(),"completed", query, pageable);
         }
         questions.stream().forEach(
                 question -> {
