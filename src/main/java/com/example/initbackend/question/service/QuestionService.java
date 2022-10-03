@@ -15,6 +15,8 @@ import com.example.initbackend.question.repository.QuestionRepository;
 import com.example.initbackend.question.vo.*;
 import com.example.initbackend.questionTag.domain.QuestionTag;
 import com.example.initbackend.questionTag.repository.QuestionTagRepository;
+import com.example.initbackend.tag.domain.Tag;
+import com.example.initbackend.tag.repository.TagRepository;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,7 @@ public class QuestionService {
     private final JwtTokenProvider jwtTokenProvider;
     private final QuestionRepository questionRepository;
     private final QuestionTagRepository questionTagRepository;
+    private final TagRepository tagRepository;
     private final AnswerRepository answerRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
@@ -63,18 +66,26 @@ public class QuestionService {
         }
 
         String tag = updateQuestionRequestDto.getTagList();
-        tag = tag.replace("{", "");
-        tag = tag.replace("}", "");
+        tag = tag.replace("[", "");
+        tag = tag.replace("]", "");
         tag = tag.replace(" ", "");
+        tag = tag.replaceAll("\"", "");
         System.out.println(tag);
 
         String[] tagList = tag.split(",");
 
+        questionTagRepository.deleteAllByQuestionId(questionId);
+
         for (int i = 0; i < tagList.length; i++) {
             System.out.println(tagList[i]);
+            Optional<Tag> optionalTag = tagRepository.findByTag(tagList[i]);
+            if (!optionalTag.isPresent()) {
+                throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+            }
+
             QuestionTag questionTag = new QuestionTag();
             questionTag.setQuestionId(optionalQuestion.get().getId());
-            questionTag.setTagId(Long.valueOf(tagList[i]));
+            questionTag.setTagId(optionalTag.get().getId());
             questionTagRepository.save(questionTag);
         }
 
