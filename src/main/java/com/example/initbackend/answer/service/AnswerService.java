@@ -6,6 +6,7 @@ import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.repository.AnswerRepository;
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
 import com.example.initbackend.answer.vo.GetAnswersTotalPageNumResponseVo;
+import com.example.initbackend.answer.vo.GetManagedAnswersResponseVo;
 import com.example.initbackend.answer.vo.IssueAnswerIdResponseVo;
 import com.example.initbackend.comment.repository.CommentRepository;
 import com.example.initbackend.global.handler.CustomException;
@@ -13,6 +14,8 @@ import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.JwtUtil;
 import com.example.initbackend.global.response.ErrorCode;
 import com.example.initbackend.question.repository.QuestionRepository;
+import com.example.initbackend.user.domain.User;
+import com.example.initbackend.user.repository.UserRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +29,8 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -36,6 +41,8 @@ public class AnswerService {
 
     private final JwtUtil jwtUtil;
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final UserRepository userRepository;
 
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
@@ -54,9 +61,33 @@ public class AnswerService {
     }
 
 
-    public GetAnswerResponseVo getAnswer(Pageable pageable, Long questionId){
+    public List<GetAnswerResponseVo> getAnswer(Pageable pageable, Long questionId){
         Page<Answer> optionalAnswer = answerRepository.findAllByQuestionIdOrderByCreateDateDesc(questionId, pageable);
-        GetAnswerResponseVo answers = new GetAnswerResponseVo(optionalAnswer.getContent());
+
+        List<GetAnswerResponseVo> answers = new ArrayList<>();
+
+
+        if(!optionalAnswer.hasContent()){
+            return null;
+        }
+
+        for (Answer answer : optionalAnswer){
+
+            Optional<User> optionalUser = userRepository.findById(answer.getUserId());
+
+            if(!optionalUser.isPresent()){
+                throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+            }
+            GetAnswerResponseVo vo = new GetAnswerResponseVo(
+                    optionalUser.get().getNickname(),
+                    answer.getContent(),
+                    answer.isSelected(),
+                    answer.getCreateDate(),
+                    answer.getUpdateDate()
+            );
+            answers.add(vo);
+
+        }
         return answers;
     }
 
@@ -125,13 +156,13 @@ public class AnswerService {
         return getAnswersTotalPageNumResponse;
     }
 
-    public GetAnswerResponseVo getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable){
+    public GetManagedAnswersResponseVo getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable){
         String token = jwtTokenProvider.resolveAccessToken(servletRequest);
         Long userId = JwtUtil.getPayloadByToken(token);
 
         Page<Answer> optionalAnswer = answerRepository.findAllByUserIdOrderByCreateDateDesc(userId, pageable);
-        GetAnswerResponseVo answerList = new GetAnswerResponseVo(optionalAnswer.getContent());
-        return answerList;
+        GetManagedAnswersResponseVo answers = new GetManagedAnswersResponseVo(optionalAnswer.getContent());
+        return answers;
     }
 
 

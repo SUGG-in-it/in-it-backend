@@ -6,6 +6,7 @@ import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.service.AnswerService;
 import com.example.initbackend.answer.vo.GetAnswerResponseVo;
 import com.example.initbackend.answer.vo.GetAnswersTotalPageNumResponseVo;
+import com.example.initbackend.answer.vo.GetManagedAnswersResponseVo;
 import com.example.initbackend.answer.vo.IssueAnswerIdResponseVo;
 import com.example.initbackend.comment.vo.GetCommentsResponseVo;
 import com.example.initbackend.global.response.StatusEnum;
@@ -17,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 
 @RestController
@@ -41,7 +44,7 @@ public class AnswerController {
 
     @GetMapping
     public SuccessResponse getAnswer(Pageable pageable, @RequestParam Long questionId){
-        GetAnswerResponseVo getAnswerResponseVo = answerService.getAnswer(pageable, questionId);
+        List<GetAnswerResponseVo> getAnswerResponseVo = answerService.getAnswer(pageable, questionId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
@@ -100,7 +103,7 @@ public class AnswerController {
 
     @GetMapping({"/manage"})
     public SuccessResponse getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable) {
-        GetAnswerResponseVo getAnswerResponse = answerService.getManagedAnswers(servletRequest, pageable);
+        GetManagedAnswersResponseVo getAnswerResponse = answerService.getManagedAnswers(servletRequest, pageable);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
