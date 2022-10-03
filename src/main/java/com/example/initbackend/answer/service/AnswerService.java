@@ -79,6 +79,7 @@ public class AnswerService {
                 throw new CustomException(ErrorCode.DATA_NOT_FOUND);
             }
             GetAnswerResponseVo vo = new GetAnswerResponseVo(
+                    answer.getId(),
                     optionalUser.get().getNickname(),
                     answer.getContent(),
                     answer.isSelected(),
