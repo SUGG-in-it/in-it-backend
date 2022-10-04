@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Table(uniqueConstraints={
         @UniqueConstraint(columnNames = {"Id", "tag"})
 })
@@ -20,8 +20,6 @@ public class Tag {
     @Column(nullable = false)
     private String tag;
 
-//    @OneToMany(mappedBy = "tag")
-//    private List<QuestionTag> questionTags = new ArrayList<>();
 }
 
 
