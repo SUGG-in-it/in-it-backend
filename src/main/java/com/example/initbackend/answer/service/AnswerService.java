@@ -13,6 +13,7 @@ import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.JwtUtil;
 import com.example.initbackend.global.response.ErrorCode;
+import com.example.initbackend.question.domain.Question;
 import com.example.initbackend.question.repository.QuestionRepository;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
@@ -137,17 +138,37 @@ public class AnswerService {
     }
 
 
-    public void selectAnswer(Long answerId){
+    public void selectAnswer(HttpServletRequest request, Long answerId){
+
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId  = jwtUtil.getPayloadByToken(token);
 
         Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
-        optionalAnswer.ifPresentOrElse(
-                selectAnswer ->{
-                    selectAnswer.setSelected(true);
-                    answerRepository.save(selectAnswer);
-                },
-                () -> {
-                    throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-                });
+
+        if (!optionalAnswer.isPresent()){
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
+
+        if (!userId.equals(optionalAnswer.get().getUserId())){
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        Optional<Question> optionalQuestion = questionRepository.findById(optionalAnswer.get().getQuestionId());
+
+        if (!optionalQuestion.isPresent()){
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
+
+        optionalAnswer.ifPresent( selectAnswer->{
+            selectAnswer.setSelected(true);
+            answerRepository.save(selectAnswer);
+        });
+
+        optionalQuestion.ifPresent(selectQuestion->{
+            selectQuestion.setType("completed");
+            questionRepository.save(selectQuestion);
+        });
+
 
     }
 
