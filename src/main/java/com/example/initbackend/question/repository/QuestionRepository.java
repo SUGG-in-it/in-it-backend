@@ -26,6 +26,8 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     Page<Question> findAll(Pageable pageable);
 
+    Page<Question> findAllByUserIdOrderByCreateDateDesc(Long userId, Pageable pageable);
+
 
     @Query(nativeQuery = true, value = "SELECT q.id, q.title,q.content,q.update_date,q.type,q.create_date,q.point,q.user_id, q.views,q.selected_user_id, q.tag_list " +
             "FROM Question q " +
