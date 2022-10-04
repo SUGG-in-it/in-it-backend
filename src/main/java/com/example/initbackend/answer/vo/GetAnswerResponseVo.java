@@ -18,6 +18,8 @@ import java.util.List;
 public class GetAnswerResponseVo {
     private Long answerId;
 
+    private Long userId;
+
     private String nickname;
 
     private String content;

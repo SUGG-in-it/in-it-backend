@@ -80,6 +80,7 @@ public class AnswerService {
             }
             GetAnswerResponseVo vo = new GetAnswerResponseVo(
                     answer.getId(),
+                    answer.getUserId(),
                     optionalUser.get().getNickname(),
                     answer.getContent(),
                     answer.isSelected(),
