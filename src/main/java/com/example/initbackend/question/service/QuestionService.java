@@ -242,6 +242,19 @@ public class QuestionService {
 
     }
 
+    public GetUserQuestionsTotalPageNumResponseVo GetUserQuestionsTotalPageNum(HttpServletRequest request, Pageable pageable) {
+
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId = JwtUtil.getPayloadByToken(token);
+
+        Page<Question> questions = questionRepository.findAllByUserIdOrderByCreateDateDesc(userId, pageable);
+
+        GetUserQuestionsTotalPageNumResponseVo getUserQuestionsTotalPageNumResponseVo = new GetUserQuestionsTotalPageNumResponseVo(questions.getTotalPages());
+
+        return getUserQuestionsTotalPageNumResponseVo;
+
+    }
+
     public GetQuestionsResponseVo getManagedQuestions(HttpServletRequest servletRequest, Pageable pageable) {
         String token = jwtTokenProvider.resolveAccessToken(servletRequest);
         Long userId = JwtUtil.getPayloadByToken(token);

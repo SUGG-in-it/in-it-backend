@@ -111,6 +111,19 @@ public class QuestionController {
         return res;
     }
 
+    @GetMapping({ "/page" })
+    public SuccessResponse getUserQuestionsTotalPageNum(HttpServletRequest request, Pageable pageable) {
+        GetUserQuestionsTotalPageNumResponseVo getUserQuestionsTotalPageNum = questionService.GetUserQuestionsTotalPageNum(request, pageable);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("get questions total page number")
+                .data(getUserQuestionsTotalPageNum)
+                .build();
+
+        return res;
+    }
+
     @GetMapping({"/manage"})
     public SuccessResponse getManagedQuestions(HttpServletRequest servletRequest, Pageable pageable) {
         GetQuestionsResponseVo getQuestionsResponse = questionService.getManagedQuestions(servletRequest, pageable);
