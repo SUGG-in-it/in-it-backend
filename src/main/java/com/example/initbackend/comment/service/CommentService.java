@@ -2,6 +2,7 @@ package com.example.initbackend.comment.service;
 
 import com.example.initbackend.answer.domain.Answer;
 import com.example.initbackend.answer.repository.AnswerRepository;
+import com.example.initbackend.answer.vo.GetUserAnswersTotalPageNumResponseVo;
 import com.example.initbackend.comment.domain.Comment;
 import com.example.initbackend.comment.dto.GetCommentsRequestDto;
 import com.example.initbackend.comment.dto.RegisterCommentRequestDto;
@@ -9,6 +10,7 @@ import com.example.initbackend.comment.repository.CommentRepository;
 import com.example.initbackend.comment.vo.CommentVo;
 import com.example.initbackend.comment.vo.GetCommentsResponseVo;
 import com.example.initbackend.comment.vo.GetCommentsTotalPageNumResponseVo;
+import com.example.initbackend.comment.vo.GetUserCommentsTotalPageNumResponseVo;
 import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.JwtUtil;
@@ -102,6 +104,17 @@ public class CommentService {
         GetCommentsTotalPageNumResponseVo getCommentsTotalPageNumResponse = new GetCommentsTotalPageNumResponseVo(optionalComments.getTotalPages());
 
         return getCommentsTotalPageNumResponse;
+    }
+
+    public GetUserCommentsTotalPageNumResponseVo getUserCommentsTotalPageNum(HttpServletRequest request, Pageable pageable){
+
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId = JwtUtil.getPayloadByToken(token);
+
+        Page<Comment> comments = commentRepository.findAllByUserIdOrderByCreateDateDesc(userId, pageable);
+
+        GetUserCommentsTotalPageNumResponseVo getUserCommentsTotalPageNumResponse = new GetUserCommentsTotalPageNumResponseVo(comments.getTotalPages());
+        return getUserCommentsTotalPageNumResponse;
     }
 
     public GetCommentsResponseVo getManagedComments(HttpServletRequest servletRequest, Pageable pageable) {

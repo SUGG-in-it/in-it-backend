@@ -4,6 +4,7 @@ import com.example.initbackend.comment.dto.RegisterCommentRequestDto;
 import com.example.initbackend.comment.service.CommentService;
 import com.example.initbackend.comment.vo.GetCommentsResponseVo;
 import com.example.initbackend.comment.vo.GetCommentsTotalPageNumResponseVo;
+import com.example.initbackend.comment.vo.GetUserCommentsTotalPageNumResponseVo;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import lombok.Getter;
@@ -69,6 +70,19 @@ public class CommentController {
                 .status(StatusEnum.OK)
                 .message("get comments total page number")
                 .data(getCommentsTotalPageNumResponse)
+                .build();
+
+        return res;
+    }
+
+    @GetMapping({"/user-page"})
+    public SuccessResponse getUserCommentsTotalPageNum(HttpServletRequest request, Pageable pageable) {
+        GetUserCommentsTotalPageNumResponseVo getUserCommentsTotalPageNumResponse = commentService.getUserCommentsTotalPageNum(request, pageable);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("get user comments total page number")
+                .data(getUserCommentsTotalPageNumResponse)
                 .build();
 
         return res;
