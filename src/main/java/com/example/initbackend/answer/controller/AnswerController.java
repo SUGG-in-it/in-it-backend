@@ -76,9 +76,9 @@ public class AnswerController {
     }
 
     @PostMapping("/select/{answerId}")
-    public SuccessResponse selectAnswer(@PathVariable("answerId") Long answerId) {
+    public SuccessResponse selectAnswer(HttpServletRequest request, @PathVariable("answerId") Long answerId) {
 
-        answerService.selectAnswer(answerId);
+        answerService.selectAnswer(request, answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
