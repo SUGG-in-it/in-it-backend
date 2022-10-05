@@ -4,10 +4,7 @@ import com.example.initbackend.answer.domain.Answer;
 import com.example.initbackend.answer.dto.IssueAnswerIdDto;
 import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.repository.AnswerRepository;
-import com.example.initbackend.answer.vo.GetAnswerResponseVo;
-import com.example.initbackend.answer.vo.GetAnswersTotalPageNumResponseVo;
-import com.example.initbackend.answer.vo.GetManagedAnswersResponseVo;
-import com.example.initbackend.answer.vo.IssueAnswerIdResponseVo;
+import com.example.initbackend.answer.vo.*;
 import com.example.initbackend.comment.repository.CommentRepository;
 import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
@@ -177,6 +174,17 @@ public class AnswerService {
         Page<Answer> optionalAnswer = answerRepository.findAllByQuestionIdOrderByCreateDateDesc(questionId, pageable);
         GetAnswersTotalPageNumResponseVo getAnswersTotalPageNumResponse = new GetAnswersTotalPageNumResponseVo(optionalAnswer.getTotalPages());
         return getAnswersTotalPageNumResponse;
+    }
+
+    public GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNum(HttpServletRequest request, Pageable pageable){
+
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId = JwtUtil.getPayloadByToken(token);
+
+        Page<Answer> answers = answerRepository.findAllByUserIdOrderByCreateDateDesc(userId, pageable);
+
+        GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNumResponse = new GetUserAnswersTotalPageNumResponseVo(answers.getTotalPages());
+        return getUserAnswersTotalPageNumResponse;
     }
 
     public GetManagedAnswersResponseVo getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable){

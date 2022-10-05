@@ -4,10 +4,7 @@ package com.example.initbackend.answer.controller;
 import com.example.initbackend.answer.dto.IssueAnswerIdDto;
 import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.service.AnswerService;
-import com.example.initbackend.answer.vo.GetAnswerResponseVo;
-import com.example.initbackend.answer.vo.GetAnswersTotalPageNumResponseVo;
-import com.example.initbackend.answer.vo.GetManagedAnswersResponseVo;
-import com.example.initbackend.answer.vo.IssueAnswerIdResponseVo;
+import com.example.initbackend.answer.vo.*;
 import com.example.initbackend.comment.vo.GetCommentsResponseVo;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
@@ -96,6 +93,19 @@ public class AnswerController {
                 .status(StatusEnum.OK)
                 .message("get answers total page number")
                 .data(getAnswersTotalPageNumResponse)
+                .build();
+
+        return res;
+    }
+
+    @GetMapping({"/user-page"})
+    public SuccessResponse getUserAnswersTotalPageNum(HttpServletRequest request, Pageable pageable) {
+        GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNumResponse = answerService.getUserAnswersTotalPageNum(request, pageable);
+
+        SuccessResponse res = SuccessResponse.builder()
+                .status(StatusEnum.OK)
+                .message("get user answers total page number")
+                .data(getUserAnswersTotalPageNumResponse)
                 .build();
 
         return res;
