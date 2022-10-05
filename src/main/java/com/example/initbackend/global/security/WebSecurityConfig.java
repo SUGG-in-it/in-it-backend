@@ -33,9 +33,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(jwtAccessDeniedHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/api/answers/**").authenticated()
-                .antMatchers(HttpMethod.DELETE,"/api/answers/**").authenticated()
-                .antMatchers(HttpMethod.PUT,"/api/answers/**").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/questions/manage", "/api/answers/manage", "/api/comments/mamage", "/api/users/profiles/:nickname").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/token/refresh-token","/api/questions/**", "/api/answers/**", "/api/comments/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/questions/**", "/api/answers/**", "/api/comments/**").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/questions/**", "/api/answers/**", "/api/comments/**", "/api/users/profiles").authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         // JwtAuthenticationFilter를 UsernamePasswordAuthentictaionFilter 전에 적용시킨다.
