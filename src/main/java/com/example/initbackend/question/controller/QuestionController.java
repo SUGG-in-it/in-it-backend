@@ -111,7 +111,7 @@ public class QuestionController {
         return res;
     }
 
-    @GetMapping({ "/page" })
+    @GetMapping({ "/user-page" })
     public SuccessResponse getUserQuestionsTotalPageNum(HttpServletRequest request, Pageable pageable) {
         GetUserQuestionsTotalPageNumResponseVo getUserQuestionsTotalPageNum = questionService.GetUserQuestionsTotalPageNum(request, pageable);
 
