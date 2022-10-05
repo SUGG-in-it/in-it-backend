@@ -76,6 +76,10 @@ public class QuestionService {
 
         questionTagRepository.deleteAllByQuestionId(questionId);
 
+        if(tagList.length > 5) {
+            throw new CustomException(ErrorCode.TAGLIST_TOO_LONG);
+        }
+
         for (int i = 0; i < tagList.length; i++) {
             System.out.println(tagList[i]);
             Optional<Tag> optionalTag = tagRepository.findByTag(tagList[i]);
