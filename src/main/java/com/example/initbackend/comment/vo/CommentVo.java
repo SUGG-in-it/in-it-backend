@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentVo {
+    private Long userId;
     private Long answerId;
     private Long commentId;
     private String nickname;

@@ -65,6 +65,7 @@ public class CommentService {
                 comment -> {
                     Optional<User> optionalUser = userRepository.findById(comment.getUserId());
                     CommentVo commentVo = new CommentVo(
+                            comment.getUserId(),
                             comment.getAnswerId(),
                             comment.getId(),
                             optionalUser.get().getNickname(),
@@ -115,6 +116,7 @@ public class CommentService {
                 comment -> {
                     Optional<User> optionalUser = userRepository.findById(comment.getUserId());
                     CommentVo commentVo = new CommentVo(
+                            comment.getUserId(),
                             comment.getAnswerId(),
                             comment.getId(),
                             optionalUser.get().getNickname(),
