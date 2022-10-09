@@ -112,7 +112,7 @@ public class CommentService {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = JwtUtil.getPayloadByToken(token);
 
-        Page<Comment> comments = commentRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable);
+        Page<Comment> comments = commentRepository.findAllByUserIdOrderByCreateDateDesc(userId, pageable);
 
         GetUserCommentsTotalPageNumResponseVo getUserCommentsTotalPageNumResponse = new GetUserCommentsTotalPageNumResponseVo(comments.getTotalPages());
         return getUserCommentsTotalPageNumResponse;

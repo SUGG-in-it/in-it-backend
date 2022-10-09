@@ -6,8 +6,7 @@ public enum ErrorCode {
     // Member
     NOT_FOUND_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER-0001", "Member not found"),
     EXISTING_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER-0002", "Member that already exists"),
-    TAGLIST_TOO_LONG(HttpStatus.BAD_REQUEST, "TAG-0001", "TagList too long"),
-    TAG_TYPE_ERROR(HttpStatus.BAD_REQUEST, "TAG-0002", "Tag type error"),
+    TAGLIST_TOO_LONG(HttpStatus.BAD_REQUEST, "QUESTION-0001", "TagList too long"),
 
     // Post
     NOT_FOUND_POST(HttpStatus.BAD_REQUEST, "POST-0001", "Post not found"),

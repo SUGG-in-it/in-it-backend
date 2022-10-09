@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findAllByAnswerId(Long answerId, Pageable pageable);
     Page<Comment> findAllByUserId(Long userId, Pageable pageable);
-    Page<Comment> findAllByUserIdOrderByCreatedAtDesc(Long UserId, Pageable pageable);
+    Page<Comment> findAllByUserIdOrderByCreateDateDesc(Long UserId, Pageable pageable);
     void deleteAllByAnswerId(Long answerId);
 
 }
