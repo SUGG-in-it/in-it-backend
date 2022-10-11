@@ -160,7 +160,7 @@ public class QuestionService {
                             question.getContent(),
                             user.get().getNickname(),
                             user.get().getLevel(),
-                            user.get().getPoint(),
+                            question.getPoint(),
                             question.getTagList(),
                             question.getType(),
                             question.getCreateDate(),
