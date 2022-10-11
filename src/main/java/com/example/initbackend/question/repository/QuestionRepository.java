@@ -37,8 +37,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "    ON t.id = r.tag_id " +
             "WHERE t.tag IN (?1) " +
             "GROUP BY q.id " +
-            "HAVING COUNT(DISTINCT t.tag) = ?2 ")
-    Page<Question> findByTypeNotAndTitleContainingIgnoreCase(List<String> tags, Integer num, String type, String title, Pageable pageable);
+            "HAVING COUNT(DISTINCT t.tag) = ?2 "+
+            "LIMIT ")
+    Page<Question> findByTypeNotAndTitleContainingIgnoreCaseByTags(List<String> tags, Integer num, String type, String title, Pageable pageable);
+    Page<Question> findByTypeNotAndTitleContainingIgnoreCase( String type, String title, Pageable pageable);
 
 
     @Query(nativeQuery = true, value = "SELECT q.id, q.title,q.content,q.update_date,q.type,q.create_date,q.point,q.user_id, q.views,q.selected_user_id, q.tag_list " +
@@ -51,6 +53,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "GROUP BY q.id " +
             "HAVING COUNT(DISTINCT t.tag) = ?2 ")
     Page<Question> findByTypeAndTitleContainingIgnoreCaseAndByTags(List<String> tags, Integer num, String type, String title, Pageable pageable);
+    Page<Question> findByTypeAndTitleContainingIgnoreCase( String type, String title, Pageable pageable);
 
 
     Question findFirstByOrderByPointDesc();

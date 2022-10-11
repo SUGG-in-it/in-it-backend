@@ -76,7 +76,7 @@ public class QuestionService {
 
         questionTagRepository.deleteAllByQuestionId(questionId);
 
-        if(tagList.length > 5) {
+        if (tagList.length > 5) {
             throw new CustomException(ErrorCode.TAGLIST_TOO_LONG);
         }
 
@@ -303,13 +303,24 @@ public class QuestionService {
         List<String> tags = Arrays.asList(tag.split(","));
 
         Page<Question> questions = null;
-        if (type.equals("total")) {
-            questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCase(tags, tags.size(), "init", query, pageable);
-        } else if (type.equals("doing")) {
-            questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(),"doing", query, pageable);
-        } else if (type.equals("completed")) {
-            questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(),"completed", query, pageable);
+        if (tags.get(0).length() != 0) {
+            if (type.equals("total")) {
+                questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCaseByTags(tags, tags.size(), "init", query, pageable);
+            } else if (type.equals("doing")) {
+                questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "doing", query, pageable);
+            } else if (type.equals("completed")) {
+                questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "completed", query, pageable);
+            }
+        } else {
+            if (type.equals("total")) {
+                questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCase("init", query, pageable);
+            } else if (type.equals("doing")) {
+                questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("doing", query, pageable);
+            } else if (type.equals("completed")) {
+                questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("completed", query, pageable);
+            }
         }
+
         questions.stream().forEach(
                 question -> {
                     SearchQuestionVo searchQuestionVo = new SearchQuestionVo(
@@ -324,6 +335,47 @@ public class QuestionService {
         );
 
         return new SearchQuestionsResponseVo(questionList);
+
+    }
+
+
+    public GetQuestionsTotalPageNumResponseVo GetSearchQuestionsTotalPageNum(String query, String type, Pageable pageable, String tag) {
+        List<SearchQuestionVo> questionList = new ArrayList<>();
+        List<String> tags = Arrays.asList(tag.split(","));
+
+        System.out.println(tags);
+        System.out.println(tags);
+        System.out.println(tags);
+        System.out.println(tags);
+        System.out.println(tags.size());
+        System.out.println(tags.size());
+        System.out.println(tags.size());
+        System.out.println(tags.size());
+        Page<Question> questions = null;
+        if (tags.get(0).length() != 0) {
+            System.out.println("1111111");
+            if (type.equals("total")) {
+                questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCaseByTags(tags, tags.size(), "init", query, pageable);
+            } else if (type.equals("doing")) {
+                questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "doing", query, pageable);
+            } else if (type.equals("completed")) {
+                questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "completed", query, pageable);
+            }
+        } else {
+            System.out.println("2222222222");
+
+            if (type.equals("total")) {
+                questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCase("init", query, pageable);
+            } else if (type.equals("doing")) {
+                questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("doing", query, pageable);
+            } else if (type.equals("completed")) {
+                questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("completed", query, pageable);
+            }
+        }
+
+        GetQuestionsTotalPageNumResponseVo getQuestionsTotalPageNumResponse = new GetQuestionsTotalPageNumResponseVo(questions.getTotalPages());
+
+        return getQuestionsTotalPageNumResponse;
 
     }
 
