@@ -266,7 +266,7 @@ public class QuestionService {
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
         Page<Question> questions = null;
 
-        questions = questionRepository.findByUserIdOrderByCreateDateDesc(userId, pageable);
+        questions = questionRepository.findByUserIdAndTypeNotOrderByCreateDateDesc(userId, "init", pageable);
 
         questions.stream().forEach(
                 it -> {
