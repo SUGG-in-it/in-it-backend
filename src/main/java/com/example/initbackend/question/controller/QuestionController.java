@@ -130,7 +130,7 @@ public class QuestionController {
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get my answers")
+                .message("get my questions")
                 .data(getQuestionsResponse)
                 .build();
 
