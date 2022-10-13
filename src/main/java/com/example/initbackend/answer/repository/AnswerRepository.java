@@ -11,17 +11,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AnswerRepository  extends JpaRepository<Answer,Long> {
+public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
     Optional<Answer> findByUserIdAndQuestionId(Long userId, Long questionId);
+
     Optional<Answer> findById(Long answerId);
+
     List<Answer> findAllByQuestionId(Long questionId);
-    
+
     @Query("SELECT questionId, COUNT(questionId) as cnt FROM Answer GROUP BY questionId order by cnt desc")
     List<Object[]> countTotalAnswersByQuestionIdByOrderByCountDesc();
 
     Page<Answer> findAllByQuestionIdOrderByCreateDateDesc(Long questionId, Pageable pageable);
-    Page<Answer> findAllByUserIdOrderByCreateDateDesc(Long UserId, Pageable pageable);
+
+    Page<Answer> findAllByUserIdOrderByCreateDateDesc(Long userId, Pageable pageable);
+
 
     void deleteAllByQuestionId(Long answerId);
 

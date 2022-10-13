@@ -21,10 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -46,9 +42,9 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final CommentRepository commentRepository;
 
-    public IssueAnswerIdResponseVo issueAnswerId(HttpServletRequest request, IssueAnswerIdDto issueAnswerIdDto){
+    public IssueAnswerIdResponseVo issueAnswerId(HttpServletRequest request, IssueAnswerIdDto issueAnswerIdDto) {
         String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId  = jwtUtil.getPayloadByToken(token);
+        Long userId = jwtUtil.getPayloadByToken(token);
         Long questionId = issueAnswerIdDto.getQuestionId();
         Answer newAnswer = new Answer();
         newAnswer.setUserId(userId);
@@ -59,21 +55,21 @@ public class AnswerService {
     }
 
 
-    public List<GetAnswerResponseVo> getAnswer(Pageable pageable, Long questionId){
+    public List<GetAnswerResponseVo> getAnswer(Pageable pageable, Long questionId) {
         Page<Answer> optionalAnswer = answerRepository.findAllByQuestionIdOrderByCreateDateDesc(questionId, pageable);
 
         List<GetAnswerResponseVo> answers = new ArrayList<>();
 
 
-        if(!optionalAnswer.hasContent()){
+        if (!optionalAnswer.hasContent()) {
             return null;
         }
 
-        for (Answer answer : optionalAnswer){
+        for (Answer answer : optionalAnswer) {
 
             Optional<User> optionalUser = userRepository.findById(answer.getUserId());
 
-            if(!optionalUser.isPresent()){
+            if (!optionalUser.isPresent()) {
                 throw new CustomException(ErrorCode.DATA_NOT_FOUND);
             }
             GetAnswerResponseVo vo = new GetAnswerResponseVo(
@@ -91,10 +87,10 @@ public class AnswerService {
         return answers;
     }
 
-    public void updateAnswer(HttpServletRequest request, UpdateAnswerRequestDto updateAnswerRequestDto, Long answerId){
+    public void updateAnswer(HttpServletRequest request, UpdateAnswerRequestDto updateAnswerRequestDto, Long answerId) {
 
         String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId  = jwtUtil.getPayloadByToken(token);
+        Long userId = jwtUtil.getPayloadByToken(token);
 
         Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
 
@@ -106,18 +102,18 @@ public class AnswerService {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        optionalAnswer.ifPresent(selectAnswer ->{
-                    selectAnswer.setContent(updateAnswerRequestDto.getContent());
-                    answerRepository.save(selectAnswer);
+        optionalAnswer.ifPresent(selectAnswer -> {
+            selectAnswer.setContent(updateAnswerRequestDto.getContent());
+            answerRepository.save(selectAnswer);
         });
 
     }
 
     @Transactional
-    public void deleteAnswer(HttpServletRequest request, Long answerId){
+    public void deleteAnswer(HttpServletRequest request, Long answerId) {
 
         String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId  = jwtUtil.getPayloadByToken(token);
+        Long userId = jwtUtil.getPayloadByToken(token);
 
         Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
 
@@ -129,40 +125,40 @@ public class AnswerService {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        optionalAnswer.ifPresent(selectAnswer ->{
-                answerRepository.deleteById(answerId);
-                commentRepository.deleteAllByAnswerId(answerId);
+        optionalAnswer.ifPresent(selectAnswer -> {
+            answerRepository.deleteById(answerId);
+            commentRepository.deleteAllByAnswerId(answerId);
         });
     }
 
 
-    public void selectAnswer(HttpServletRequest request, Long answerId){
+    public void selectAnswer(HttpServletRequest request, Long answerId) {
 
         String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId  = jwtUtil.getPayloadByToken(token);
+        Long userId = jwtUtil.getPayloadByToken(token);
 
         Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
 
-        if (!optionalAnswer.isPresent()){
+        if (!optionalAnswer.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
         }
 
-        if (!userId.equals(optionalAnswer.get().getUserId())){
+        if (!userId.equals(optionalAnswer.get().getUserId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
         Optional<Question> optionalQuestion = questionRepository.findById(optionalAnswer.get().getQuestionId());
 
-        if (!optionalQuestion.isPresent()){
+        if (!optionalQuestion.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
         }
 
-        optionalAnswer.ifPresent( selectAnswer->{
+        optionalAnswer.ifPresent(selectAnswer -> {
             selectAnswer.setSelected(true);
             answerRepository.save(selectAnswer);
         });
 
-        optionalQuestion.ifPresent(selectQuestion->{
+        optionalQuestion.ifPresent(selectQuestion -> {
             selectQuestion.setType("completed");
             questionRepository.save(selectQuestion);
         });
@@ -170,13 +166,13 @@ public class AnswerService {
 
     }
 
-    public GetAnswersTotalPageNumResponseVo getAnswersTotalPageNum(Pageable pageable, Long questionId){
+    public GetAnswersTotalPageNumResponseVo getAnswersTotalPageNum(Pageable pageable, Long questionId) {
         Page<Answer> optionalAnswer = answerRepository.findAllByQuestionIdOrderByCreateDateDesc(questionId, pageable);
         GetAnswersTotalPageNumResponseVo getAnswersTotalPageNumResponse = new GetAnswersTotalPageNumResponseVo(optionalAnswer.getTotalPages());
         return getAnswersTotalPageNumResponse;
     }
 
-    public GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNum(HttpServletRequest request, Pageable pageable){
+    public GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNum(HttpServletRequest request, Pageable pageable) {
 
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = JwtUtil.getPayloadByToken(token);
@@ -187,17 +183,40 @@ public class AnswerService {
         return getUserAnswersTotalPageNumResponse;
     }
 
-    public GetManagedAnswersResponseVo getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable){
+    public GetManagedAnswersResponseVo getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable) {
         String token = jwtTokenProvider.resolveAccessToken(servletRequest);
         Long userId = JwtUtil.getPayloadByToken(token);
 
-        Page<Answer> optionalAnswer = answerRepository.findAllByUserIdOrderByCreateDateDesc(userId, pageable);
-        GetManagedAnswersResponseVo answers = new GetManagedAnswersResponseVo(optionalAnswer.getContent());
-        return answers;
+        List<ManagedAnswerVo> managedAnswerList = new ArrayList<>();
+        Page<Answer> optionalAnswers = answerRepository.findAllByUserIdOrderByCreateDateDesc(userId, pageable);
+
+        optionalAnswers.stream().forEach(
+                answer -> {
+                    Optional<Question> optionalQuestion = questionRepository.findById(answer.getQuestionId());
+                    if (!optionalQuestion.isPresent()) {
+                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+                    }
+                    Question question = optionalQuestion.get();
+
+                    ManagedAnswerVo managedAnswerVo = new ManagedAnswerVo(
+                            answer.getId(),
+                            answer.getQuestionId(),
+                            question.getTitle(),
+                            answer.getUserId(),
+                            answer.getContent(),
+                            answer.isSelected(),
+                            answer.getCreateDate(),
+                            answer.getUpdateDate()
+                    );
+                    managedAnswerList.add(managedAnswerVo);
+                }
+        );
+
+        return new GetManagedAnswersResponseVo(managedAnswerList);
     }
 
 
-    private boolean isDuplicatedAnswer(Long userId, Long questionId ) {
-        return answerRepository.findByUserIdAndQuestionId(userId,questionId).isPresent();
+    private boolean isDuplicatedAnswer(Long userId, Long questionId) {
+        return answerRepository.findByUserIdAndQuestionId(userId, questionId).isPresent();
     }
 }
