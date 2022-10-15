@@ -177,7 +177,7 @@ public class AnswerService {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = JwtUtil.getPayloadByToken(token);
 
-        Page<Answer> answers = answerRepository.findAllByUserIdOrderByCreateDateDesc(userId, pageable);
+        Page<Answer> answers = answerRepository.findByUserIdAndContentIsNotNullOrderByCreateDateDesc(userId, pageable);
 
         GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNumResponse = new GetUserAnswersTotalPageNumResponseVo(answers.getTotalPages());
         return getUserAnswersTotalPageNumResponse;
@@ -188,7 +188,7 @@ public class AnswerService {
         Long userId = JwtUtil.getPayloadByToken(token);
 
         List<ManagedAnswerVo> managedAnswerList = new ArrayList<>();
-        Page<Answer> optionalAnswers = answerRepository.findAllByUserIdOrderByCreateDateDesc(userId, pageable);
+        Page<Answer> optionalAnswers = answerRepository.findByUserIdAndContentIsNotNullOrderByCreateDateDesc(userId, pageable);
 
         optionalAnswers.stream().forEach(
                 answer -> {
