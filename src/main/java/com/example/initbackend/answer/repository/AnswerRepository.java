@@ -24,7 +24,7 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
     Page<Answer> findAllByQuestionIdOrderByCreateDateDesc(Long questionId, Pageable pageable);
 
-    Page<Answer> findAllByUserIdOrderByCreateDateDesc(Long userId, Pageable pageable);
+    Page<Answer> findByUserIdAndContentIsNotNullOrderByCreateDateDesc(Long userId, Pageable pageable);
 
 
     void deleteAllByQuestionId(Long answerId);
