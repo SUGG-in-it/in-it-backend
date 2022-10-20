@@ -29,7 +29,7 @@ public class TagService {
         String type = getTagListRequestDto.getType();
         List<String> tags = new ArrayList<>();
 
-        if (type.equals("All")){
+        if (type.equals("all")){
             List<Tag> optionalTag = tagRepository.findAllByOrderByTag();
 
             for(Tag t :optionalTag){
