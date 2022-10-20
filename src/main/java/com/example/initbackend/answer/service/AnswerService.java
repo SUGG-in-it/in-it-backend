@@ -56,7 +56,7 @@ public class AnswerService {
 
 
     public List<GetAnswerResponseVo> getAnswer(Pageable pageable, Long questionId) {
-        Page<Answer> optionalAnswer = answerRepository.findAllByQuestionIdOrderByCreateDateDesc(questionId, pageable);
+        Page<Answer> optionalAnswer = answerRepository.findByQuestionIdAndContentIsNotNullOrderByCreateDateDesc(questionId, pageable);
 
         List<GetAnswerResponseVo> answers = new ArrayList<>();
 
@@ -167,7 +167,7 @@ public class AnswerService {
     }
 
     public GetAnswersTotalPageNumResponseVo getAnswersTotalPageNum(Pageable pageable, Long questionId) {
-        Page<Answer> optionalAnswer = answerRepository.findAllByQuestionIdOrderByCreateDateDesc(questionId, pageable);
+        Page<Answer> optionalAnswer = answerRepository.findByQuestionIdAndContentIsNotNullOrderByCreateDateDesc(questionId, pageable);
         GetAnswersTotalPageNumResponseVo getAnswersTotalPageNumResponse = new GetAnswersTotalPageNumResponseVo(optionalAnswer.getTotalPages());
         return getAnswersTotalPageNumResponse;
     }
