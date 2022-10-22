@@ -109,9 +109,7 @@ public class UserService {
     }
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> byEmail = userRepository.findByEmail(email);
-
-        User user = byEmail.orElseThrow(() -> new UsernameNotFoundException("아이디나 비밀번호가 틀립니다."));
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("아이디나 비밀번호가 틀립니다."));
 
         return User.builder()
                 .email(user.getEmail())
