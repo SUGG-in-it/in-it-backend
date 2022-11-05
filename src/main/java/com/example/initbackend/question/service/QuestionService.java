@@ -131,6 +131,7 @@ public class QuestionService {
         );
     }
 
+    // 여기
     public GetQuestionsResponseVo GetQuestions(Pageable pageable, String type) {
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
         Page<Question> questions = null;
@@ -206,9 +207,6 @@ public class QuestionService {
         if (type.equals("popular")) {
             try {
                 List<Object[]> counts = answerRepository.countTotalAnswersByQuestionIdByOrderByCountDesc();
-                System.out.println("========================");
-                System.out.println((Long) counts.get(0)[0]);
-                System.out.println("========================");
                 return new GetBannerQuestionIdResponseVo((Long) counts.get(0)[0]);
             } catch (IndexOutOfBoundsException e) {
                 throw new CustomException(ErrorCode.StatusGone);
@@ -216,14 +214,15 @@ public class QuestionService {
 
         } else if (type.equals("recent")) {
             question = questionRepository.findFirstByOrderByUpdateDateDesc();
+            return new GetBannerQuestionIdResponseVo((Long) question.getId());
         } else if (type.equals("point")) {
             question = questionRepository.findFirstByOrderByPointDesc();
+            return new GetBannerQuestionIdResponseVo((Long) question.getId());
         } else if (type.equals("random")) {
             questions = questionRepository.findAll();
             Long count = questions.stream().count();
             System.out.println(count);
             Long randomId = GenerateRandomNumber.generateRandomNumber(count);
-            // 이게 가끔 에러가 뜨는데 원인 파악을 좀 해봐야할듯..!
             return new GetBannerQuestionIdResponseVo(questionRepository.findById(randomId).get().getId());
         }
         return new GetBannerQuestionIdResponseVo();
@@ -298,11 +297,13 @@ public class QuestionService {
     }
 
 
+
     public SearchQuestionsResponseVo searchQuestions(String query, String type, Pageable pageable, String tag) {
         List<SearchQuestionVo> questionList = new ArrayList<>();
         List<String> tags = Arrays.asList(tag.split(","));
 
         Page<Question> questions = null;
+
         if (tags.get(0).length() != 0) {
             if (type.equals("total")) {
                 questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCaseByTags(tags, tags.size(), "init", query, pageable);
