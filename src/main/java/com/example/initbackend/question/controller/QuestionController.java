@@ -138,7 +138,7 @@ public class QuestionController {
     }
 
     @GetMapping({"/search"})
-    public SuccessResponse searchQuestions(@RequestParam String query, @RequestParam String type, Pageable pageable, @RequestParam(required = false) String tag) {
+    public SuccessResponse searchQuestions(@RequestParam(required = false) String query, @RequestParam String type, Pageable pageable, @RequestParam(required = false) String tag) {
         SearchQuestionsResponseVo searchQuestionsResponse = questionService.searchQuestions(query, type, pageable, tag);
 
         SuccessResponse res = SuccessResponse.builder()
