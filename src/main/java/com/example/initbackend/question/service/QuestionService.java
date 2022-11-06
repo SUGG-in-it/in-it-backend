@@ -23,8 +23,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -134,7 +136,9 @@ public class QuestionService {
     // 여기
     public GetQuestionsResponseVo GetQuestions(Pageable pageable, String type) {
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
-        Page<Question> questions = null;
+        List<Question> newQuestions = new ArrayList<>();
+        Page<Question> questions = new PageImpl<>(newQuestions);
+
         if (type.equals("total")) {
             System.out.println("====total====");
             questions = questionRepository.findByTypeNotOrderByCreateDateDesc("init", pageable);
@@ -300,38 +304,73 @@ public class QuestionService {
 
     public SearchQuestionsResponseVo searchQuestions(String query, String type, Pageable pageable, String tag) {
         List<SearchQuestionVo> questionList = new ArrayList<>();
-        List<String> tags = Arrays.asList(tag.split(","));
 
-        Page<Question> questions = null;
-
-        if (tags.get(0).length() != 0) {
+        List<Question> newQuestions = new ArrayList<>();
+        Page<Question> questions = new PageImpl<>(newQuestions);
+        System.out.println("====query====");
+        System.out.println(query);
+        if(ObjectUtils.isEmpty(questions)){
+            System.out.println("====equals====");
             if (type.equals("total")) {
-                questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCaseByTags(tags, tags.size(), "init", query, pageable);
+                System.out.println("====total====");
+                questions = questionRepository.findByTypeNotOrderByCreateDateDesc("init", pageable);
             } else if (type.equals("doing")) {
-                questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "doing", query, pageable);
+                System.out.println("====doing====");
+                questions = questionRepository.findByTypeOrderByCreateDateDesc("doing", pageable);
             } else if (type.equals("completed")) {
-                questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "completed", query, pageable);
+                System.out.println("====completed====");
+                questions = questionRepository.findByTypeOrderByCreateDateDesc("completed", pageable);
             }
-        } else {
-            if (type.equals("total")) {
-                questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCase("init", query, pageable);
-            } else if (type.equals("doing")) {
-                questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("doing", query, pageable);
-            } else if (type.equals("completed")) {
-                questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("completed", query, pageable);
+        }
+        else {
+            if (!ObjectUtils.isEmpty(tag)) {
+
+                List<String> tags = Arrays.asList(tag.split(","));
+
+                if (type.equals("total")) {
+                    questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCaseByTags(tags, tags.size(), "init", query, pageable);
+                } else if (type.equals("doing")) {
+                    questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "doing", query, pageable);
+                } else if (type.equals("completed")) {
+                    questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "completed", query, pageable);
+                }
+            } else {
+                if (type.equals("total")) {
+                    questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCase("init", query, pageable);
+                } else if (type.equals("doing")) {
+                    questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("doing", query, pageable);
+                } else if (type.equals("completed")) {
+                    questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("completed", query, pageable);
+                }
             }
         }
 
         questions.stream().forEach(
-                question -> {
+                it -> {
+                    Optional<Question> optionalQuestion = questionRepository.findById(it.getId());
+                    Question question = optionalQuestion.get();
+                    Long userId = question.getUserId();
+                    Optional<User> user = userRepository.findById(userId);
+                    if (!user.isPresent()) {
+                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+                    }
                     SearchQuestionVo searchQuestionVo = new SearchQuestionVo(
                             question.getId(),
+                            user.get().getId(),
                             question.getTitle(),
                             question.getContent(),
+                            user.get().getNickname(),
+                            user.get().getLevel(),
+                            question.getTagList(),
+                            question.getPoint(),
+                            question.getType(),
+                            question.getCreateDate(),
                             question.getUpdateDate(),
-                            question.getType()
+                            0
                     );
+                    System.out.println(question.getContent() + " " + user.get().getId());
                     questionList.add(searchQuestionVo);
+                    System.out.println("====3====");
                 }
         );
 
