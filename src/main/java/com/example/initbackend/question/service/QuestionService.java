@@ -198,8 +198,8 @@ public class QuestionService {
     }
 
     public GetBannerQuestionIdResponseVo GetBannerQuestionId(String type) {
-        Question question = new Question();
-        List<Question> questions = new ArrayList<>();
+        Question question;
+        List<Question> questions;
         if (type.equals("popular")) {
             try {
                 List<Object[]> counts = answerRepository.countTotalAnswersByQuestionIdByOrderByCountDesc();
