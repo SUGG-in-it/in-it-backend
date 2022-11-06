@@ -37,8 +37,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "    ON t.id = r.tag_id " +
             "WHERE t.tag IN (?1) " +
             "GROUP BY q.id " +
-            "HAVING COUNT(DISTINCT t.tag) = ?2 " +
-            "LIMIT ")
+            "HAVING COUNT(DISTINCT t.tag) = ?2 ")
     Page<Question> findByTypeNotAndTitleContainingIgnoreCaseByTags(List<String> tags, Integer num, String type, String title, Pageable pageable);
 
     Page<Question> findByTypeNotAndTitleContainingIgnoreCase(String type, String title, Pageable pageable);
