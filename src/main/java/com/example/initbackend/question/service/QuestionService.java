@@ -309,7 +309,7 @@ public class QuestionService {
         Page<Question> questions = new PageImpl<>(newQuestions);
         System.out.println("====query====");
         System.out.println(query);
-        if(ObjectUtils.isEmpty(questions)){
+        if(ObjectUtils.isEmpty(query)){
             System.out.println("====equals====");
             if (type.equals("total")) {
                 System.out.println("====total====");
