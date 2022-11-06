@@ -17,6 +17,7 @@ import java.util.Optional;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     Optional<Question> findById(Long questionId);
+    Long countBy();
 
     Page<Question> findByTypeOrderByCreateDateDesc(String type, Pageable pageable);
 
