@@ -133,20 +133,16 @@ public class QuestionService {
         );
     }
 
-    // 여기
     public GetQuestionsResponseVo GetQuestions(Pageable pageable, String type) {
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
         List<Question> newQuestions = new ArrayList<>();
         Page<Question> questions = new PageImpl<>(newQuestions);
 
         if (type.equals("total")) {
-            System.out.println("====total====");
             questions = questionRepository.findByTypeNotOrderByCreateDateDesc("init", pageable);
         } else if (type.equals("doing")) {
-            System.out.println("====doing====");
             questions = questionRepository.findByTypeOrderByCreateDateDesc("doing", pageable);
         } else if (type.equals("completed")) {
-            System.out.println("====completed====");
             questions = questionRepository.findByTypeOrderByCreateDateDesc("completed", pageable);
         }
         questions.stream().forEach(
@@ -174,7 +170,6 @@ public class QuestionService {
                     );
                     System.out.println(question.getContent() + " " + user.get().getId());
                     questionList.add(getQuestionResponse);
-                    System.out.println("====3====");
                 }
         );
 
@@ -195,9 +190,6 @@ public class QuestionService {
             List<Answer> optionalAnswer = answerRepository.findAllByQuestionId(questionId);
             optionalAnswer.stream().forEach(
                     answer -> {
-                        System.out.println("==============");
-                        System.out.println(answer.getId()); // answer id
-                        System.out.println("==============");
                         commentRepository.deleteAllByAnswerId(answer.getId());
                     });
             answerRepository.deleteAllByQuestionId(questionId);
@@ -310,15 +302,11 @@ public class QuestionService {
         System.out.println("====query====");
         System.out.println(query);
         if(ObjectUtils.isEmpty(query)){
-            System.out.println("====equals====");
             if (type.equals("total")) {
-                System.out.println("====total====");
                 questions = questionRepository.findByTypeNotOrderByCreateDateDesc("init", pageable);
             } else if (type.equals("doing")) {
-                System.out.println("====doing====");
                 questions = questionRepository.findByTypeOrderByCreateDateDesc("doing", pageable);
             } else if (type.equals("completed")) {
-                System.out.println("====completed====");
                 questions = questionRepository.findByTypeOrderByCreateDateDesc("completed", pageable);
             }
         }
@@ -370,7 +358,6 @@ public class QuestionService {
                     );
                     System.out.println(question.getContent() + " " + user.get().getId());
                     questionList.add(searchQuestionVo);
-                    System.out.println("====3====");
                 }
         );
 
@@ -393,7 +380,6 @@ public class QuestionService {
         System.out.println(tags.size());
         Page<Question> questions = null;
         if (tags.get(0).length() != 0) {
-            System.out.println("1111111");
             if (type.equals("total")) {
                 questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCaseByTags(tags, tags.size(), "init", query, pageable);
             } else if (type.equals("doing")) {
@@ -402,8 +388,6 @@ public class QuestionService {
                 questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "completed", query, pageable);
             }
         } else {
-            System.out.println("2222222222");
-
             if (type.equals("total")) {
                 questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCase("init", query, pageable);
             } else if (type.equals("doing")) {
