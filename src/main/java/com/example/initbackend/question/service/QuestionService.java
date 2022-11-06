@@ -299,7 +299,6 @@ public class QuestionService {
 
         List<Question> newQuestions = new ArrayList<>();
         Page<Question> questions = new PageImpl<>(newQuestions);
-        System.out.println("====query====");
         System.out.println(query);
         if(ObjectUtils.isEmpty(query)){
             if (type.equals("total")) {
@@ -339,6 +338,7 @@ public class QuestionService {
                     Question question = optionalQuestion.get();
                     Long userId = question.getUserId();
                     Optional<User> user = userRepository.findById(userId);
+                    Long answerCount = answerRepository.countByQuestionId(question.getId());
                     if (!user.isPresent()) {
                         throw new CustomException(ErrorCode.DATA_NOT_FOUND);
                     }
@@ -354,9 +354,8 @@ public class QuestionService {
                             question.getType(),
                             question.getCreateDate(),
                             question.getUpdateDate(),
-                            0
+                            Math.toIntExact(answerCount)
                     );
-                    System.out.println(question.getContent() + " " + user.get().getId());
                     questionList.add(searchQuestionVo);
                 }
         );
