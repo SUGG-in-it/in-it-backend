@@ -198,8 +198,8 @@ public class QuestionService {
     }
 
     public GetBannerQuestionIdResponseVo GetBannerQuestionId(String type) {
-        Question question = null;
-        List<Question> questions = null;
+        Question question = new Question();
+        List<Question> questions = new ArrayList<>();
         if (type.equals("popular")) {
             try {
                 List<Object[]> counts = answerRepository.countTotalAnswersByQuestionIdByOrderByCountDesc();
@@ -217,6 +217,7 @@ public class QuestionService {
         } else if (type.equals("random")) {
             questions = questionRepository.findAll();
             Long count = questions.stream().count();
+
             System.out.println(count);
             Long randomId = GenerateRandomNumber.generateRandomNumber(count);
             return new GetBannerQuestionIdResponseVo(questionRepository.findById(randomId).get().getId());
