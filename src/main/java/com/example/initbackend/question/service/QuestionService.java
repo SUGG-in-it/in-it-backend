@@ -215,8 +215,7 @@ public class QuestionService {
             question = questionRepository.findFirstByOrderByPointDesc();
             return new GetBannerQuestionIdResponseVo((Long) question.getId());
         } else if (type.equals("random")) {
-            questions = questionRepository.findAll();
-            Long count = questions.stream().count();
+            Long count = questionRepository.countBy();
 
             System.out.println(count);
             Long randomId = GenerateRandomNumber.generateRandomNumber(count);
