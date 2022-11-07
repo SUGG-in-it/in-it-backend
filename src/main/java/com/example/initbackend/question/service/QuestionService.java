@@ -380,24 +380,46 @@ public class QuestionService {
         List<Question> newQuestions = new ArrayList<>();
         Page<Question> questions = new PageImpl<>(newQuestions);
 
-        if (!ObjectUtils.isEmpty(tag)) {
-
-            List<String> tags = Arrays.asList(tag.split(","));
-
-            if (type.equals("total")) {
-                questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCaseByTags(tags, tags.size(), "init", query, pageable);
-            } else if (type.equals("doing")) {
-                questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "doing", query, pageable);
-            } else if (type.equals("completed")) {
-                questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "completed", query, pageable);
+        if (ObjectUtils.isEmpty(query)) {
+            if (!ObjectUtils.isEmpty(tag)) {
+                List<String> tags = Arrays.asList(tag.split(","));
+                if (type.equals("total")) {
+                    questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCaseByTags(tags, tags.size(), "init", query, pageable);
+                } else if (type.equals("doing")) {
+                    questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "doing", query, pageable);
+                } else if (type.equals("completed")) {
+                    questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "completed", query, pageable);
+                }
+            } else {
+                if (type.equals("total")) {
+                    questions = questionRepository.findByTypeNotOrderByCreateDateDesc("init", pageable);
+                } else if (type.equals("doing")) {
+                    questions = questionRepository.findByTypeOrderByCreateDateDesc("doing", pageable);
+                } else if (type.equals("completed")) {
+                    questions = questionRepository.findByTypeOrderByCreateDateDesc("completed", pageable);
+                }
             }
+
         } else {
-            if (type.equals("total")) {
-                questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCase("init", query, pageable);
-            } else if (type.equals("doing")) {
-                questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("doing", query, pageable);
-            } else if (type.equals("completed")) {
-                questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("completed", query, pageable);
+            if (!ObjectUtils.isEmpty(tag)) {
+
+                List<String> tags = Arrays.asList(tag.split(","));
+
+                if (type.equals("total")) {
+                    questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCaseByTags(tags, tags.size(), "init", query, pageable);
+                } else if (type.equals("doing")) {
+                    questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "doing", query, pageable);
+                } else if (type.equals("completed")) {
+                    questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "completed", query, pageable);
+                }
+            } else {
+                if (type.equals("total")) {
+                    questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCase("init", query, pageable);
+                } else if (type.equals("doing")) {
+                    questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("doing", query, pageable);
+                } else if (type.equals("completed")) {
+                    questions = questionRepository.findByTypeAndTitleContainingIgnoreCase("completed", query, pageable);
+                }
             }
         }
 
