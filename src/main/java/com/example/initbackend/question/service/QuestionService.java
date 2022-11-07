@@ -366,19 +366,14 @@ public class QuestionService {
 
 
     public GetQuestionsTotalPageNumResponseVo GetSearchQuestionsTotalPageNum(String query, String type, Pageable pageable, String tag) {
-        List<SearchQuestionVo> questionList = new ArrayList<>();
-        List<String> tags = Arrays.asList(tag.split(","));
 
-        System.out.println(tags);
-        System.out.println(tags);
-        System.out.println(tags);
-        System.out.println(tags);
-        System.out.println(tags.size());
-        System.out.println(tags.size());
-        System.out.println(tags.size());
-        System.out.println(tags.size());
-        Page<Question> questions = null;
-        if (tags.get(0).length() != 0) {
+        List<Question> newQuestions = new ArrayList<>();
+        Page<Question> questions = new PageImpl<>(newQuestions);
+
+        if (!ObjectUtils.isEmpty(tag)) {
+
+            List<String> tags = Arrays.asList(tag.split(","));
+
             if (type.equals("total")) {
                 questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCaseByTags(tags, tags.size(), "init", query, pageable);
             } else if (type.equals("doing")) {
