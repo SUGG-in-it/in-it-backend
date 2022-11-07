@@ -293,23 +293,33 @@ public class QuestionService {
     }
 
 
-
     public SearchQuestionsResponseVo searchQuestions(String query, String type, Pageable pageable, String tag) {
         List<SearchQuestionVo> questionList = new ArrayList<>();
 
         List<Question> newQuestions = new ArrayList<>();
         Page<Question> questions = new PageImpl<>(newQuestions);
         System.out.println(query);
-        if(ObjectUtils.isEmpty(query)){
-            if (type.equals("total")) {
-                questions = questionRepository.findByTypeNotOrderByCreateDateDesc("init", pageable);
-            } else if (type.equals("doing")) {
-                questions = questionRepository.findByTypeOrderByCreateDateDesc("doing", pageable);
-            } else if (type.equals("completed")) {
-                questions = questionRepository.findByTypeOrderByCreateDateDesc("completed", pageable);
+        if (ObjectUtils.isEmpty(query)) {
+            if (!ObjectUtils.isEmpty(tag)) {
+                List<String> tags = Arrays.asList(tag.split(","));
+                if (type.equals("total")) {
+                    questions = questionRepository.findByTypeNotAndTitleContainingIgnoreCaseByTags(tags, tags.size(), "init", query, pageable);
+                } else if (type.equals("doing")) {
+                    questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "doing", query, pageable);
+                } else if (type.equals("completed")) {
+                    questions = questionRepository.findByTypeAndTitleContainingIgnoreCaseAndByTags(tags, tags.size(), "completed", query, pageable);
+                }
+            } else {
+                if (type.equals("total")) {
+                    questions = questionRepository.findByTypeNotOrderByCreateDateDesc("init", pageable);
+                } else if (type.equals("doing")) {
+                    questions = questionRepository.findByTypeOrderByCreateDateDesc("doing", pageable);
+                } else if (type.equals("completed")) {
+                    questions = questionRepository.findByTypeOrderByCreateDateDesc("completed", pageable);
+                }
             }
-        }
-        else {
+
+        } else {
             if (!ObjectUtils.isEmpty(tag)) {
 
                 List<String> tags = Arrays.asList(tag.split(","));
