@@ -27,6 +27,6 @@ nbdist/
 /src/main/resources/
 /build/classes/
 /build/generated/
-/build/resoures/
+/build/resources/
 /build/tmp/
 /build/bootJarMainClassName
