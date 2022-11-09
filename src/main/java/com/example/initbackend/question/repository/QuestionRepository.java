@@ -1,6 +1,5 @@
 package com.example.initbackend.question.repository;
 
-
 import com.example.initbackend.question.domain.Question;
 import com.example.initbackend.question.vo.SearchQuestionVo;
 import org.springframework.data.domain.Page;
