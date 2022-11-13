@@ -16,6 +16,7 @@ public class InItBackendApplication implements WebMvcConfigurer{
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
+				.allowedHeaders("Access-Control-Allow-Origin", "*")
 				.allowedOrigins("http://localhost:3000","https://cr-init.herokuapp.com")
 				.allowedMethods(
 						HttpMethod.GET.name(),
