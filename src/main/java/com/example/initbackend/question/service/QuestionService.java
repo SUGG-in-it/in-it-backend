@@ -216,8 +216,14 @@ public class QuestionService {
             return new GetBannerQuestionIdResponseVo((Long) question.getId());
         } else if (type.equals("random")) {
             Long count = questionRepository.countBy();
+            System.out.println("=======================");
+            System.out.println(count);
+            System.out.println("=======================");
             try{
                 Long randomId = GenerateRandomNumber.generateRandomNumber(count);
+                System.out.println("=======================");
+                System.out.println(randomId);
+                System.out.println("=======================");
                 return new GetBannerQuestionIdResponseVo(questionRepository.findById(randomId).get().getId());
             } catch (IllegalArgumentException e) {
                 throw new CustomException(ErrorCode.DATA_NOT_FOUND);
