@@ -138,14 +138,14 @@ public class AnswerService {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
         }
 
-        if (!userId.equals(optionalAnswer.get().getUserId())) {
-            throw new CustomException(ErrorCode.FORBIDDEN);
-        }
-
         Optional<Question> optionalQuestion = questionRepository.findById(optionalAnswer.get().getQuestionId());
 
         if (!optionalQuestion.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
+
+        if (!userId.equals(optionalQuestion.get().getUserId())) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
         optionalAnswer.ifPresent(selectAnswer -> {
