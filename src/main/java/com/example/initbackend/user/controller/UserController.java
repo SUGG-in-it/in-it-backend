@@ -35,7 +35,6 @@ public class UserController {
                 .status(StatusEnum.OK)
                 .message("Success Join")
                 .build();
-        System.out.println(res);
         return res;
     }
 

@@ -38,7 +38,6 @@ public class UserService {
     public void join(JoinRequestDto joinRequestDto) {
         if (isDuplicatedUser(joinRequestDto.getEmail())) {
             throw new CustomException(ErrorCode.CONFLICT);
-//                    IllegalArgumentException("Duplicated User");
         }
 
         User user = joinRequestDto.toEntity();
@@ -48,14 +47,12 @@ public class UserService {
     public void duplicatedEmail(DuplicatedUserRequestDto duplicatedUserRequestDto) {
         if (isDuplicatedUser(duplicatedUserRequestDto.getEmail())) {
             throw new CustomException(ErrorCode.CONFLICT);
-//            throw new IllegalArgumentException("Duplicated User");
         }
     }
 
     public void duplicatedNickname(DuplicatedNicknameRequestDto duplicatedNicknameRequestDto) {
         if (isDuplicatedNickname(duplicatedNicknameRequestDto.getNickname())) {
             throw new CustomException(ErrorCode.CONFLICT);
-//            throw new IllegalArgumentException("Duplicated Nickname");
         }
     }
 
@@ -64,7 +61,6 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-//            throw new EntityNotFoundException("User not present in the database");
         }
 
         User user = optionalUser.get();
