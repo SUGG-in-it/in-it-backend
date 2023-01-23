@@ -46,6 +46,7 @@ public class QuestionService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public IssueQuestionIdResponseVo issueQuestionId(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
@@ -55,16 +56,14 @@ public class QuestionService {
         return new IssueQuestionIdResponseVo(newQuestion.getId());
     }
 
-    public void UpdateQuestion(HttpServletRequest request, Long questionId, UpdateQuestionRequestDto updateQuestionRequestDto) {
+    @Transactional
+    public void UpdateQuestion(HttpServletRequest request, Long questionId, UpdateQuestionRequestDto updateQuestionRequestDto){
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
 
-        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
-        if (!userId.equals(optionalQuestion.get().getUserId())) {
+        Question optionalQuestion = questionRepository.findById(questionId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        if (!userId.equals(optionalQuestion.getUserId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
-        }
-        if (!optionalQuestion.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
         }
 
         String tag = updateQuestionRequestDto.getTagList();
@@ -84,27 +83,22 @@ public class QuestionService {
 
         for (int i = 0; i < tagList.length; i++) {
             System.out.println(tagList[i]);
-            Optional<Tag> optionalTag = tagRepository.findByTag(tagList[i]);
-            if (!optionalTag.isPresent()) {
-                throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-            }
+            Tag optionalTag = tagRepository.findByTag(tagList[i]).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
             QuestionTag questionTag = new QuestionTag();
-            questionTag.setQuestionId(optionalQuestion.get().getId());
-            questionTag.setTagId(optionalTag.get().getId());
+            questionTag.setQuestionId(optionalQuestion.getId());
+            questionTag.setTagId(optionalTag.getId());
             questionTagRepository.save(questionTag);
         }
 
-        optionalQuestion.ifPresent(selectQuestion -> {
-            selectQuestion.setTitle(updateQuestionRequestDto.getTitle());
-            selectQuestion.setContent(updateQuestionRequestDto.getContent());
-            selectQuestion.setTagList(updateQuestionRequestDto.getTagList());
-            selectQuestion.setPoint(updateQuestionRequestDto.getPoint());
-            if (!selectQuestion.getType().equals("completed")) {
-                selectQuestion.setType("doing");
-            }
-            questionRepository.save(selectQuestion);
-        });
+        optionalQuestion.setTitle(updateQuestionRequestDto.getTitle());
+        optionalQuestion.setContent(updateQuestionRequestDto.getContent());
+        optionalQuestion.setTagList(updateQuestionRequestDto.getTagList());
+        optionalQuestion.setPoint(updateQuestionRequestDto.getPoint());
+        if (!optionalQuestion.getType().equals("completed")) {
+            optionalQuestion.setType("doing");
+        }
+        questionRepository.save(optionalQuestion);
     }
 
     public GetQuestionResponseVo GetQuestion(Long questionId) {
