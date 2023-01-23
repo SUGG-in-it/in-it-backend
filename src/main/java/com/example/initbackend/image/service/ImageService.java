@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -32,6 +33,7 @@ public class ImageService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
+    @Transactional
     public UploadImageResponseVo uploadImage(HttpServletRequest request, MultipartFile multipartFile) {
         validateFileExists(multipartFile);
         String token = jwtTokenProvider.resolveAccessToken(request);
