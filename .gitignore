@@ -30,3 +30,4 @@ nbdist/
 /build/resources/
 /build/tmp/
 /build/bootJarMainClassName
+/build/libs
