@@ -133,6 +133,7 @@ public class QuestionService {
         );
     }
 
+    @Transactional
     public GetQuestionsResponseVo GetQuestions(Pageable pageable, String type) {
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
         List<Question> newQuestions = new ArrayList<>();
@@ -150,17 +151,14 @@ public class QuestionService {
                     Optional<Question> optionalQuestion = questionRepository.findById(it.getId());
                     Question question = optionalQuestion.get();
                     Long userId = question.getUserId();
-                    Optional<User> user = userRepository.findById(userId);
-                    if (!user.isPresent()) {
-                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-                    }
+                    User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
                     GetQuestionResponseVo getQuestionResponse = new GetQuestionResponseVo(
                             question.getId(),
-                            user.get().getId(),
+                            user.getId(),
                             question.getTitle(),
                             question.getContent(),
-                            user.get().getNickname(),
-                            user.get().getLevel(),
+                            user.getNickname(),
+                            user.getLevel(),
                             question.getPoint(),
                             question.getTagList(),
                             question.getType(),
@@ -168,7 +166,7 @@ public class QuestionService {
                             question.getUpdateDate(),
                             0
                     );
-                    System.out.println(question.getContent() + " " + user.get().getId());
+                    System.out.println(question.getContent() + " " + user.getId());
                     questionList.add(getQuestionResponse);
                 }
         );
