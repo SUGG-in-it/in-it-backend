@@ -26,12 +26,12 @@ public class QuestionController {
 
     @PostMapping({ "" })
     public SuccessResponse issueQuestionId(HttpServletRequest request) {
-        IssueQuestionIdResponseVo issueQuestionIdResponse = questionService.issueQuestionId(request);
+        IssueQuestionIdResponseVo issueQuestionIdResponseVo = questionService.issueQuestionId(request);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("Issued QuestionId")
-                .data(issueQuestionIdResponse)
+                .data(issueQuestionIdResponseVo)
                 .build();
 
         return res;
@@ -50,12 +50,12 @@ public class QuestionController {
 
     @GetMapping({ "/{questionId}" })
     public SuccessResponse getQuestion(@PathVariable("questionId") Long questionId) {
-        GetQuestionResponseVo getQuestionResponse = questionService.GetQuestion(questionId);
+        GetQuestionResponseVo getQuestionResponseVo = questionService.GetQuestion(questionId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("Get Question")
-                .data(getQuestionResponse)
+                .data(getQuestionResponseVo)
                 .build();
 
         return res;
