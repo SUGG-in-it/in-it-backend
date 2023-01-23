@@ -87,12 +87,12 @@ public class QuestionController {
     }
     @GetMapping({ "/main" })
     public SuccessResponse getBannerQuestion(@RequestParam("type") String type) {
-        GetBannerQuestionIdResponseVo getBannerQuestionIdResponse = questionService.GetBannerQuestionId(type);
+        GetBannerQuestionIdResponseVo getBannerQuestionIdResponseVo = questionService.GetBannerQuestionId(type);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("Get Question")
-                .data(getBannerQuestionIdResponse)
+                .data(getBannerQuestionIdResponseVo)
                 .build();
 
         return res;
