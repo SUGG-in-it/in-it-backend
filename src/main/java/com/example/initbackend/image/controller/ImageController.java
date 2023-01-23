@@ -21,13 +21,12 @@ public class ImageController {
     }
 
     @PostMapping({"/upload"})
-    // dto 로 수정
     public SuccessResponse uploadImage(HttpServletRequest request, @RequestPart(value = "image") MultipartFile multipartFile) {
-        UploadImageResponseVo uploadImageResponse = imageService.uploadImage(request, multipartFile);
+        UploadImageResponseVo uploadImageResponseVo = imageService.uploadImage(request, multipartFile);
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("Uploaded Image")
-                .data(uploadImageResponse)
+                .data(uploadImageResponseVo)
                 .build();
 
         return res;
