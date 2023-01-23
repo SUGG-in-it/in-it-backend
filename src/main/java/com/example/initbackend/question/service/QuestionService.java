@@ -107,13 +107,10 @@ public class QuestionService {
         });
     }
 
+    @Transactional
     public GetQuestionResponseVo GetQuestion(Long questionId) {
-        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
-        if (!optionalQuestion.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        Question question = optionalQuestion.get();
         Long userId = question.getUserId();
         Optional<User> user = userRepository.findById(userId);
         Long answerCount = answerRepository.countByQuestionId(question.getId());

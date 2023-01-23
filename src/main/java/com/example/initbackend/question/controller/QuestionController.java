@@ -50,12 +50,12 @@ public class QuestionController {
 
     @GetMapping({ "/{questionId}" })
     public SuccessResponse getQuestion(@PathVariable("questionId") Long questionId) {
-        GetQuestionResponseVo getQuestionResponse = questionService.GetQuestion(questionId);
+        GetQuestionResponseVo getQuestionResponseVo = questionService.GetQuestion(questionId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("Get Question")
-                .data(getQuestionResponse)
+                .data(getQuestionResponseVo)
                 .build();
 
         return res;
