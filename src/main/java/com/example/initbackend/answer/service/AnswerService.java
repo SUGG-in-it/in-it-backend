@@ -42,6 +42,7 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final CommentRepository commentRepository;
 
+    @Transactional
     public IssueAnswerIdResponseVo issueAnswerId(HttpServletRequest request, IssueAnswerIdDto issueAnswerIdDto) {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
@@ -55,7 +56,7 @@ public class AnswerService {
         return new IssueAnswerIdResponseVo(ans.getId());
     }
 
-
+    @Transactional
     public List<GetAnswerResponseVo> getAnswer(Pageable pageable, Long questionId) {
         Page<Answer> optionalAnswer = answerRepository.findByQuestionIdAndContentIsNotNullOrderByIsSelectedDesc(questionId, pageable);
 
@@ -63,45 +64,42 @@ public class AnswerService {
 
         for (Answer answer : optionalAnswer) {
 
-            Optional<User> optionalUser = userRepository.findById(answer.getUserId());
+            User optionalUser = userRepository.findById(answer.getUserId())
+                    .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-            if (!optionalUser.isPresent()) {
-                throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-            }
-            GetAnswerResponseVo vo = new GetAnswerResponseVo(
+            GetAnswerResponseVo getAnswerResponseVo = new GetAnswerResponseVo(
                     answer.getId(),
                     answer.getUserId(),
-                    optionalUser.get().getNickname(),
+                    optionalUser.getNickname(),
                     answer.getContent(),
                     answer.isSelected(),
                     answer.getCreateDate(),
                     answer.getUpdateDate()
             );
-            answers.add(vo);
-
+            answers.add(getAnswerResponseVo);
         }
         return answers;
     }
 
+    @Transactional
     public void updateAnswer(HttpServletRequest request, UpdateAnswerRequestDto updateAnswerRequestDto, Long answerId) {
 
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
 
-        Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
+        Answer optionalAnswer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        if (!optionalAnswer.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
 
-        if (!userId.equals(optionalAnswer.get().getUserId())) {
+        if (!userId.equals(optionalAnswer.getUserId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        optionalAnswer.ifPresent(selectAnswer -> {
-            selectAnswer.setContent(updateAnswerRequestDto.getContent());
-            answerRepository.save(selectAnswer);
-        });
+        Answer ans= Answer.builder()
+                .content(updateAnswerRequestDto.getContent())
+                .build();
+
+        answerRepository.save(ans);
 
     }
 
@@ -111,61 +109,50 @@ public class AnswerService {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
 
-        Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
+        Answer optionalAnswer = answerRepository.findById(answerId)
+                .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        if (!optionalAnswer.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
-
-        if (!userId.equals(optionalAnswer.get().getUserId())) {
+        if (!userId.equals(optionalAnswer.getUserId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        optionalAnswer.ifPresent(selectAnswer -> {
-            answerRepository.deleteById(answerId);
-            commentRepository.deleteAllByAnswerId(answerId);
-        });
+        answerRepository.deleteById(answerId);
+        commentRepository.deleteAllByAnswerId(answerId);
     }
 
-
+    @Transactional
     public void selectAnswer(HttpServletRequest request, Long answerId) {
 
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
 
-        Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
+        Answer optionalAnswer = answerRepository.findById(answerId)
+                .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        if (!optionalAnswer.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
 
-        Optional<Question> optionalQuestion = questionRepository.findById(optionalAnswer.get().getQuestionId());
+        Question optionalQuestion = questionRepository.findById(optionalAnswer.getQuestionId())
+                .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        if (!optionalQuestion.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
 
-        if (!userId.equals(optionalQuestion.get().getUserId())) {
+        if (!userId.equals(optionalQuestion.getUserId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        optionalAnswer.ifPresent(selectAnswer -> {
-            selectAnswer.setSelected(true);
-            answerRepository.save(selectAnswer);
-        });
+        Answer ans= Answer.builder()
+                .isSelected(true)
+                .build();
 
-        optionalQuestion.ifPresent(selectQuestion -> {
-            selectQuestion.setType("completed");
-            questionRepository.save(selectQuestion);
-        });
+        Question que = Question.builder()
+                .type("completed")
+                .build();
 
-
+        answerRepository.save(ans);
+        questionRepository.save(que);
     }
 
     public GetAnswersTotalPageNumResponseVo getAnswersTotalPageNum(Pageable pageable, Long questionId) {
         Page<Answer> optionalAnswer = answerRepository.findByQuestionIdAndContentIsNotNullOrderByIsSelectedDesc(questionId, pageable);
-        GetAnswersTotalPageNumResponseVo getAnswersTotalPageNumResponse = new GetAnswersTotalPageNumResponseVo(optionalAnswer.getTotalPages());
-        return getAnswersTotalPageNumResponse;
+        return  new GetAnswersTotalPageNumResponseVo(optionalAnswer.getTotalPages());
     }
 
     public GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNum(HttpServletRequest request, Pageable pageable) {
@@ -174,9 +161,7 @@ public class AnswerService {
         Long userId = JwtUtil.getPayloadByToken(token);
 
         Page<Answer> answers = answerRepository.findByUserIdAndContentIsNotNullOrderByCreateDateDesc(userId, pageable);
-
-        GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNumResponse = new GetUserAnswersTotalPageNumResponseVo(answers.getTotalPages());
-        return getUserAnswersTotalPageNumResponse;
+        return new GetUserAnswersTotalPageNumResponseVo(answers.getTotalPages());
     }
 
     public GetManagedAnswersResponseVo getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable) {
@@ -188,16 +173,13 @@ public class AnswerService {
 
         optionalAnswers.stream().forEach(
                 answer -> {
-                    Optional<Question> optionalQuestion = questionRepository.findById(answer.getQuestionId());
-                    if (!optionalQuestion.isPresent()) {
-                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-                    }
-                    Question question = optionalQuestion.get();
+                    Question optionalQuestion = questionRepository.findById(answer.getQuestionId())
+                            .orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
                     ManagedAnswerVo managedAnswerVo = new ManagedAnswerVo(
                             answer.getId(),
                             answer.getQuestionId(),
-                            question.getTitle(),
+                            optionalQuestion.getTitle(),
                             answer.getUserId(),
                             answer.getContent(),
                             answer.isSelected(),
@@ -211,8 +193,4 @@ public class AnswerService {
         return new GetManagedAnswersResponseVo(managedAnswerList);
     }
 
-
-    private boolean isDuplicatedAnswer(Long userId, Long questionId) {
-        return answerRepository.findByUserIdAndQuestionId(userId, questionId).isPresent();
-    }
 }

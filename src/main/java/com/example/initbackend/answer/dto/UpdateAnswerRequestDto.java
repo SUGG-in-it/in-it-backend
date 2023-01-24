@@ -12,9 +12,4 @@ public class UpdateAnswerRequestDto {
 
     private String content;
 
-    public Answer toEntity(){
-        return Answer.builder()
-                .content(content)
-                .build();
-    }
 }

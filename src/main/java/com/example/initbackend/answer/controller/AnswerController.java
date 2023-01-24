@@ -45,6 +45,7 @@ public class AnswerController {
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
+                .message("Get Answer")
                 .data(getAnswerResponseVo)
                 .build();
         return res;
@@ -87,12 +88,12 @@ public class AnswerController {
 
     @GetMapping({"/page"})
     public SuccessResponse getAnswersTotalPageNum(Pageable pageable, @RequestParam Long questionId) {
-        GetAnswersTotalPageNumResponseVo getAnswersTotalPageNumResponse = answerService.getAnswersTotalPageNum(pageable, questionId);
+        GetAnswersTotalPageNumResponseVo getAnswersTotalPageNumResponseVo = answerService.getAnswersTotalPageNum(pageable, questionId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get answers total page number")
-                .data(getAnswersTotalPageNumResponse)
+                .message("Get answers total page number")
+                .data(getAnswersTotalPageNumResponseVo)
                 .build();
 
         return res;
@@ -104,7 +105,7 @@ public class AnswerController {
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get user answers total page number")
+                .message("Get user answers total page number")
                 .data(getUserAnswersTotalPageNumResponse)
                 .build();
 
@@ -113,12 +114,12 @@ public class AnswerController {
 
     @GetMapping({"/manage"})
     public SuccessResponse getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable) {
-        GetManagedAnswersResponseVo getAnswerResponse = answerService.getManagedAnswers(servletRequest, pageable);
+        GetManagedAnswersResponseVo getAnswerResponseVo = answerService.getManagedAnswers(servletRequest, pageable);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get my answers")
-                .data(getAnswerResponse)
+                .message("Get my answers")
+                .data(getAnswerResponseVo)
                 .build();
 
         return res;
