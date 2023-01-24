@@ -17,6 +17,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Optional;
@@ -32,6 +33,7 @@ public class AuthService {
     @Autowired
     private final JavaMailSender emailSender;
 
+    @Transactional
     public String issueCertificationCode(IssueCertificationCodeRequestDto issueCertificationCodeRequestDto){
         String type = issueCertificationCodeRequestDto.getType();
         String certificationCode = GenerateCeritificationCode.generateCeritificationCode();
