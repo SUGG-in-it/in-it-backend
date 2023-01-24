@@ -161,9 +161,7 @@ public class AnswerService {
         Long userId = JwtUtil.getPayloadByToken(token);
 
         Page<Answer> answers = answerRepository.findByUserIdAndContentIsNotNullOrderByCreateDateDesc(userId, pageable);
-
-        GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNumResponse = new GetUserAnswersTotalPageNumResponseVo(answers.getTotalPages());
-        return getUserAnswersTotalPageNumResponse;
+        return new GetUserAnswersTotalPageNumResponseVo(answers.getTotalPages());
     }
 
     public GetManagedAnswersResponseVo getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable) {

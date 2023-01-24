@@ -105,7 +105,7 @@ public class AnswerController {
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get user answers total page number")
+                .message("Get user answers total page number")
                 .data(getUserAnswersTotalPageNumResponse)
                 .build();
 
