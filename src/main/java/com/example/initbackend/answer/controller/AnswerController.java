@@ -114,12 +114,12 @@ public class AnswerController {
 
     @GetMapping({"/manage"})
     public SuccessResponse getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable) {
-        GetManagedAnswersResponseVo getAnswerResponse = answerService.getManagedAnswers(servletRequest, pageable);
+        GetManagedAnswersResponseVo getAnswerResponseVo = answerService.getManagedAnswers(servletRequest, pageable);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get my answers")
-                .data(getAnswerResponse)
+                .message("Get my answers")
+                .data(getAnswerResponseVo)
                 .build();
 
         return res;

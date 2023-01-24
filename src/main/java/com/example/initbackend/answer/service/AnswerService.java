@@ -173,16 +173,13 @@ public class AnswerService {
 
         optionalAnswers.stream().forEach(
                 answer -> {
-                    Optional<Question> optionalQuestion = questionRepository.findById(answer.getQuestionId());
-                    if (!optionalQuestion.isPresent()) {
-                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-                    }
-                    Question question = optionalQuestion.get();
+                    Question optionalQuestion = questionRepository.findById(answer.getQuestionId())
+                            .orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
                     ManagedAnswerVo managedAnswerVo = new ManagedAnswerVo(
                             answer.getId(),
                             answer.getQuestionId(),
-                            question.getTitle(),
+                            optionalQuestion.getTitle(),
                             answer.getUserId(),
                             answer.getContent(),
                             answer.isSelected(),
@@ -196,8 +193,4 @@ public class AnswerService {
         return new GetManagedAnswersResponseVo(managedAnswerList);
     }
 
-
-    private boolean isDuplicatedAnswer(Long userId, Long questionId) {
-        return answerRepository.findByUserIdAndQuestionId(userId, questionId).isPresent();
-    }
 }
