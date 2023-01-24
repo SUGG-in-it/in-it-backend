@@ -186,9 +186,9 @@ public class QuestionService {
         });
     }
 
+    @Transactional
     public GetBannerQuestionIdResponseVo GetBannerQuestionId(String type) {
         Question question;
-        List<Question> questions;
         if (type.equals("popular")) {
             try {
                 List<Object[]> counts = answerRepository.countTotalAnswersByQuestionIdByOrderByCountDesc();
