@@ -31,7 +31,7 @@ public class CommentController {
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("comment successfully registered")
+                .message("Comment Registered")
                 .build();
 
         return res;
@@ -39,12 +39,12 @@ public class CommentController {
 
     @GetMapping
     public SuccessResponse getComments(Pageable pageable, @Valid @RequestParam final Long answerId) {
-        GetCommentsResponseVo getCommentsResponse = commentService.getComments(pageable, answerId);
+        GetCommentsResponseVo getCommentsResponseVo = commentService.getComments(pageable, answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get comments")
-                .data(getCommentsResponse)
+                .message("Get Comments")
+                .data(getCommentsResponseVo)
                 .build();
 
         return res;
@@ -56,7 +56,7 @@ public class CommentController {
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("comment successfully deleted")
+                .message("Comment Deleted")
                 .build();
 
         return res;
@@ -64,12 +64,12 @@ public class CommentController {
 
     @GetMapping({"/page"})
     public SuccessResponse getCommentsTotalPageNum(Pageable pageable, @Valid @RequestParam final Long answerId) {
-        GetCommentsTotalPageNumResponseVo getCommentsTotalPageNumResponse = commentService.getCommentsTotalPageNum(pageable, answerId);
+        GetCommentsTotalPageNumResponseVo getCommentsTotalPageNumResponseVo = commentService.getCommentsTotalPageNum(pageable, answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get comments total page number")
-                .data(getCommentsTotalPageNumResponse)
+                .message("Get Comments Total Page Number")
+                .data(getCommentsTotalPageNumResponseVo)
                 .build();
 
         return res;
@@ -77,12 +77,12 @@ public class CommentController {
 
     @GetMapping({"/user-page"})
     public SuccessResponse getUserCommentsTotalPageNum(HttpServletRequest request, Pageable pageable) {
-        GetUserCommentsTotalPageNumResponseVo getUserCommentsTotalPageNumResponse = commentService.getUserCommentsTotalPageNum(request, pageable);
+        GetUserCommentsTotalPageNumResponseVo getUserCommentsTotalPageNumResponseVo = commentService.getUserCommentsTotalPageNum(request, pageable);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get user comments total page number")
-                .data(getUserCommentsTotalPageNumResponse)
+                .message("Get User Comments Total Page Number")
+                .data(getUserCommentsTotalPageNumResponseVo)
                 .build();
 
         return res;
@@ -90,12 +90,12 @@ public class CommentController {
 
     @GetMapping({"/manage"})
     public SuccessResponse getManagedComments(HttpServletRequest servletRequest, Pageable pageable) {
-        GetCommentsResponseVo getCommentsResponse = commentService.getManagedComments(servletRequest, pageable);
+        GetCommentsResponseVo getCommentsResponseVo = commentService.getManagedComments(servletRequest, pageable);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get my comments")
-                .data(getCommentsResponse)
+                .message("Get Managed Comments")
+                .data(getCommentsResponseVo)
                 .build();
 
         return res;
