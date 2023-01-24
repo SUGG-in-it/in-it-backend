@@ -45,6 +45,7 @@ public class AnswerController {
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
+                .message("Get Answer")
                 .data(getAnswerResponseVo)
                 .build();
         return res;

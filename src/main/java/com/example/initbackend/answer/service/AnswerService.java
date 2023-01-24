@@ -63,22 +63,19 @@ public class AnswerService {
 
         for (Answer answer : optionalAnswer) {
 
-            Optional<User> optionalUser = userRepository.findById(answer.getUserId());
+            User optionalUser = userRepository.findById(answer.getUserId())
+                    .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-            if (!optionalUser.isPresent()) {
-                throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-            }
-            GetAnswerResponseVo vo = new GetAnswerResponseVo(
+            GetAnswerResponseVo getAnswerResponseVo = new GetAnswerResponseVo(
                     answer.getId(),
                     answer.getUserId(),
-                    optionalUser.get().getNickname(),
+                    optionalUser.getNickname(),
                     answer.getContent(),
                     answer.isSelected(),
                     answer.getCreateDate(),
                     answer.getUpdateDate()
             );
-            answers.add(vo);
-
+            answers.add(getAnswerResponseVo);
         }
         return answers;
     }
