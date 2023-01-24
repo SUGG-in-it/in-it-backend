@@ -43,7 +43,7 @@ public class AuthService {
         if(type.equals("password")) {
             userRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         }
-        if(optionalAuth.isPresent()){
+        if(optionalAuth.isPresent()){ // refactoring 필요
             Auth newAuth = optionalAuth.get();
             newAuth.setCode(certificationCode);
             newAuth.setUpdate_date(new Timestamp(System.currentTimeMillis()));
@@ -59,7 +59,6 @@ public class AuthService {
         String certificationCode = verifyCertificationCodeRequestDto.getCode();
         String email = verifyCertificationCodeRequestDto.getEmail();
         Auth optionalAuth = authRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-
 
         Timestamp currnetTime = new Timestamp(System.currentTimeMillis());
         Timestamp issuedTime = optionalAuth.getUpdate_date();
