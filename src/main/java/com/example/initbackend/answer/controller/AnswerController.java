@@ -88,12 +88,12 @@ public class AnswerController {
 
     @GetMapping({"/page"})
     public SuccessResponse getAnswersTotalPageNum(Pageable pageable, @RequestParam Long questionId) {
-        GetAnswersTotalPageNumResponseVo getAnswersTotalPageNumResponse = answerService.getAnswersTotalPageNum(pageable, questionId);
+        GetAnswersTotalPageNumResponseVo getAnswersTotalPageNumResponseVo = answerService.getAnswersTotalPageNum(pageable, questionId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get answers total page number")
-                .data(getAnswersTotalPageNumResponse)
+                .message("Get answers total page number")
+                .data(getAnswersTotalPageNumResponseVo)
                 .build();
 
         return res;

@@ -152,8 +152,7 @@ public class AnswerService {
 
     public GetAnswersTotalPageNumResponseVo getAnswersTotalPageNum(Pageable pageable, Long questionId) {
         Page<Answer> optionalAnswer = answerRepository.findByQuestionIdAndContentIsNotNullOrderByIsSelectedDesc(questionId, pageable);
-        GetAnswersTotalPageNumResponseVo getAnswersTotalPageNumResponse = new GetAnswersTotalPageNumResponseVo(optionalAnswer.getTotalPages());
-        return getAnswersTotalPageNumResponse;
+        return  new GetAnswersTotalPageNumResponseVo(optionalAnswer.getTotalPages());
     }
 
     public GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNum(HttpServletRequest request, Pageable pageable) {
