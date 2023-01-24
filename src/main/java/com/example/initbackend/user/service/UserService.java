@@ -142,14 +142,10 @@ public class UserService {
         return getProfileResponseVo;
     }
 
+    @Transactional
     public void updateUser(UpdateProfileRequestDto updateProfileRequestDto) {
 
-        Optional<User> optionalUser = userRepository.findByEmail(updateProfileRequestDto.getEmail());
-        if (!optionalUser.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
-
-        User user = optionalUser.get();
+        User user = userRepository.findByEmail(updateProfileRequestDto.getEmail()).orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
         user.setNickname(updateProfileRequestDto.getNickname());
         user.setGithub_account(updateProfileRequestDto.getGithubAccount());

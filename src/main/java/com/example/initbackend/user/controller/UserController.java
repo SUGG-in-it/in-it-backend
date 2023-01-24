@@ -123,7 +123,7 @@ public class UserController {
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("update profile")
+                .message("Update Profile")
                 .build();
 
         return res;
