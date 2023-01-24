@@ -247,51 +247,47 @@ public class QuestionService {
 
     }
 
+    @Transactional
     public GetQuestionsResponseVo getManagedQuestions(HttpServletRequest servletRequest, Pageable pageable) {
         String token = jwtTokenProvider.resolveAccessToken(servletRequest);
         Long userId = JwtUtil.getPayloadByToken(token);
 
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
-        Page<Question> questions = null;
-
-        questions = questionRepository.findByUserIdAndTypeNotOrderByCreateDateDesc(userId, "init", pageable);
+        Page<Question> questions = questionRepository.findByUserIdAndTypeNotOrderByCreateDateDesc(userId, "init", pageable);
 
         questions.stream().forEach(
                 it -> {
-                    Optional<Question> optionalQuestion = questionRepository.findById(it.getId());
-                    Question question = optionalQuestion.get();
-                    Optional<User> user = userRepository.findById(question.getUserId());
-                    if (!user.isPresent()) {
-                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-                    }
-                    GetQuestionResponseVo getQuestionResponse = new GetQuestionResponseVo(
+                    Question question = questionRepository.findById(it.getId()).orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
+                    User user = userRepository.findById(question.getUserId()).orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
+
+                    GetQuestionResponseVo getQuestionResponseVo = new GetQuestionResponseVo(
                             question.getId(),
-                            user.get().getId(),
+                            user.getId(),
                             question.getTitle(),
                             question.getContent(),
-                            user.get().getNickname(),
-                            user.get().getLevel(),
-                            user.get().getPoint(),
+                            user.getNickname(),
+                            user.getLevel(),
+                            user.getPoint(),
                             question.getTagList(),
                             question.getType(),
                             question.getCreateDate(),
                             question.getUpdateDate(),
                             0
                     );
-                    questionList.add(getQuestionResponse);
+                    questionList.add(getQuestionResponseVo);
                 }
         );
 
         return new GetQuestionsResponseVo(questionList);
     }
 
-
+    @Transactional
     public SearchQuestionsResponseVo searchQuestions(String query, String type, Pageable pageable, String tag) {
         List<SearchQuestionVo> questionList = new ArrayList<>();
 
         List<Question> newQuestions = new ArrayList<>();
         Page<Question> questions = new PageImpl<>(newQuestions);
-        System.out.println(query);
+
         if (ObjectUtils.isEmpty(query)) {
             if (!ObjectUtils.isEmpty(tag)) {
                 List<String> tags = Arrays.asList(tag.split(","));
@@ -337,21 +333,18 @@ public class QuestionService {
 
         questions.stream().forEach(
                 it -> {
-                    Optional<Question> optionalQuestion = questionRepository.findById(it.getId());
-                    Question question = optionalQuestion.get();
+                    Question question = questionRepository.findById(it.getId()).orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
                     Long userId = question.getUserId();
-                    Optional<User> user = userRepository.findById(userId);
+                    User user = userRepository.findById(userId).orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
                     Long answerCount = answerRepository.countByQuestionId(question.getId());
-                    if (!user.isPresent()) {
-                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-                    }
+
                     SearchQuestionVo searchQuestionVo = new SearchQuestionVo(
                             question.getId(),
-                            user.get().getId(),
+                            user.getId(),
                             question.getTitle(),
                             question.getContent(),
-                            user.get().getNickname(),
-                            user.get().getLevel(),
+                            user.getNickname(),
+                            user.getLevel(),
                             question.getTagList(),
                             question.getPoint(),
                             question.getType(),
@@ -367,9 +360,8 @@ public class QuestionService {
 
     }
 
-
+    @Transactional
     public GetQuestionsTotalPageNumResponseVo GetSearchQuestionsTotalPageNum(String query, String type, Pageable pageable, String tag) {
-
         List<Question> newQuestions = new ArrayList<>();
         Page<Question> questions = new PageImpl<>(newQuestions);
 
@@ -416,9 +408,7 @@ public class QuestionService {
             }
         }
 
-        GetQuestionsTotalPageNumResponseVo getQuestionsTotalPageNumResponse = new GetQuestionsTotalPageNumResponseVo(questions.getTotalPages());
-
-        return getQuestionsTotalPageNumResponse;
+        return new GetQuestionsTotalPageNumResponseVo(questions.getTotalPages());
 
     }
 

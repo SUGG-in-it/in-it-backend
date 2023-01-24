@@ -126,12 +126,12 @@ public class QuestionController {
 
     @GetMapping({"/manage"})
     public SuccessResponse getManagedQuestions(HttpServletRequest servletRequest, Pageable pageable) {
-        GetQuestionsResponseVo getQuestionsResponse = questionService.getManagedQuestions(servletRequest, pageable);
+        GetQuestionsResponseVo getQuestionsResponseVo = questionService.getManagedQuestions(servletRequest, pageable);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get my questions")
-                .data(getQuestionsResponse)
+                .message("Get Managed Questions")
+                .data(getQuestionsResponseVo)
                 .build();
 
         return res;
@@ -139,12 +139,12 @@ public class QuestionController {
 
     @GetMapping({"/search"})
     public SuccessResponse searchQuestions(@RequestParam(required = false) String query, @RequestParam String type, Pageable pageable, @RequestParam(required = false) String tag) {
-        SearchQuestionsResponseVo searchQuestionsResponse = questionService.searchQuestions(query, type, pageable, tag);
+        SearchQuestionsResponseVo searchQuestionsResponseVo = questionService.searchQuestions(query, type, pageable, tag);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("search successfully")
-                .data(searchQuestionsResponse)
+                .message("Search Successfully")
+                .data(searchQuestionsResponseVo)
                 .build();
 
         return res;
@@ -152,12 +152,12 @@ public class QuestionController {
 
     @GetMapping({ "/search/page"})
     public SuccessResponse getSearchQuestionsTotalPageNum(@RequestParam(required = false) String query, @RequestParam String type, Pageable pageable, @RequestParam(required = false) String tag) {
-        GetQuestionsTotalPageNumResponseVo getQuestionsTotalPageNumResponse = questionService.GetSearchQuestionsTotalPageNum(query, type, pageable, tag);
+        GetQuestionsTotalPageNumResponseVo getQuestionsTotalPageNumResponseVo = questionService.GetSearchQuestionsTotalPageNum(query, type, pageable, tag);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get search question total page number successfully")
-                .data(getQuestionsTotalPageNumResponse)
+                .message("Get Search Question Total Page Number")
+                .data(getQuestionsTotalPageNumResponseVo)
                 .build();
 
         return res;
