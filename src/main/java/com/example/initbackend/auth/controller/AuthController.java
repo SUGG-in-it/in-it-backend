@@ -3,6 +3,7 @@ package com.example.initbackend.auth.controller;
 import com.example.initbackend.auth.dto.IssueCertificationCodeRequestDto;
 import com.example.initbackend.auth.dto.VerifyCertificationCodeRequestDto;
 import com.example.initbackend.auth.service.AuthService;
+import com.example.initbackend.auth.vo.IssueCertificationCodeResponseVo;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import lombok.Getter;
@@ -35,10 +36,11 @@ public class AuthController {
     @PostMapping({ "/issue" })
     public SuccessResponse issueCertificationCode(@Valid @RequestBody final IssueCertificationCodeRequestDto requestDto) {
         String certificationCode = authService.issueCertificationCode(requestDto);
-        authService.sendSimpleMessage(requestDto.getEmail(), certificationCode);
+        IssueCertificationCodeResponseVo issueCertificationCodeResponseVo = authService.sendSimpleMessage(requestDto.getEmail(), certificationCode);
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message(String.valueOf(certificationCode))
+                .message("Issued CertificationCode")
+                .data(issueCertificationCodeResponseVo)
                 .build();
 
         return res;
