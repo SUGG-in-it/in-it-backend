@@ -54,7 +54,7 @@ public class UserController {
         userService.duplicatedNickname(requestDto);
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("Nickname is not duplicated")
+                .message("Nickname Is Not Duplicated")
                 .build();
 
         return res;
