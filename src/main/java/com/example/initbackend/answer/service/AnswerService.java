@@ -126,33 +126,28 @@ public class AnswerService {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
 
-        Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
+        Answer optionalAnswer = answerRepository.findById(answerId)
+                .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        if (!optionalAnswer.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
 
-        Optional<Question> optionalQuestion = questionRepository.findById(optionalAnswer.get().getQuestionId());
+        Question optionalQuestion = questionRepository.findById(optionalAnswer.getQuestionId())
+                .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        if (!optionalQuestion.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
 
-        if (!userId.equals(optionalQuestion.get().getUserId())) {
+        if (!userId.equals(optionalQuestion.getUserId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        optionalAnswer.ifPresent(selectAnswer -> {
-            selectAnswer.setSelected(true);
-            answerRepository.save(selectAnswer);
-        });
+        Answer ans= Answer.builder()
+                .isSelected(true)
+                .build();
 
-        optionalQuestion.ifPresent(selectQuestion -> {
-            selectQuestion.setType("completed");
-            questionRepository.save(selectQuestion);
-        });
+        Question que = Question.builder()
+                .type("completed")
+                .build();
 
-
+        answerRepository.save(ans);
+        questionRepository.save(que);
     }
 
     public GetAnswersTotalPageNumResponseVo getAnswersTotalPageNum(Pageable pageable, Long questionId) {
