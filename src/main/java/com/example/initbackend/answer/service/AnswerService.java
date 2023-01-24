@@ -109,20 +109,15 @@ public class AnswerService {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
 
-        Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
+        Answer optionalAnswer = answerRepository.findById(answerId)
+                .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        if (!optionalAnswer.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
-
-        if (!userId.equals(optionalAnswer.get().getUserId())) {
+        if (!userId.equals(optionalAnswer.getUserId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        optionalAnswer.ifPresent(selectAnswer -> {
-            answerRepository.deleteById(answerId);
-            commentRepository.deleteAllByAnswerId(answerId);
-        });
+        answerRepository.deleteById(answerId);
+        commentRepository.deleteAllByAnswerId(answerId);
     }
 
 
