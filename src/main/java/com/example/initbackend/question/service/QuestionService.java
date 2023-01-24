@@ -281,13 +281,13 @@ public class QuestionService {
         return new GetQuestionsResponseVo(questionList);
     }
 
-
+    @Transactional
     public SearchQuestionsResponseVo searchQuestions(String query, String type, Pageable pageable, String tag) {
         List<SearchQuestionVo> questionList = new ArrayList<>();
 
         List<Question> newQuestions = new ArrayList<>();
         Page<Question> questions = new PageImpl<>(newQuestions);
-        System.out.println(query);
+
         if (ObjectUtils.isEmpty(query)) {
             if (!ObjectUtils.isEmpty(tag)) {
                 List<String> tags = Arrays.asList(tag.split(","));
@@ -333,21 +333,18 @@ public class QuestionService {
 
         questions.stream().forEach(
                 it -> {
-                    Optional<Question> optionalQuestion = questionRepository.findById(it.getId());
-                    Question question = optionalQuestion.get();
+                    Question question = questionRepository.findById(it.getId()).orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
                     Long userId = question.getUserId();
-                    Optional<User> user = userRepository.findById(userId);
+                    User user = userRepository.findById(userId).orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
                     Long answerCount = answerRepository.countByQuestionId(question.getId());
-                    if (!user.isPresent()) {
-                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-                    }
+
                     SearchQuestionVo searchQuestionVo = new SearchQuestionVo(
                             question.getId(),
-                            user.get().getId(),
+                            user.getId(),
                             question.getTitle(),
                             question.getContent(),
-                            user.get().getNickname(),
-                            user.get().getLevel(),
+                            user.getNickname(),
+                            user.getLevel(),
                             question.getTagList(),
                             question.getPoint(),
                             question.getType(),
