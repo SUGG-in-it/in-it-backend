@@ -52,7 +52,8 @@ public class UserService {
     }
 
     public void duplicatedNickname(DuplicatedNicknameRequestDto duplicatedNicknameRequestDto) {
-        if (isDuplicatedNickname(duplicatedNicknameRequestDto.getNickname())) {
+        String nickname = duplicatedNicknameRequestDto.getNickname();
+        if (userRepository.findByNickname(nickname).isPresent()) {
             throw new CustomException(ErrorCode.CONFLICT);
         }
     }
@@ -62,7 +63,7 @@ public class UserService {
         String email = changePasswordRequestDto.toEntity().getEmail();
         String newPassword = changePasswordRequestDto.toEntity().getPassword();
         User optionalUser = userRepository.findByEmail(email)
-                .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
         optionalUser.builder()
                 .password(newPassword)
@@ -86,7 +87,7 @@ public class UserService {
 
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.getId(), optionalUser.getNickname(),authentication);
+        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.getId(), optionalUser.getNickname(), authentication);
 
         UserToken userToken = tokenRepository.findById(optionalUser.getId());
 
@@ -110,7 +111,7 @@ public class UserService {
     }
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("아이디나 비밀번호가 틀립니다."));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("아이디나 비밀번호가 틀립니다."));
         user.builder()
                 .email(user.getEmail())
                 .password(user.getPassword())
@@ -140,7 +141,7 @@ public class UserService {
                 user.getCompany(),
                 user.getPoint(),
                 user.getLevel()
-                );
+        );
 
         return getProfileResponse;
     }
@@ -168,7 +169,5 @@ public class UserService {
         return userRepository.findByEmail(email).isPresent();
     }
 
-    private boolean isDuplicatedNickname(String nickname) {
-        return userRepository.findByNickname(nickname).isPresent();
-    }
+
 }
