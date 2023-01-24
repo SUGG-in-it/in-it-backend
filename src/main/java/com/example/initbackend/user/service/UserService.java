@@ -73,24 +73,26 @@ public class UserService {
 
         String email = loginRequestDto.toEntity().getEmail();
         String password = loginRequestDto.toEntity().getPassword();
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (!optionalUser.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
-        String dbPassword = optionalUser.get().getPassword();
+        User optionalUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+
+        String dbPassword = optionalUser.getPassword();
         if (!dbPassword.equals(password)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_PASSWORD);
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.get().getId(), optionalUser.get().getNickname(),authentication);
+        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.getId(), optionalUser.getNickname(),authentication);
 
-        UserToken userToken = tokenRepository.findById(optionalUser.get().getId());
+        UserToken userToken = tokenRepository.findById(optionalUser.getId());
+
         if (Objects.isNull(userToken)) {
-            userToken = new UserToken(optionalUser.get().getId(), tokenInfo.getRefreshToken());
+            userToken = new UserToken(optionalUser.getId(), tokenInfo.getRefreshToken());
         } else {
-            userToken.setRefreshToken(tokenInfo.getRefreshToken());
+            userToken.builder()
+                    .refreshToken(tokenInfo.getRefreshToken())
+                    .build();
         }
 
         tokenRepository.save(userToken);
