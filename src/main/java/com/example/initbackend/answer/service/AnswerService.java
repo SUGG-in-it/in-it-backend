@@ -46,12 +46,13 @@ public class AnswerService {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
         Long questionId = issueAnswerIdDto.getQuestionId();
-        Answer newAnswer = new Answer();
-        newAnswer.setUserId(userId);
-        newAnswer.setQuestionId(questionId);
-        answerRepository.save(newAnswer);
+        Answer ans= Answer.builder()
+                .userId(userId)
+                .questionId(questionId)
+                .build();
 
-        return new IssueAnswerIdResponseVo(newAnswer.getId());
+        answerRepository.save(ans);
+        return new IssueAnswerIdResponseVo(ans.getId());
     }
 
 

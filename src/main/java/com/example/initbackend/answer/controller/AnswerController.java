@@ -28,12 +28,12 @@ public class AnswerController {
 
     @PostMapping
     public SuccessResponse issueAnswerId(HttpServletRequest request, @RequestBody IssueAnswerIdDto requestDto) {
-        IssueAnswerIdResponseVo issueAnswerIdResponse = answerService.issueAnswerId(request, requestDto);
+        IssueAnswerIdResponseVo issueAnswerIdResponseVo = answerService.issueAnswerId(request, requestDto);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("Issued answerId")
-                .data(issueAnswerIdResponse)
+                .data(issueAnswerIdResponseVo)
                 .build();
 
         return res;
