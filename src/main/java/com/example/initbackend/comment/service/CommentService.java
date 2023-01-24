@@ -2,9 +2,7 @@ package com.example.initbackend.comment.service;
 
 import com.example.initbackend.answer.domain.Answer;
 import com.example.initbackend.answer.repository.AnswerRepository;
-import com.example.initbackend.answer.vo.GetUserAnswersTotalPageNumResponseVo;
 import com.example.initbackend.comment.domain.Comment;
-import com.example.initbackend.comment.dto.GetCommentsRequestDto;
 import com.example.initbackend.comment.dto.RegisterCommentRequestDto;
 import com.example.initbackend.comment.repository.CommentRepository;
 import com.example.initbackend.comment.vo.CommentVo;
@@ -25,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,83 +40,78 @@ public class CommentService {
     private final JwtUtil jwtUtil;
 
 
+    @Transactional
     public void registerComment(HttpServletRequest servletRequest, RegisterCommentRequestDto registerCommentRequestDto) {
         String token = jwtTokenProvider.resolveAccessToken(servletRequest);
         Long userId = jwtUtil.getPayloadByToken(token);
 
-        Optional<User> optionalUser = userRepository.findById(userId);
-        Optional<Answer> optionalAnswer = answerRepository.findById(registerCommentRequestDto.getAnswerId());
+        userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        answerRepository.findById(registerCommentRequestDto.getAnswerId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        if (!optionalUser.isPresent() || !optionalAnswer.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
-
-        Comment comment = registerCommentRequestDto.toEntity();
-        comment.setUserId(userId);
+        Comment comment = registerCommentRequestDto.toEntity().builder()
+                .userId(userId)
+                .build();
 
         commentRepository.save(comment);
 
     }
 
+    @Transactional
     public GetCommentsResponseVo getComments(Pageable pageable, Long answerId) {
         List<CommentVo> comments = new ArrayList<>();
         Page<Comment> optionalComments = commentRepository.findAllByAnswerId(answerId, pageable);
 
-        optionalComments.stream().forEach(
-                comment -> {
-                    Optional<User> optionalUser = userRepository.findById(comment.getUserId());
-                    CommentVo commentVo = new CommentVo(
-                            comment.getUserId(),
-                            comment.getAnswerId(),
-                            comment.getId(),
-                            optionalUser.get().getNickname(),
-                            comment.getContent(),
-                            comment.getUpdatedAt()
-                    );
-                    comments.add(commentVo);
-                }
-        );
+        for (Comment comment : optionalComments) {
+            User user = userRepository.findById(comment.getUserId())
+                    .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
+
+            CommentVo commentVo = new CommentVo(
+                    comment.getUserId(),
+                    comment.getAnswerId(),
+                    comment.getId(),
+                    user.getNickname(),
+                    comment.getContent(),
+                    comment.getUpdatedAt()
+            );
+            comments.add(commentVo);
+        };
 
         return new GetCommentsResponseVo(comments);
     }
 
+    @Transactional
     public void deleteComment(HttpServletRequest servletRequest, Long commentId) {
         String token = jwtTokenProvider.resolveAccessToken(servletRequest);
         Long userId = jwtUtil.getPayloadByToken(token);
 
-        Optional<User> optionalUser = userRepository.findById(userId);
-        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+        userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        if (!optionalUser.isPresent() || !optionalComment.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
-
-        if(!userId.equals(optionalComment.get().getUserId())){
+        if(!userId.equals(comment.getUserId())){
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
 
         commentRepository.deleteById(commentId);
     }
 
+    @Transactional
     public GetCommentsTotalPageNumResponseVo getCommentsTotalPageNum(Pageable pageable, Long answerId) {
         Page<Comment> optionalComments = commentRepository.findAllByAnswerId(answerId, pageable);
 
-        GetCommentsTotalPageNumResponseVo getCommentsTotalPageNumResponse = new GetCommentsTotalPageNumResponseVo(optionalComments.getTotalPages());
-
-        return getCommentsTotalPageNumResponse;
+        return new GetCommentsTotalPageNumResponseVo(optionalComments.getTotalPages());
     }
 
+    @Transactional
     public GetUserCommentsTotalPageNumResponseVo getUserCommentsTotalPageNum(HttpServletRequest request, Pageable pageable){
-
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = JwtUtil.getPayloadByToken(token);
 
         Page<Comment> comments = commentRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable);
 
-        GetUserCommentsTotalPageNumResponseVo getUserCommentsTotalPageNumResponse = new GetUserCommentsTotalPageNumResponseVo(comments.getTotalPages());
-        return getUserCommentsTotalPageNumResponse;
+        return new GetUserCommentsTotalPageNumResponseVo(comments.getTotalPages());
     }
 
+    @Transactional
     public GetCommentsResponseVo getManagedComments(HttpServletRequest servletRequest, Pageable pageable) {
         String token = jwtTokenProvider.resolveAccessToken(servletRequest);
         Long userId = JwtUtil.getPayloadByToken(token);
@@ -125,20 +119,19 @@ public class CommentService {
         List<CommentVo> comments = new ArrayList<>();
         Page<Comment> optionalComments = commentRepository.findAllByUserId(userId, pageable);
 
-        optionalComments.stream().forEach(
-                comment -> {
-                    Optional<User> optionalUser = userRepository.findById(comment.getUserId());
-                    CommentVo commentVo = new CommentVo(
-                            comment.getUserId(),
-                            comment.getAnswerId(),
-                            comment.getId(),
-                            optionalUser.get().getNickname(),
-                            comment.getContent(),
-                            comment.getUpdatedAt()
-                    );
-                    comments.add(commentVo);
-                }
-        );
+        for (Comment comment : optionalComments) {
+            User user = userRepository.findById(comment.getUserId())
+                    .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
+            CommentVo commentVo = new CommentVo(
+                    comment.getUserId(),
+                    comment.getAnswerId(),
+                    comment.getId(),
+                    user.getNickname(),
+                    comment.getContent(),
+                    comment.getUpdatedAt()
+            );
+            comments.add(commentVo);
+        }
 
         return new GetCommentsResponseVo(comments);
     }
