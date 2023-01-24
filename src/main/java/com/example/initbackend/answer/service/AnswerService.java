@@ -42,6 +42,7 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final CommentRepository commentRepository;
 
+    @Transactional
     public IssueAnswerIdResponseVo issueAnswerId(HttpServletRequest request, IssueAnswerIdDto issueAnswerIdDto) {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
@@ -55,7 +56,7 @@ public class AnswerService {
         return new IssueAnswerIdResponseVo(ans.getId());
     }
 
-
+    @Transactional
     public List<GetAnswerResponseVo> getAnswer(Pageable pageable, Long questionId) {
         Page<Answer> optionalAnswer = answerRepository.findByQuestionIdAndContentIsNotNullOrderByIsSelectedDesc(questionId, pageable);
 
@@ -80,25 +81,25 @@ public class AnswerService {
         return answers;
     }
 
+    @Transactional
     public void updateAnswer(HttpServletRequest request, UpdateAnswerRequestDto updateAnswerRequestDto, Long answerId) {
 
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
 
-        Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
+        Answer optionalAnswer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        if (!optionalAnswer.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
 
-        if (!userId.equals(optionalAnswer.get().getUserId())) {
+        if (!userId.equals(optionalAnswer.getUserId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        optionalAnswer.ifPresent(selectAnswer -> {
-            selectAnswer.setContent(updateAnswerRequestDto.getContent());
-            answerRepository.save(selectAnswer);
-        });
+        Answer ans= Answer.builder()
+                .content(updateAnswerRequestDto.getContent())
+                .build();
+
+        answerRepository.save(ans);
 
     }
 
