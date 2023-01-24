@@ -41,35 +41,28 @@ public class AuthService {
         Auth auth = issueCertificationCodeRequestDto.toEntity(certificationCode);
         Optional<Auth> optionalAuth = authRepository.findByEmail(email);
         if(type.equals("password")) {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if (!optionalUser.isPresent()) {
-                throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-            }
+            userRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         }
-        if (!optionalAuth.isPresent()) {
-            authRepository.save(auth);
-        } else {
+        if(optionalAuth.isPresent()){
             Auth newAuth = optionalAuth.get();
             newAuth.setCode(certificationCode);
             newAuth.setUpdate_date(new Timestamp(System.currentTimeMillis()));
             authRepository.save(newAuth);
+        } else {
+            authRepository.save(auth);
         }
         return certificationCode;
     }
 
+    @Transactional
     public void verifyCertificationCodeRequestDto(VerifyCertificationCodeRequestDto verifyCertificationCodeRequestDto){
         String certificationCode = verifyCertificationCodeRequestDto.getCode();
         String email = verifyCertificationCodeRequestDto.getEmail();
-        Optional<Auth> optionalAuth = authRepository.findByEmail(email);
-        if (!optionalAuth.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-//            throw new EntityNotFoundException(
-//                    "Email not present in the database"
-//            );
-        }
+        Auth optionalAuth = authRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+
 
         Timestamp currnetTime = new Timestamp(System.currentTimeMillis());
-        Timestamp issuedTime = optionalAuth.get().getUpdate_date();
+        Timestamp issuedTime = optionalAuth.getUpdate_date();
 
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(issuedTime.getTime());
@@ -85,22 +78,12 @@ public class AuthService {
 
         if(currnetTime.after(issuedTime)){
             throw new CustomException(ErrorCode.CERTIFICATION_CODE_EXPIRED);
-//            throw new EntityNotFoundException(
-//                    "Code Expired"
-//            );
         }
 
-        String dbCertificationCode = optionalAuth.get().getCode();
+        String dbCertificationCode = optionalAuth.getCode();
         if(!dbCertificationCode.equals(certificationCode)){
             throw new CustomException(ErrorCode.UNAUTHORIZED_CERTIFICATION_CODE);
-//            throw new EntityNotFoundException(
-//                    "incorrect certificationCode"
-//            );
         }
-
-        // 시간 초과 시 에러처리 필요
-
-
     }
 
     public IssueCertificationCodeResponseVo sendSimpleMessage(String email, String certificationCode) {
