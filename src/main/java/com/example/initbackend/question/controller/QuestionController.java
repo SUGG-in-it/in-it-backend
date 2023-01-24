@@ -152,12 +152,12 @@ public class QuestionController {
 
     @GetMapping({ "/search/page"})
     public SuccessResponse getSearchQuestionsTotalPageNum(@RequestParam(required = false) String query, @RequestParam String type, Pageable pageable, @RequestParam(required = false) String tag) {
-        GetQuestionsTotalPageNumResponseVo getQuestionsTotalPageNumResponse = questionService.GetSearchQuestionsTotalPageNum(query, type, pageable, tag);
+        GetQuestionsTotalPageNumResponseVo getQuestionsTotalPageNumResponseVo = questionService.GetSearchQuestionsTotalPageNum(query, type, pageable, tag);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get search question total page number successfully")
-                .data(getQuestionsTotalPageNumResponse)
+                .message("Get Search Question Total Page Number")
+                .data(getQuestionsTotalPageNumResponseVo)
                 .build();
 
         return res;

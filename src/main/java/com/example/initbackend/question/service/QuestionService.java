@@ -360,9 +360,8 @@ public class QuestionService {
 
     }
 
-
+    @Transactional
     public GetQuestionsTotalPageNumResponseVo GetSearchQuestionsTotalPageNum(String query, String type, Pageable pageable, String tag) {
-
         List<Question> newQuestions = new ArrayList<>();
         Page<Question> questions = new PageImpl<>(newQuestions);
 
@@ -409,9 +408,7 @@ public class QuestionService {
             }
         }
 
-        GetQuestionsTotalPageNumResponseVo getQuestionsTotalPageNumResponse = new GetQuestionsTotalPageNumResponseVo(questions.getTotalPages());
-
-        return getQuestionsTotalPageNumResponse;
+        return new GetQuestionsTotalPageNumResponseVo(questions.getTotalPages());
 
     }
 
