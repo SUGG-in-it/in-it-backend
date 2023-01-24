@@ -120,7 +120,7 @@ public class AnswerService {
         commentRepository.deleteAllByAnswerId(answerId);
     }
 
-
+    @Transactional
     public void selectAnswer(HttpServletRequest request, Long answerId) {
 
         String token = jwtTokenProvider.resolveAccessToken(request);
