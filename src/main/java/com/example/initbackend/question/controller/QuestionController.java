@@ -126,12 +126,12 @@ public class QuestionController {
 
     @GetMapping({"/manage"})
     public SuccessResponse getManagedQuestions(HttpServletRequest servletRequest, Pageable pageable) {
-        GetQuestionsResponseVo getQuestionsResponse = questionService.getManagedQuestions(servletRequest, pageable);
+        GetQuestionsResponseVo getQuestionsResponseVo = questionService.getManagedQuestions(servletRequest, pageable);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get my questions")
-                .data(getQuestionsResponse)
+                .message("Get Managed Questions")
+                .data(getQuestionsResponseVo)
                 .build();
 
         return res;

@@ -247,38 +247,34 @@ public class QuestionService {
 
     }
 
+    @Transactional
     public GetQuestionsResponseVo getManagedQuestions(HttpServletRequest servletRequest, Pageable pageable) {
         String token = jwtTokenProvider.resolveAccessToken(servletRequest);
         Long userId = JwtUtil.getPayloadByToken(token);
 
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
-        Page<Question> questions = null;
-
-        questions = questionRepository.findByUserIdAndTypeNotOrderByCreateDateDesc(userId, "init", pageable);
+        Page<Question> questions = questionRepository.findByUserIdAndTypeNotOrderByCreateDateDesc(userId, "init", pageable);
 
         questions.stream().forEach(
                 it -> {
-                    Optional<Question> optionalQuestion = questionRepository.findById(it.getId());
-                    Question question = optionalQuestion.get();
-                    Optional<User> user = userRepository.findById(question.getUserId());
-                    if (!user.isPresent()) {
-                        throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-                    }
-                    GetQuestionResponseVo getQuestionResponse = new GetQuestionResponseVo(
+                    Question question = questionRepository.findById(it.getId()).orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
+                    User user = userRepository.findById(question.getUserId()).orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
+
+                    GetQuestionResponseVo getQuestionResponseVo = new GetQuestionResponseVo(
                             question.getId(),
-                            user.get().getId(),
+                            user.getId(),
                             question.getTitle(),
                             question.getContent(),
-                            user.get().getNickname(),
-                            user.get().getLevel(),
-                            user.get().getPoint(),
+                            user.getNickname(),
+                            user.getLevel(),
+                            user.getPoint(),
                             question.getTagList(),
                             question.getType(),
                             question.getCreateDate(),
                             question.getUpdateDate(),
                             0
                     );
-                    questionList.add(getQuestionResponse);
+                    questionList.add(getQuestionResponseVo);
                 }
         );
 
