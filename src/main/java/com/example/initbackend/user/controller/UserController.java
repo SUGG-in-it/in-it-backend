@@ -105,12 +105,12 @@ public class UserController {
     @GetMapping({"/profiles/{nickname}"})
     public SuccessResponse getProfile(@PathVariable("nickname") String nickname){
 
-        GetProfileResponseVo getProfileResponse = userService.getUserByNickname(nickname);
+        GetProfileResponseVo getProfileResponseVo = userService.getUserByNickname(nickname);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get profile")
-                .data(getProfileResponse)
+                .message("Get Profile")
+                .data(getProfileResponseVo)
                 .build();
 
         return res;

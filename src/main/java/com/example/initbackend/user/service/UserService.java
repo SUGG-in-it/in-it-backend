@@ -125,13 +125,9 @@ public class UserService {
 
     public GetProfileResponseVo getUserByNickname(String nickname) {
 
-        Optional<User> byNickname = userRepository.findByNickname(nickname);
+        User user = userRepository.findByNickname(nickname).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        if (!byNickname.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
-        User user = byNickname.get();
-        GetProfileResponseVo getProfileResponse = new GetProfileResponseVo(
+        GetProfileResponseVo getProfileResponseVo = new GetProfileResponseVo(
                 user.getEmail(),
                 user.getNickname(),
                 user.getGithub_account(),
@@ -143,7 +139,7 @@ public class UserService {
                 user.getLevel()
         );
 
-        return getProfileResponse;
+        return getProfileResponseVo;
     }
 
     public void updateUser(UpdateProfileRequestDto updateProfileRequestDto) {
