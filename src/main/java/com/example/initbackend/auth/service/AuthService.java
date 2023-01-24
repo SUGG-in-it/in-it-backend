@@ -4,6 +4,7 @@ import com.example.initbackend.auth.domain.Auth;
 import com.example.initbackend.auth.dto.IssueCertificationCodeRequestDto;
 import com.example.initbackend.auth.dto.VerifyCertificationCodeRequestDto;
 import com.example.initbackend.auth.repository.AuthRepository;
+import com.example.initbackend.auth.vo.IssueCertificationCodeResponseVo;
 import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.response.ErrorCode;
 import com.example.initbackend.global.util.GenerateCeritificationCode;
@@ -100,12 +101,17 @@ public class AuthService {
 
     }
 
-    public void sendSimpleMessage(String email, String certificationCode) {
+    public IssueCertificationCodeResponseVo sendSimpleMessage(String email, String certificationCode) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("jihyoungkwon@gmail.com");
         message.setTo(email);
         message.setSubject("인증번호");
         message.setText(certificationCode);
         emailSender.send(message);
+
+        IssueCertificationCodeResponseVo issueCertificationCodeResponseVo = new IssueCertificationCodeResponseVo(
+            certificationCode
+        );
+        return issueCertificationCodeResponseVo;
     }
 }
