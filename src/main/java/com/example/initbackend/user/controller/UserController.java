@@ -65,7 +65,7 @@ public class UserController {
         userService.changePassword(requestDto);
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("change password")
+                .message("Change password")
                 .build();
 
         return res;
