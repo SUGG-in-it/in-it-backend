@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -56,19 +57,21 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void changePassword(ChangePasswordRequestDto changePasswordRequestDto) {
         String email = changePasswordRequestDto.toEntity().getEmail();
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (!optionalUser.isPresent()) {
-            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
-        }
+        String newPassword = changePasswordRequestDto.toEntity().getPassword();
+        User optionalUser = userRepository.findByEmail(email)
+                .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        User user = optionalUser.get();
-        user.setPassword(changePasswordRequestDto.toEntity().getPassword());
-        userRepository.save(user);
+        optionalUser.builder()
+                .password(newPassword)
+                .build();
+
+        userRepository.save(optionalUser);
     }
 
-
+    @Transactional
     public LoginResponseVo login(LoginRequestDto loginRequestDto) {
 
         String email = loginRequestDto.toEntity().getEmail();
