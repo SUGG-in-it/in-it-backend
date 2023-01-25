@@ -100,12 +100,12 @@ public class QuestionController {
 
     @GetMapping({ "/page" })
     public SuccessResponse getQuestionsTotalPageNum(Pageable pageable, @RequestParam("type") String type) {
-        GetQuestionsTotalPageNumResponseVo getQuestionsTotalPageNumResponse = questionService.GetQuestionsTotalPageNum(pageable, type);
+        GetQuestionsTotalPageNumResponseVo getQuestionsTotalPageNumResponseVo = questionService.GetQuestionsTotalPageNum(pageable, type);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get questions total page number")
-                .data(getQuestionsTotalPageNumResponse)
+                .message("Get Questions Total Page Number")
+                .data(getQuestionsTotalPageNumResponseVo)
                 .build();
 
         return res;
@@ -113,12 +113,12 @@ public class QuestionController {
 
     @GetMapping({ "/user-page" })
     public SuccessResponse getUserQuestionsTotalPageNum(HttpServletRequest request, Pageable pageable) {
-        GetUserQuestionsTotalPageNumResponseVo getUserQuestionsTotalPageNum = questionService.GetUserQuestionsTotalPageNum(request, pageable);
+        GetUserQuestionsTotalPageNumResponseVo getUserQuestionsTotalPageNumVo = questionService.GetUserQuestionsTotalPageNum(request, pageable);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
-                .message("get questions total page number")
-                .data(getUserQuestionsTotalPageNum)
+                .message("Get User Questions Total Page Number")
+                .data(getUserQuestionsTotalPageNumVo)
                 .build();
 
         return res;
