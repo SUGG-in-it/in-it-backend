@@ -92,25 +92,25 @@ public class UserService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.getId(), optionalUser.getNickname(), authentication);
 
-        UserToken userToken = tokenRepository.findById(optionalUser.getId());
+        tokenRepository.findById(optionalUser.getId()).ifPresentOrElse(
+                t -> {
+                        t.builder()
+                                .refreshToken(tokenInfo.getRefreshToken())
+                                .build();
+                    tokenRepository.save(t);
+                }, () -> {
+                        UserToken ut = UserToken.builder()
+                                .userId(optionalUser.getId())
+                                .refreshToken(tokenInfo.getRefreshToken())
+                                .build();
+                    tokenRepository.save(ut);
+                }
+        );
 
-        if (Objects.isNull(userToken)) {
-            userToken = new UserToken(optionalUser.getId(), tokenInfo.getRefreshToken());
-        } else {
-            userToken.builder()
-                    .refreshToken(tokenInfo.getRefreshToken())
-                    .build();
-        }
-
-        tokenRepository.save(userToken);
-
-        LoginResponseVo loginResponseVo = new LoginResponseVo(
+        return new LoginResponseVo(
                 tokenInfo.getAccessToken(),
                 tokenInfo.getRefreshToken()
         );
-
-        return loginResponseVo;
-
     }
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
