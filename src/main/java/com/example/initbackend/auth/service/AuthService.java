@@ -42,15 +42,16 @@ public class AuthService {
             userRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         }
         Auth auth = issueCertificationCodeRequestDto.toEntity(certificationCode);
-        Optional<Auth> optionalAuth = authRepository.findByEmail(email);
-        if(optionalAuth.isPresent()){
-            Auth newAuth = optionalAuth.get();
-            newAuth.setCode(certificationCode);
-            newAuth.setUpdate_date(new Timestamp(System.currentTimeMillis()));
-            authRepository.save(newAuth);
-        } else {
-            authRepository.save(auth);
-        }
+        authRepository.findByEmail(email).ifPresentOrElse(
+                a -> {
+                    a.setCode(certificationCode);
+                    a.setUpdate_date(new Timestamp(System.currentTimeMillis()));
+                    authRepository.save(a);
+                }, () -> {
+                    authRepository.save(auth);
+                }
+        );
+
         return certificationCode;
     }
 
