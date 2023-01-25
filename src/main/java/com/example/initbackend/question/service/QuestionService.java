@@ -225,8 +225,8 @@ public class QuestionService {
     }
 
     public GetQuestionsTotalPageNumResponseVo GetQuestionsTotalPageNum(Pageable pageable, String type) {
-        List<GetQuestionResponseVo> questionList = new ArrayList<>();
         Page<Question> questions = null;
+
         if (type.equals("total")) {
             questions = questionRepository.findByTypeNotOrderByCreateDateDesc("init", pageable);
         } else if (type.equals("doing")) {
@@ -235,9 +235,7 @@ public class QuestionService {
             questions = questionRepository.findByTypeOrderByCreateDateDesc("completed", pageable);
         }
 
-        GetQuestionsTotalPageNumResponseVo getQuestionsTotalPageNumResponse = new GetQuestionsTotalPageNumResponseVo(questions.getTotalPages());
-
-        return getQuestionsTotalPageNumResponse;
+        return new GetQuestionsTotalPageNumResponseVo(questions.getTotalPages());
 
     }
 
@@ -248,9 +246,7 @@ public class QuestionService {
 
         Page<Question> questions = questionRepository.findAllByUserIdOrderByCreateDateDesc(userId, pageable);
 
-        GetUserQuestionsTotalPageNumResponseVo getUserQuestionsTotalPageNumResponseVo = new GetUserQuestionsTotalPageNumResponseVo(questions.getTotalPages());
-
-        return getUserQuestionsTotalPageNumResponseVo;
+        return new GetUserQuestionsTotalPageNumResponseVo(questions.getTotalPages());
 
     }
 
