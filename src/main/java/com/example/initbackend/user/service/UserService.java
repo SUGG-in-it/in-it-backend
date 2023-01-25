@@ -37,25 +37,28 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public void join(JoinRequestDto joinRequestDto) {
-        if (isDuplicatedUser(joinRequestDto.getEmail())) {
-            throw new CustomException(ErrorCode.CONFLICT);
-        }
+        String email = joinRequestDto.getEmail();
+        userRepository.findByEmail(email).ifPresent(u ->
+                new CustomException(ErrorCode.CONFLICT)
+        );
 
         User user = joinRequestDto.toEntity();
         userRepository.save(user);
     }
 
     public void duplicatedEmail(DuplicatedUserRequestDto duplicatedUserRequestDto) {
-        if (isDuplicatedUser(duplicatedUserRequestDto.getEmail())) {
-            throw new CustomException(ErrorCode.CONFLICT);
-        }
+        String email = duplicatedUserRequestDto.getEmail();
+        userRepository.findByEmail(email).ifPresent(u ->
+             new CustomException(ErrorCode.CONFLICT)
+        );
+
     }
 
     public void duplicatedNickname(DuplicatedNicknameRequestDto duplicatedNicknameRequestDto) {
         String nickname = duplicatedNicknameRequestDto.getNickname();
-        if (userRepository.findByNickname(nickname).isPresent()) {
-            throw new CustomException(ErrorCode.CONFLICT);
-        }
+        userRepository.findByNickname(nickname).ifPresent(u ->
+                new CustomException(ErrorCode.CONFLICT)
+        );
     }
 
     @Transactional
@@ -156,10 +159,4 @@ public class UserService {
 
         userRepository.save(user);
     }
-
-    private boolean isDuplicatedUser(String email) {
-        return userRepository.findByEmail(email).isPresent();
-    }
-
-
 }

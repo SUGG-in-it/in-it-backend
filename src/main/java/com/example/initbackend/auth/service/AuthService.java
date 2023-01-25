@@ -38,12 +38,12 @@ public class AuthService {
         String type = issueCertificationCodeRequestDto.getType();
         String certificationCode = GenerateCeritificationCode.generateCeritificationCode();
         String email = issueCertificationCodeRequestDto.getEmail();
-        Auth auth = issueCertificationCodeRequestDto.toEntity(certificationCode);
-        Optional<Auth> optionalAuth = authRepository.findByEmail(email);
         if(type.equals("password")) {
             userRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         }
-        if(optionalAuth.isPresent()){ // refactoring 필요
+        Auth auth = issueCertificationCodeRequestDto.toEntity(certificationCode);
+        Optional<Auth> optionalAuth = authRepository.findByEmail(email);
+        if(optionalAuth.isPresent()){
             Auth newAuth = optionalAuth.get();
             newAuth.setCode(certificationCode);
             newAuth.setUpdate_date(new Timestamp(System.currentTimeMillis()));
