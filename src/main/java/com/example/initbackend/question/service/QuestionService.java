@@ -85,20 +85,27 @@ public class QuestionService {
             System.out.println(tagList[i]);
             Tag optionalTag = tagRepository.findByTag(tagList[i]).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-            QuestionTag questionTag = new QuestionTag();
-            questionTag.setQuestionId(optionalQuestion.getId());
-            questionTag.setTagId(optionalTag.getId());
+            QuestionTag questionTag = QuestionTag.builder()
+                    .questionId(optionalQuestion.getId())
+                    .tagId(optionalTag.getId())
+                    .build();
+
             questionTagRepository.save(questionTag);
         }
 
-        optionalQuestion.setTitle(updateQuestionRequestDto.getTitle());
-        optionalQuestion.setContent(updateQuestionRequestDto.getContent());
-        optionalQuestion.setTagList(updateQuestionRequestDto.getTagList());
-        optionalQuestion.setPoint(updateQuestionRequestDto.getPoint());
-        if (!optionalQuestion.getType().equals("completed")) {
-            optionalQuestion.setType("doing");
+        Question question = optionalQuestion.builder()
+                .title(updateQuestionRequestDto.getTitle())
+                .content(updateQuestionRequestDto.getContent())
+                .tagList(updateQuestionRequestDto.getTagList())
+                .point(updateQuestionRequestDto.getPoint())
+                .build();
+
+        if (!question.getType().equals("completed")) {
+            question.builder()
+                    .type("doing");
         }
-        questionRepository.save(optionalQuestion);
+
+        questionRepository.save(question);
     }
 
     @Transactional
