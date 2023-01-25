@@ -49,7 +49,7 @@ public class UserService {
     public void duplicatedEmail(DuplicatedUserRequestDto duplicatedUserRequestDto) {
         String email = duplicatedUserRequestDto.getEmail();
         userRepository.findByEmail(email).ifPresent(u ->
-             new CustomException(ErrorCode.CONFLICT)
+                new CustomException(ErrorCode.CONFLICT)
         );
 
     }
@@ -147,15 +147,16 @@ public class UserService {
 
     @Transactional
     public void updateUser(UpdateProfileRequestDto updateProfileRequestDto) {
+        User optionalUser = userRepository.findByEmail(updateProfileRequestDto.getEmail()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        User user = userRepository.findByEmail(updateProfileRequestDto.getEmail()).orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
-
-        user.setNickname(updateProfileRequestDto.getNickname());
-        user.setGithub_account(updateProfileRequestDto.getGithubAccount());
-        user.setIntroduction(updateProfileRequestDto.getIntroduction());
-        user.setWork_position(updateProfileRequestDto.getWorkPosition());
-        user.setCareer(updateProfileRequestDto.getCareer());
-        user.setCompany(updateProfileRequestDto.getCompany());
+        User user = optionalUser.builder()
+                .nickname(updateProfileRequestDto.getNickname())
+                .github_account(updateProfileRequestDto.getGithubAccount())
+                .introduction(updateProfileRequestDto.getIntroduction())
+                .work_position(updateProfileRequestDto.getWorkPosition())
+                .career(updateProfileRequestDto.getCareer())
+                .company(updateProfileRequestDto.getCompany())
+                .build();
 
         userRepository.save(user);
     }
