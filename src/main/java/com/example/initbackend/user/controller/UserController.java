@@ -30,7 +30,6 @@ public class UserController {
     @PostMapping({ "/join" })
     public SuccessResponse join(@Valid @RequestBody final JoinRequestDto requestDto) {
         userService.join(requestDto);
-        // 실패시 로직 추가 요망
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
                 .message("Success Join")
