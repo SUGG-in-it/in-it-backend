@@ -26,6 +26,7 @@ public class TagController {
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
+                .message("Get TagList")
                 .data(getAnswerResponseVo)
                 .build();
         return res;
