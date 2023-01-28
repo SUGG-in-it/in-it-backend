@@ -46,10 +46,10 @@ public class AnswerService {
     public IssueAnswerIdResponseVo issueAnswerId(HttpServletRequest request, IssueAnswerIdDto issueAnswerIdDto) {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
-        Long questionId = issueAnswerIdDto.getQuestionId();
-        Answer ans= Answer.builder()
+        Answer newAnswer = issueAnswerIdDto.toEntity();
+
+        Answer ans= newAnswer.builder()
                 .userId(userId)
-                .questionId(questionId)
                 .build();
 
         answerRepository.save(ans);
@@ -81,7 +81,6 @@ public class AnswerService {
         return answers;
     }
 
-    @Transactional
     public void updateAnswer(HttpServletRequest request, UpdateAnswerRequestDto updateAnswerRequestDto, Long answerId) {
 
         String token = jwtTokenProvider.resolveAccessToken(request);
@@ -95,7 +94,7 @@ public class AnswerService {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        Answer ans= Answer.builder()
+        Answer ans= optionalAnswer.builder()
                 .content(updateAnswerRequestDto.getContent())
                 .build();
 
@@ -138,11 +137,11 @@ public class AnswerService {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        Answer ans= Answer.builder()
+        Answer ans= optionalAnswer.builder()
                 .isSelected(true)
                 .build();
 
-        Question que = Question.builder()
+        Question que = optionalQuestion.builder()
                 .type("completed")
                 .build();
 
