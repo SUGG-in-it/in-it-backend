@@ -28,27 +28,18 @@ public class TagService {
     public GetTagListResponseVo getTagList(GetTagListRequestDto getTagListRequestDto){
         String type = getTagListRequestDto.getType();
         List<String> tags = new ArrayList<>();
-
+        List<Tag> specialTag = new ArrayList<>();
         if (type.equals("all")){
-            List<Tag> optionalTag = tagRepository.findAllByOrderByTag();
-
-            for(Tag t :optionalTag){
-                tags.add(t.getTag());
-            }
-
+            specialTag = tagRepository.findAllByOrderByTag();
         } else if (type.equals("popular")){
             List<Long> popularTagIds = questionTagRepository.countTagIdByOrderByCount();
-            System.out.println(popularTagIds);
             List<Tag> popularTags = tagRepository.findTop10ByIdIn(popularTagIds);
-            System.out.println(popularTags);
-            for(Tag t : popularTags){
-                tags.add(t.getTag());
-            }
-
-            System.out.println(tags);
-
         } else {
             throw new CustomException(ErrorCode.TAG_TYPE_ERROR);
+        }
+
+        for(Tag t : specialTag){
+            tags.add(t.getTag());
         }
 
         GetTagListResponseVo getTagListResponseVo = new GetTagListResponseVo(tags);
