@@ -41,7 +41,7 @@ public class UserService {
         userRepository.findByEmail(email).ifPresent(u ->
                 new CustomException(ErrorCode.CONFLICT)
         );
-
+        // 닉네임 중복 확인
         User user = joinRequestDto.toEntity();
         userRepository.save(user);
     }
