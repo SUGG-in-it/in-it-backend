@@ -31,3 +31,4 @@ nbdist/
 /build/tmp/
 /build/bootJarMainClassName
 /build/libs/
+/bin/main/application.properties
