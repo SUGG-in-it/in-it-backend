@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.transaction.Transactional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
@@ -50,17 +51,11 @@ class UserServiceTest {
                 .password("test123")
                 .nickname("test2")
                 .build();
-        // when, then
-//        userService.join(joinRequestDto);
 
-//        assertThatThrownBy(() -> userService.join(joinRequestDto))
-//                .isInstanceOf(CustomException.class)
-//                .hasMessage("Duplicated data exist");
-//        try {
-//            userService.join(joinRequestDto);
-//        } catch (CustomException e) {
-//            Assertions.assertEquals("");
-//        }
+        // when, then
+        assertThatThrownBy(() -> userService.join(joinRequestDto))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("Duplicated data exist");
     }
 
 
