@@ -38,9 +38,9 @@ public class UserService {
 
     public void join(JoinRequestDto joinRequestDto) {
         String email = joinRequestDto.getEmail();
-        userRepository.findByEmail(email).ifPresent(u ->
-                new CustomException(ErrorCode.CONFLICT)
-        );
+        userRepository.findByEmail(email).ifPresent(u -> {
+            throw new CustomException(ErrorCode.CONFLICT);
+        });
         // 닉네임 중복 확인
         User user = joinRequestDto.toEntity();
         userRepository.save(user);
@@ -48,17 +48,17 @@ public class UserService {
 
     public void duplicatedEmail(DuplicatedUserRequestDto duplicatedUserRequestDto) {
         String email = duplicatedUserRequestDto.getEmail();
-        userRepository.findByEmail(email).ifPresent(u ->
-                new CustomException(ErrorCode.CONFLICT)
-        );
+        userRepository.findByEmail(email).ifPresent(u -> {
+            throw new CustomException(ErrorCode.CONFLICT);
+        });
 
     }
 
     public void duplicatedNickname(DuplicatedNicknameRequestDto duplicatedNicknameRequestDto) {
         String nickname = duplicatedNicknameRequestDto.getNickname();
-        userRepository.findByNickname(nickname).ifPresent(u ->
-                new CustomException(ErrorCode.CONFLICT)
-        );
+        userRepository.findByNickname(nickname).ifPresent(u -> {
+            throw new CustomException(ErrorCode.CONFLICT);
+        });
     }
 
     @Transactional
