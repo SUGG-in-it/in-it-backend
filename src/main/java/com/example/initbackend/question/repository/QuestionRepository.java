@@ -16,6 +16,7 @@ import java.util.Optional;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     Optional<Question> findById(Long questionId);
+
     @Query(nativeQuery = true, value = "SELECT id FROM Question where not type = \"init\" order by RAND() limit 1;")
     Long findIdByTypeNot();
 

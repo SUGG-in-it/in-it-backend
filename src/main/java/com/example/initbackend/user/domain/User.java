@@ -1,4 +1,5 @@
 package com.example.initbackend.user.domain;
+import com.example.initbackend.likes.domain.Likes;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,9 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -69,6 +68,9 @@ public class User implements UserDetails {
     @CreationTimestamp
     private Timestamp update_date;
 
+    @OneToMany(mappedBy = "userId")
+    private List<Likes> likes = new ArrayList<>();
+
 
     private String role = "ROLE_USER";
 
@@ -83,7 +85,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> auth = new HashSet<>();
-        auth.add(new SimpleGrantedAuthority(authority));
+        auth.add(new SimpleGrantedAuthority(role));
         return auth;
     }
 
