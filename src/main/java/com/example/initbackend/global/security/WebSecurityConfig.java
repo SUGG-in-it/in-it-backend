@@ -34,7 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/api/questions/manage", "/api/questions/user-page", "/api/answers/manage", "/api/answers/user-page", "/api/comments/manage", "/api/comments/user-page", "/api/users/profiles/:nickname").authenticated()
-                .antMatchers(HttpMethod.POST, "api/auth","/api/questions/**", "/api/answers/**", "/api/comments/**").authenticated()
+                .antMatchers(HttpMethod.POST, "api/like","api/like/**","api/auth","/api/questions/**", "/api/answers/**", "/api/comments/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/api/questions/**", "/api/answers/**", "/api/comments/**").authenticated()
                 .antMatchers(HttpMethod.PUT, "/api/questions/**", "/api/answers/**", "/api/comments/**", "/api/users/profiles").authenticated()
                 .and()
