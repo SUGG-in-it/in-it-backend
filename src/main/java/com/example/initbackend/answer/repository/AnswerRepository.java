@@ -28,4 +28,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
     void deleteAllByQuestionId(Long answerId);
 
     Long countByQuestionId(Long questionId);
+
+    void deleteAnswerByQuestionIdAndUserId(Long questionId, Long userId);
 }
