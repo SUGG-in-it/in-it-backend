@@ -54,7 +54,8 @@ public class Question {
     private List<Likes> likes = new ArrayList<>();
 
     @Builder
-    public Question(String title, String content, String type, Integer point, Long userId, Integer selectedUserId, String tagList, Integer views) {
+    public Question(Long id, String title, String content, String type, Integer point, Long userId, Integer selectedUserId, String tagList, Integer views) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.type = type;

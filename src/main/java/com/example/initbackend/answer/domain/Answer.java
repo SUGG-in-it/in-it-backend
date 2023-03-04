@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 public class Answer {
 
@@ -38,6 +37,15 @@ public class Answer {
     public Answer(Long userId) {
         this.userId = userId;
     }
+
+    public void setContent(String content){
+        this.content = content;
+    }
+
+    public void setIsSelected(boolean isSelected){
+        this.isSelected = isSelected;
+    }
+
     @Builder
     public Answer(Long id, Long questionId, Long userId, String content, boolean isSelected){
         this.id = id;

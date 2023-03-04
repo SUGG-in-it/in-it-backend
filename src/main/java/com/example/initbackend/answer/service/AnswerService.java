@@ -42,6 +42,11 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final CommentRepository commentRepository;
 
+
+    public void findAnswer(Long answerId) throws Exception{
+        answerRepository.findById(answerId).orElseThrow();
+    }
+
     @Transactional
     public IssueAnswerIdResponseVo issueAnswerId(HttpServletRequest request, IssueAnswerIdDto issueAnswerIdDto) {
         String token = jwtTokenProvider.resolveAccessToken(request);
@@ -81,35 +86,28 @@ public class AnswerService {
         return answers;
     }
 
-    public void updateAnswer(HttpServletRequest request, UpdateAnswerRequestDto updateAnswerRequestDto, Long answerId) {
-
-        String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId = jwtUtil.getPayloadByToken(token);
+    public void updateAnswer(Long userId, UpdateAnswerRequestDto updateAnswerRequestDto, Long answerId) {
 
         Answer optionalAnswer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+                .orElseThrow(() -> {
+                    throw new CustomException(ErrorCode.DATA_NOT_FOUND);});
 
 
         if (!userId.equals(optionalAnswer.getUserId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        Answer ans= optionalAnswer.builder()
-                .content(updateAnswerRequestDto.getContent())
-                .build();
-
-        answerRepository.save(ans);
-
+        optionalAnswer.setContent(updateAnswerRequestDto.getContent());
+        answerRepository.save(optionalAnswer);
     }
 
     @Transactional
-    public void deleteAnswer(HttpServletRequest request, Long answerId) {
-
-        String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId = jwtUtil.getPayloadByToken(token);
+    public void deleteAnswer(Long userId, Long answerId) {
 
         Answer optionalAnswer = answerRepository.findById(answerId)
-                .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
+                .orElseThrow(()->{
+                    throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+                });
 
         if (!userId.equals(optionalAnswer.getUserId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
@@ -120,33 +118,22 @@ public class AnswerService {
     }
 
     @Transactional
-    public void selectAnswer(HttpServletRequest request, Long answerId) {
-
-        String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId = jwtUtil.getPayloadByToken(token);
+    public void selectAnswer(Long userId, Long answerId) {
 
         Answer optionalAnswer = answerRepository.findById(answerId)
-                .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
-
+                .orElseThrow(()->{
+                    throw new CustomException(ErrorCode.DATA_NOT_FOUND);});
 
         Question optionalQuestion = questionRepository.findById(optionalAnswer.getQuestionId())
-                .orElseThrow(()->new CustomException(ErrorCode.DATA_NOT_FOUND));
-
+                .orElseThrow(()->{
+                    throw new CustomException(ErrorCode.DATA_NOT_FOUND);});
 
         if (!userId.equals(optionalQuestion.getUserId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        Answer ans= optionalAnswer.builder()
-                .isSelected(true)
-                .build();
-
-        Question que = optionalQuestion.builder()
-                .type("completed")
-                .build();
-
-        answerRepository.save(ans);
-        questionRepository.save(que);
+        optionalAnswer.setIsSelected(true);
+        optionalQuestion.setType("completed");
     }
 
     public GetAnswersTotalPageNumResponseVo getAnswersTotalPageNum(Pageable pageable, Long questionId) {
@@ -154,18 +141,13 @@ public class AnswerService {
         return  new GetAnswersTotalPageNumResponseVo(optionalAnswer.getTotalPages());
     }
 
-    public GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNum(HttpServletRequest request, Pageable pageable) {
-
-        String token = jwtTokenProvider.resolveAccessToken(request);
-        Long userId = JwtUtil.getPayloadByToken(token);
+    public GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNum(Long userId, Pageable pageable) {
 
         Page<Answer> answers = answerRepository.findByUserIdAndContentIsNotNullOrderByCreateDateDesc(userId, pageable);
         return new GetUserAnswersTotalPageNumResponseVo(answers.getTotalPages());
     }
 
-    public GetManagedAnswersResponseVo getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable) {
-        String token = jwtTokenProvider.resolveAccessToken(servletRequest);
-        Long userId = JwtUtil.getPayloadByToken(token);
+    public GetManagedAnswersResponseVo getManagedAnswers(Long userId, Pageable pageable) {
 
         List<ManagedAnswerVo> managedAnswerList = new ArrayList<>();
         Page<Answer> optionalAnswers = answerRepository.findByUserIdAndContentIsNotNullOrderByCreateDateDesc(userId, pageable);
@@ -173,7 +155,8 @@ public class AnswerService {
         optionalAnswers.stream().forEach(
                 answer -> {
                     Question optionalQuestion = questionRepository.findById(answer.getQuestionId())
-                            .orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
+                            .orElseThrow(()-> {
+                                throw new CustomException(ErrorCode.DATA_NOT_FOUND);});
 
                     ManagedAnswerVo managedAnswerVo = new ManagedAnswerVo(
                             answer.getId(),
