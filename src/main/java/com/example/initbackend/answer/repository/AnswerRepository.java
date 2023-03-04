@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,4 +31,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
     Long countByQuestionId(Long questionId);
 
     void deleteAnswerByQuestionIdAndUserId(Long questionId, Long userId);
+
+    Answer findByQuestionIdAndUserId(Long questionId, Long userId);
 }

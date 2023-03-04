@@ -6,6 +6,8 @@ import com.example.initbackend.answer.dto.UpdateAnswerRequestDto;
 import com.example.initbackend.answer.service.AnswerService;
 import com.example.initbackend.answer.vo.*;
 import com.example.initbackend.comment.vo.GetCommentsResponseVo;
+import com.example.initbackend.global.jwt.JwtTokenProvider;
+import com.example.initbackend.global.jwt.JwtUtil;
 import com.example.initbackend.global.response.StatusEnum;
 import com.example.initbackend.global.response.SuccessResponse;
 import lombok.AllArgsConstructor;
@@ -26,8 +28,12 @@ public class AnswerController {
 
     private final AnswerService answerService;
 
+    private final JwtUtil jwtUtil;
+    private final JwtTokenProvider jwtTokenProvider;
+
     @PostMapping
     public SuccessResponse issueAnswerId(HttpServletRequest request, @RequestBody IssueAnswerIdDto requestDto) {
+
         IssueAnswerIdResponseVo issueAnswerIdResponseVo = answerService.issueAnswerId(request, requestDto);
 
         SuccessResponse res = SuccessResponse.builder()
@@ -53,7 +59,7 @@ public class AnswerController {
 
     @PutMapping({ "/{answerId}" })
     public SuccessResponse updateAnswer(HttpServletRequest request, @Valid @RequestBody UpdateAnswerRequestDto requestDto, @PathVariable("answerId") Long answerId){
-        answerService.updateAnswer(request, requestDto, answerId);
+        answerService.updateAnswer(getUserIdFromToken(request), requestDto, answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
@@ -64,7 +70,7 @@ public class AnswerController {
 
     @DeleteMapping({ "/{answerId}" })
     public SuccessResponse deleteAnswer(HttpServletRequest request, @PathVariable("answerId") Long answerId){
-        answerService.deleteAnswer(request, answerId);
+        answerService.deleteAnswer(getUserIdFromToken(request), answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
@@ -76,7 +82,7 @@ public class AnswerController {
     @PostMapping("/select/{answerId}")
     public SuccessResponse selectAnswer(HttpServletRequest request, @PathVariable("answerId") Long answerId) {
 
-        answerService.selectAnswer(request, answerId);
+        answerService.selectAnswer(getUserIdFromToken(request), answerId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
@@ -101,7 +107,7 @@ public class AnswerController {
 
     @GetMapping({"/user-page"})
     public SuccessResponse getUserAnswersTotalPageNum(HttpServletRequest request, Pageable pageable) {
-        GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNumResponse = answerService.getUserAnswersTotalPageNum(request, pageable);
+        GetUserAnswersTotalPageNumResponseVo getUserAnswersTotalPageNumResponse = answerService.getUserAnswersTotalPageNum(getUserIdFromToken(request), pageable);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
@@ -113,8 +119,8 @@ public class AnswerController {
     }
 
     @GetMapping({"/manage"})
-    public SuccessResponse getManagedAnswers(HttpServletRequest servletRequest, Pageable pageable) {
-        GetManagedAnswersResponseVo getAnswerResponseVo = answerService.getManagedAnswers(servletRequest, pageable);
+    public SuccessResponse getManagedAnswers(HttpServletRequest request, Pageable pageable) {
+        GetManagedAnswersResponseVo getAnswerResponseVo = answerService.getManagedAnswers(getUserIdFromToken(request), pageable);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
@@ -123,5 +129,10 @@ public class AnswerController {
                 .build();
 
         return res;
+    }
+
+    private Long getUserIdFromToken(HttpServletRequest request){
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        return jwtUtil.getPayloadByToken(token);
     }
 }
