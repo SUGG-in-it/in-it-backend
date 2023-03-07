@@ -4,6 +4,7 @@ import com.example.initbackend.global.handler.CustomException;
 import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.dto.JwtResponseDto;
 import com.example.initbackend.global.response.ErrorCode;
+import com.example.initbackend.pkg.oauth.GithubInfo;
 import com.example.initbackend.user.dto.*;
 import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
@@ -14,6 +15,7 @@ import com.example.initbackend.userToken.repository.UserTokenRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.parser.ParseException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,9 +23,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -36,7 +38,7 @@ public class UserService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void join(JoinRequestDto joinRequestDto) {
+    public User join(JoinRequestDto joinRequestDto) {
         String email = joinRequestDto.getEmail();
         userRepository.findByEmail(email).ifPresent(u -> {
             throw new CustomException(ErrorCode.CONFLICT);
@@ -44,6 +46,7 @@ public class UserService {
         // 닉네임 중복 확인
         User user = joinRequestDto.toEntity();
         userRepository.save(user);
+        return user;
     }
 
     public void duplicatedEmail(DuplicatedUserRequestDto duplicatedUserRequestDto) {
@@ -159,5 +162,43 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+    }
+
+    @Transactional
+    public LoginResponseVo loginGithubUser(String accessToken) throws IOException, ParseException {
+
+        Map<String, Object> userInfo = GithubInfo.getGithubUserInfo(accessToken);
+
+        String email = userInfo.get("email").toString();
+        String nickname = userInfo.get("nickname").toString();
+        String password = "github";
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (!optionalUser.isPresent()){
+            optionalUser = Optional.ofNullable(join(JoinRequestDto.builder().email(email).password(password).nickname(nickname).build()));
+        }
+        Long UserId = optionalUser.get().getId();
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.get().getId(), optionalUser.get().getNickname(), authentication);
+
+        tokenRepository.findById(optionalUser.get().getId()).ifPresentOrElse(
+                t -> {
+                    t.builder()
+                            .refreshToken(tokenInfo.getRefreshToken())
+                            .build();
+                    tokenRepository.save(t);
+                }, () -> {
+                    UserToken ut = UserToken.builder()
+                            .userId(UserId)
+                            .refreshToken(tokenInfo.getRefreshToken())
+                            .build();
+                    tokenRepository.save(ut);
+                }
+        );
+
+        return new LoginResponseVo(
+                tokenInfo.getAccessToken(),
+                tokenInfo.getRefreshToken()
+        );
     }
 }
