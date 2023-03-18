@@ -15,7 +15,6 @@ import com.example.initbackend.userToken.repository.UserTokenRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.parser.ParseException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -83,37 +83,35 @@ public class UserService {
 
         String email = loginRequestDto.toEntity().getEmail();
         String password = loginRequestDto.toEntity().getPassword();
-        User optionalUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-
-        String dbPassword = optionalUser.getPassword();
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (!optionalUser.isPresent()) {
+            throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+        }
+        String dbPassword = optionalUser.get().getPassword();
         if (!dbPassword.equals(password)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_PASSWORD);
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.getId(), optionalUser.getNickname(), authentication);
+        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.get().getId(), optionalUser.get().getNickname(),authentication);
 
-        tokenRepository.findById(optionalUser.getId()).ifPresentOrElse(
-                t -> {
-                        t.builder()
-                                .refreshToken(tokenInfo.getRefreshToken())
-                                .build();
-                    tokenRepository.save(t);
-                }, () -> {
-                        UserToken ut = UserToken.builder()
-                                .userId(optionalUser.getId())
-                                .refreshToken(tokenInfo.getRefreshToken())
-                                .build();
-                    tokenRepository.save(ut);
-                }
-        );
+        UserToken userToken = tokenRepository.findById(optionalUser.get().getId());
+        if (Objects.isNull(userToken)) {
+            userToken = new UserToken(optionalUser.get().getId(), tokenInfo.getRefreshToken());
+        } else {
+            userToken.setRefreshToken(tokenInfo.getRefreshToken());
+        }
+
+        tokenRepository.save(userToken);
+
+
 
         return new LoginResponseVo(
                 tokenInfo.getAccessToken(),
                 tokenInfo.getRefreshToken()
         );
+
     }
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -165,7 +163,7 @@ public class UserService {
     }
 
     @Transactional
-    public LoginResponseVo loginGithubUser(String accessToken) throws IOException, ParseException {
+    public LoginResponseVo loginGithubUser(String accessToken) throws IOException {
 
         Map<String, Object> userInfo = GithubInfo.getGithubUserInfo(accessToken);
 
@@ -176,25 +174,20 @@ public class UserService {
         if (!optionalUser.isPresent()){
             optionalUser = Optional.ofNullable(join(JoinRequestDto.builder().email(email).password(password).nickname(nickname).build()));
         }
-        Long UserId = optionalUser.get().getId();
+
+        Long userId = optionalUser.get().getId();
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.get().getId(), optionalUser.get().getNickname(), authentication);
+        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(userId, optionalUser.get().getNickname(), authentication);
 
-        tokenRepository.findById(optionalUser.get().getId()).ifPresentOrElse(
-                t -> {
-                    t.builder()
-                            .refreshToken(tokenInfo.getRefreshToken())
-                            .build();
-                    tokenRepository.save(t);
-                }, () -> {
-                    UserToken ut = UserToken.builder()
-                            .userId(UserId)
-                            .refreshToken(tokenInfo.getRefreshToken())
-                            .build();
-                    tokenRepository.save(ut);
-                }
-        );
+        UserToken userToken = tokenRepository.findByUserId(userId);
+
+        if (Objects.isNull(userToken)) {
+            userToken = new UserToken(userId, tokenInfo.getRefreshToken());
+            tokenRepository.save(userToken);
+        } else {
+            userToken.setRefreshToken(tokenInfo.getRefreshToken()); // 더티체킹
+        }
 
         return new LoginResponseVo(
                 tokenInfo.getAccessToken(),
