@@ -24,7 +24,7 @@ public class UserToken  {
     @Column(nullable = false)
     private Long userId;
 
-    @Column(length = 500)
+    @Column
     private String refreshToken;
 
     @CreationTimestamp

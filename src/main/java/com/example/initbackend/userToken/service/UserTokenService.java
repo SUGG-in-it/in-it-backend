@@ -45,8 +45,8 @@ public class UserTokenService {
             String token = jwtTokenProvider.resolveAccessToken(request);
             // Access Token을 디코딩하여 Payload 값을 가져옴
             Long userId  = JwtUtil.getPayloadByToken(token);
-            UserToken userToken = tokenRepository.findById(userId)
-                    .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+            UserToken userToken = tokenRepository.findById(userId);
+            // !!!! new CustomException(ErrorCode.DATA_NOT_FOUND)); 필요
 
             // 리프레시가 만료됐는지
             boolean isTokenValid = jwtTokenProvider.validateToken(userToken.getRefreshToken());
