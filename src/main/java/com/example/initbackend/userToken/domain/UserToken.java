@@ -10,7 +10,6 @@ import java.sql.Timestamp;
 
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
@@ -32,6 +31,10 @@ public class UserToken  {
 
     @CreationTimestamp
     private Timestamp update_date;
+
+    public void setRefreshToken(String refreshToken){
+        this.refreshToken = refreshToken;
+    }
 
     @Builder
     public UserToken(Long userId, String refreshToken) {
