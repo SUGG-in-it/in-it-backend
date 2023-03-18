@@ -61,8 +61,9 @@ public class QuestionService {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
 
-        Question optionalQuestion = questionRepository.findById(questionId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        if (!userId.equals(optionalQuestion.getUserId())) {
+        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        // !!!! 존재 여부 확인
+        if (!userId.equals(optionalQuestion.get().getUserId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
 
@@ -83,29 +84,27 @@ public class QuestionService {
 
         for (int i = 0; i < tagList.length; i++) {
             System.out.println(tagList[i]);
-            Tag optionalTag = tagRepository.findByTag(tagList[i]).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+            Optional<Tag> optionalTag = tagRepository.findByTag(tagList[i]);
+            if (!optionalTag.isPresent()) {
+                throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+            }
 
-            QuestionTag questionTag = QuestionTag.builder()
-                    .questionId(optionalQuestion.getId())
-                    .tagId(optionalTag.getId())
-                    .build();
-
+            QuestionTag questionTag = new QuestionTag();
+            questionTag.setQuestionId(optionalQuestion.get().getId());
+            questionTag.setTagId(optionalTag.get().getId());
             questionTagRepository.save(questionTag);
         }
 
-        Question question = optionalQuestion.builder()
-                .title(updateQuestionRequestDto.getTitle())
-                .content(updateQuestionRequestDto.getContent())
-                .tagList(updateQuestionRequestDto.getTagList())
-                .point(updateQuestionRequestDto.getPoint())
-                .build();
-
-        if (!question.getType().equals("completed")) {
-            question.builder()
-                    .type("doing");
-        }
-
-        questionRepository.save(question);
+        optionalQuestion.ifPresent(selectQuestion -> {
+            selectQuestion.setTitle(updateQuestionRequestDto.getTitle());
+            selectQuestion.setContent(updateQuestionRequestDto.getContent());
+            selectQuestion.setTagList(updateQuestionRequestDto.getTagList());
+            selectQuestion.setPoint(updateQuestionRequestDto.getPoint());
+            if (!selectQuestion.getType().equals("completed")) {
+                selectQuestion.setType("doing");
+            }
+            questionRepository.save(selectQuestion);
+        });
     }
 
     @Transactional
