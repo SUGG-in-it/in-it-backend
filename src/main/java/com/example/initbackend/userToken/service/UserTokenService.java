@@ -47,7 +47,9 @@ public class UserTokenService {
             // Access Token을 디코딩하여 Payload 값을 가져옴
             Long userId  = JwtUtil.getPayloadByToken(token);
             UserToken userToken = tokenRepository.findById(userId);
-            // !!!! new CustomException(ErrorCode.DATA_NOT_FOUND)); 필요
+            if (userToken == null){
+                throw new CustomException(ErrorCode.UNAUTHORIZED);
+            }
 
             // 리프레시가 만료됐는지
             boolean isTokenValid = jwtTokenProvider.validateToken(userToken.getRefreshToken());
@@ -60,8 +62,7 @@ public class UserTokenService {
                 if(user.isPresent()) {
                     Authentication authentication = jwtTokenProvider.getAuthentication(token);
                     JwtResponseDto.TokenInfo newTokenInfo = jwtTokenProvider.generateToken(user.get().getId(), user.get().getNickname(),authentication);
-                    userToken.builder()
-                            .refreshToken(newTokenInfo.getRefreshToken());
+                    userToken.setRefreshToken(newTokenInfo.getRefreshToken());
                     tokenRepository.save(userToken);
 
                     ReIssueTokenResponseVo reIssueTokenResponseVo = new ReIssueTokenResponseVo(newTokenInfo.getAccessToken());
@@ -82,7 +83,7 @@ public class UserTokenService {
 
         UserToken userToken = tokenRepository.findByUserId(userId);
 
-        if (Objects.isNull(userToken)) {
+        if (userToken == null) {
             userToken = new UserToken(userId, tokenInfo.getRefreshToken());
             tokenRepository.save(userToken);
         } else {
