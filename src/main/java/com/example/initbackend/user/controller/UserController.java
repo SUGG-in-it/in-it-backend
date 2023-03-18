@@ -104,14 +104,14 @@ public class UserController {
         return res;
     }
 
-    @GetMapping({ "/login/github" })
+    @GetMapping({ "/oauth/github" })
     public ResponseEntity<?> loginWithGithub() {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(String.format("%s?client_id=%s&redirect_uri=%s", redirectPrefix, clientId, redirectURL)));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
 
-    @GetMapping({ "/login/redirect/github" })
+    @GetMapping({ "/oauth/redirect/github" })
     public ResponseEntity<?> getGithubAccessToken(@Valid @RequestParam String code) throws IOException, ParseException {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("client_id", clientId);
@@ -121,11 +121,11 @@ public class UserController {
         String AccessToken = GithubInfo.getGithubAccessToken(map);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(String.format("/api/users/login/github/think?accessToken=%s", AccessToken)));
+        headers.setLocation(URI.create(String.format("/api/users/oauth/authorize/github?accessToken=%s", AccessToken)));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
 
-    @GetMapping({ "/login/github/think" })
+    @GetMapping({ "/oauth/authorize/github" })
     public SuccessResponse loginGithubUser(@Valid @RequestParam String accessToken) throws IOException, ParseException {
         System.out.println("========리다이렉트 성공==========");
         LoginResponseVo loginGithubUserResponseVo = userService.loginGithubUser(accessToken);
