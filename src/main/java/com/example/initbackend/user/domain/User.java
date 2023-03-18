@@ -1,5 +1,6 @@
 package com.example.initbackend.user.domain;
 import com.example.initbackend.likes.domain.Likes;
+import com.example.initbackend.user.dto.UpdateProfileRequestDto;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
@@ -14,11 +15,7 @@ import java.util.*;
 
 @Entity
 @Getter
-@Setter
-@AllArgsConstructor
 @NoArgsConstructor
-
-
 public class User implements UserDetails {
 
     @Id
@@ -114,7 +111,21 @@ public class User implements UserDetails {
         return true;
     }
 
+    public void setId(Long id){
+        this.id = id;
+    }
+    public void setPassword(String password){
+        this.password = password;
+    }
 
+    public void updateUser(UpdateProfileRequestDto updateProfileRequestDto){
+        this.nickname = updateProfileRequestDto.getNickname();
+        this.github_account = updateProfileRequestDto.getGithubAccount();
+        this.introduction = updateProfileRequestDto.getIntroduction();
+        this.work_position = updateProfileRequestDto.getWorkPosition();
+        this.career = updateProfileRequestDto.getCareer();
+        this.company = updateProfileRequestDto.getCompany();
+    }
 
 
     @Builder

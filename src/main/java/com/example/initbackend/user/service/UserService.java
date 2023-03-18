@@ -71,11 +71,7 @@ public class UserService {
         User optionalUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
-        optionalUser.builder()
-                .password(newPassword)
-                .build();
-
-        userRepository.save(optionalUser);
+        optionalUser.setPassword(newPassword);
     }
 
     @Transactional
@@ -141,17 +137,7 @@ public class UserService {
     @Transactional
     public void updateUser(UpdateProfileRequestDto updateProfileRequestDto) {
         User optionalUser = userRepository.findByEmail(updateProfileRequestDto.getEmail()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-
-        User user = optionalUser.builder()
-                .nickname(updateProfileRequestDto.getNickname())
-                .github_account(updateProfileRequestDto.getGithubAccount())
-                .introduction(updateProfileRequestDto.getIntroduction())
-                .work_position(updateProfileRequestDto.getWorkPosition())
-                .career(updateProfileRequestDto.getCareer())
-                .company(updateProfileRequestDto.getCompany())
-                .build();
-
-        userRepository.save(user);
+        optionalUser.updateUser(updateProfileRequestDto);
     }
 
     @Transactional
