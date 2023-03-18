@@ -16,6 +16,7 @@ import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import com.example.initbackend.userToken.domain.UserToken;
 import com.example.initbackend.userToken.repository.UserTokenRepository;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -72,5 +73,22 @@ public class UserTokenService {
             // Refresh Token 만료 Exception
             throw new CustomException(ErrorCode.JWT_REFRESH_TOKEN_EXPIRED);
         }
+    }
+
+    public JwtResponseDto.TokenInfo issueToken(String email, String password, Long userId, String nickname){
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(userId, nickname, authentication);
+
+        UserToken userToken = tokenRepository.findByUserId(userId);
+
+        if (Objects.isNull(userToken)) {
+            userToken = new UserToken(userId, tokenInfo.getRefreshToken());
+            tokenRepository.save(userToken);
+        } else {
+            userToken.setRefreshToken(tokenInfo.getRefreshToken()); // 더티체킹
+        }
+
+        return tokenInfo;
     }
 }

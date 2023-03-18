@@ -10,22 +10,20 @@ import com.example.initbackend.user.domain.User;
 import com.example.initbackend.user.repository.UserRepository;
 import com.example.initbackend.user.vo.GetProfileResponseVo;
 import com.example.initbackend.user.vo.LoginResponseVo;
-import com.example.initbackend.userToken.domain.UserToken;
 import com.example.initbackend.userToken.repository.UserTokenRepository;
+import com.example.initbackend.userToken.service.UserTokenService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.json.simple.parser.ParseException;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -33,8 +31,10 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private final UserTokenService userTokenService;
     private final UserRepository userRepository;
     private final UserTokenRepository tokenRepository;
+
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -83,29 +83,21 @@ public class UserService {
 
         String email = loginRequestDto.toEntity().getEmail();
         String password = loginRequestDto.toEntity().getPassword();
+
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent()) {
             throw new CustomException(ErrorCode.DATA_NOT_FOUND);
         }
+
         String dbPassword = optionalUser.get().getPassword();
         if (!dbPassword.equals(password)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_PASSWORD);
         }
 
-        UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(optionalUser.get().getId(), optionalUser.get().getNickname(),authentication);
+        Long userId = optionalUser.get().getId();
+        String nickname = optionalUser.get().getNickname();
 
-        UserToken userToken = tokenRepository.findById(optionalUser.get().getId());
-        if (Objects.isNull(userToken)) {
-            userToken = new UserToken(optionalUser.get().getId(), tokenInfo.getRefreshToken());
-        } else {
-            userToken.setRefreshToken(tokenInfo.getRefreshToken());
-        }
-
-        tokenRepository.save(userToken);
-
-
+        JwtResponseDto.TokenInfo tokenInfo = userTokenService.issueToken(email, password, userId, nickname);
 
         return new LoginResponseVo(
                 tokenInfo.getAccessToken(),
@@ -163,7 +155,7 @@ public class UserService {
     }
 
     @Transactional
-    public LoginResponseVo loginGithubUser(String accessToken) throws IOException {
+    public LoginResponseVo loginGithubUser(String accessToken) throws IOException, ParseException {
 
         Map<String, Object> userInfo = GithubInfo.getGithubUserInfo(accessToken);
 
@@ -176,22 +168,15 @@ public class UserService {
         }
 
         Long userId = optionalUser.get().getId();
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        JwtResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(userId, optionalUser.get().getNickname(), authentication);
-
-        UserToken userToken = tokenRepository.findByUserId(userId);
-
-        if (Objects.isNull(userToken)) {
-            userToken = new UserToken(userId, tokenInfo.getRefreshToken());
-            tokenRepository.save(userToken);
-        } else {
-            userToken.setRefreshToken(tokenInfo.getRefreshToken()); // 더티체킹
-        }
+        JwtResponseDto.TokenInfo tokenInfo = userTokenService.issueToken(email, password, userId, nickname);
 
         return new LoginResponseVo(
                 tokenInfo.getAccessToken(),
                 tokenInfo.getRefreshToken()
         );
     }
+
+
+
+
 }

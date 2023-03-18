@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.json.simple.parser.ParseException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -111,7 +112,7 @@ public class UserController {
     }
 
     @GetMapping({ "/login/redirect/github" })
-    public ResponseEntity<?> getGithubAccessToken(@Valid @RequestParam String code) throws IOException {
+    public ResponseEntity<?> getGithubAccessToken(@Valid @RequestParam String code) throws IOException, ParseException {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("client_id", clientId);
         map.put("client_secret", clientSecret);
@@ -125,7 +126,7 @@ public class UserController {
     }
 
     @GetMapping({ "/login/github/think" })
-    public SuccessResponse loginGithubUser(@Valid @RequestParam String accessToken) throws IOException {
+    public SuccessResponse loginGithubUser(@Valid @RequestParam String accessToken) throws IOException, ParseException {
         System.out.println("========리다이렉트 성공==========");
         LoginResponseVo loginGithubUserResponseVo = userService.loginGithubUser(accessToken);
         // 2. 회원 가입 (없을 경우 로그인) -> service
