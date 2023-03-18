@@ -9,7 +9,6 @@ import com.example.initbackend.user.vo.GetProfileResponseVo;
 import com.example.initbackend.user.vo.LoginResponseVo;
 import lombok.Getter;
 
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -112,7 +111,7 @@ public class UserController {
     }
 
     @GetMapping({ "/login/redirect/github" })
-    public ResponseEntity<?> getGithubAccessToken(@Valid @RequestParam String code) throws IOException, ParseException {
+    public ResponseEntity<?> getGithubAccessToken(@Valid @RequestParam String code) throws IOException {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("client_id", clientId);
         map.put("client_secret", clientSecret);
@@ -126,7 +125,7 @@ public class UserController {
     }
 
     @GetMapping({ "/login/github/think" })
-    public SuccessResponse loginGithubUser(@Valid @RequestParam String accessToken) throws IOException, ParseException {
+    public SuccessResponse loginGithubUser(@Valid @RequestParam String accessToken) throws IOException {
         System.out.println("========리다이렉트 성공==========");
         LoginResponseVo loginGithubUserResponseVo = userService.loginGithubUser(accessToken);
         // 2. 회원 가입 (없을 경우 로그인) -> service
