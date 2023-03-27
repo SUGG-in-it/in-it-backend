@@ -50,7 +50,7 @@ public class Question {
     @UpdateTimestamp
     private Timestamp updateDate;
 
-    @OneToMany(mappedBy = "questionId")
+    @OneToMany(mappedBy = "question")
     private List<Likes> likes = new ArrayList<>();
 
     @Builder
@@ -64,5 +64,12 @@ public class Question {
         this.selectedUserId = selectedUserId;
         this.tagList = tagList;
         this.views = views;
+    }
+
+    public static Question createQuestion(Long questionId){
+        Question question = new Question();
+        question.setId(questionId);
+
+        return question;
     }
 }

@@ -8,9 +8,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LikesRepository extends JpaRepository<Likes, Long> {
 
-    List<Likes> findUserIdsByQuestionId(Question questionId);
+    List<Likes> findUsersByQuestion(Question question);
+
+    Likes findByQuestionAndUser(Question question, User user);
+
+    void deleteByQuestionAndUser(Question question, User user);
 }

@@ -1,5 +1,6 @@
 package com.example.initbackend.user.domain;
 import com.example.initbackend.likes.domain.Likes;
+import com.example.initbackend.question.domain.Question;
 import com.example.initbackend.user.dto.UpdateProfileRequestDto;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -65,7 +66,7 @@ public class User implements UserDetails {
     @CreationTimestamp
     private Timestamp update_date;
 
-    @OneToMany(mappedBy = "userId")
+    @OneToMany(mappedBy = "user")
     private List<Likes> likes = new ArrayList<>();
 
 
@@ -145,6 +146,13 @@ public class User implements UserDetails {
         this.point= point;
         this.level = level;
 
+    }
+
+    public static User createUser(Long userId){
+        User user = new User();
+        user.setId(userId);
+
+        return user;
     }
 
 
