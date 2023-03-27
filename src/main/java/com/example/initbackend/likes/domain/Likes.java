@@ -23,11 +23,11 @@ public class Likes {
 
     @ManyToOne
     @JoinColumn(name="question_id")
-    private Question questionId;
+    private Question question;
 
     @ManyToOne
     @JoinColumn(name="user_id")
-    private User userId;
+    private User user;
 
     @CreationTimestamp
     private Timestamp createDate;
@@ -37,8 +37,8 @@ public class Likes {
 
     @Builder
     public Likes(Question question, User user){
-        this.questionId = question;
-        this.userId = user;
+        this.question = question;
+        this.user = user;
     }
 
 }

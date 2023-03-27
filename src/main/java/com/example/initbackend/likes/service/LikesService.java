@@ -4,6 +4,7 @@ import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.JwtUtil;
 import com.example.initbackend.likes.domain.Likes;
 import com.example.initbackend.likes.repository.LikesRepository;
+import com.example.initbackend.likes.vo.GetLikeResponseVo;
 import com.example.initbackend.question.domain.Question;
 import com.example.initbackend.user.domain.User;
 import lombok.AllArgsConstructor;
@@ -29,24 +30,52 @@ public class LikesService {
 
     private final LikesRepository likesRepository;
 
-
     private RedisTemplate<String, String> redisTemplate;
-    public void addLikes(HttpServletRequest request, Long questionId) {
+
+    @Transactional
+    public void addLike(HttpServletRequest request, Long questionId) {
         String token = jwtTokenProvider.resolveAccessToken(request);
         Long userId = jwtUtil.getPayloadByToken(token);
 
-        Question question = new Question();
-        question.setId(questionId);
+        Question question = Question.createQuestion(questionId);
+        User user = User.createUser(userId);
 
-        User user = new User();
-        user.setId(userId);
+        Likes likes = likesRepository.findByQuestionAndUser(question, user);
 
-        if (!IsKeyExists(questionId)) addDataFromDBtoCache(String.valueOf(questionId), getDataFromDBtoCache(question));
+
+        if (likes == null) {
+            save(question, user);
+        }
         addSet(String.valueOf(questionId), String.valueOf(userId));
-        save(question, user);
     }
 
-    private void save(Question question, User user){
+    public void cancelLike(HttpServletRequest request, Long questionId) {
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId = jwtUtil.getPayloadByToken(token);
+
+        Question question = Question.createQuestion(questionId);
+        User user = User.createUser(userId);
+
+        deleteSet(String.valueOf(questionId), String.valueOf(userId));
+        delete(question, user);
+    }
+
+    public GetLikeResponseVo getLike(HttpServletRequest request, Long questionId) {
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Long userId = jwtUtil.getPayloadByToken(token);
+
+        if (!isKeyExists(questionId)) {
+            Question question = Question.createQuestion(questionId);
+            addDataFromDBtoCache(String.valueOf(questionId), getDataFromDBtoCache(question));
+        }
+
+        return new GetLikeResponseVo(
+                findSet(String.valueOf(questionId), String.valueOf(userId)),
+                findCount(String.valueOf(questionId))
+        );
+    }
+
+    private void save(Question question, User user) {
 
         likesRepository.save(Likes.builder()
                 .question(question)
@@ -54,24 +83,40 @@ public class LikesService {
                 .build());
     }
 
-    private void addSet(String key, String values){
+    private void delete(Question question, User user) {
+        likesRepository.deleteByQuestionAndUser(question, user);
+    }
+
+    private void addSet(String key, String values) {
         redisTemplate.opsForSet().add(key, values);
     }
 
-    private boolean IsKeyExists(Long key){
+    private void deleteSet(String key, String values) {
+        redisTemplate.opsForSet().remove(key, values);
+    }
+
+    private Long findCount(String key) {
+        return redisTemplate.opsForSet().size(key);
+    }
+
+    private boolean findSet(String key, String value) {
+        return redisTemplate.opsForSet().isMember(key, value);
+    }
+
+    private boolean isKeyExists(Long key) {
         return redisTemplate.hasKey(String.valueOf(key));
     }
 
-    private void addDataFromDBtoCache(String key, List<Likes> values){
+    private void addDataFromDBtoCache(String key, List<Likes> values) {
 
         values.stream().forEach(
                 it -> {
-                    addSet(key, String.valueOf(it.getUserId().getId()));
+                    addSet(key, String.valueOf(it.getUser().getId()));
                 }
         );
     }
 
-    private List<Likes> getDataFromDBtoCache(Question question){
-        return likesRepository.findUserIdsByQuestionId(question);
+    private List<Likes> getDataFromDBtoCache(Question question) {
+        return likesRepository.findUsersByQuestion(question);
     }
 }
