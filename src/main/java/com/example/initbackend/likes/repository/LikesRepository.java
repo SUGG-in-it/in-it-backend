@@ -18,4 +18,6 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
     Likes findByQuestionAndUser(Question question, User user);
 
     void deleteByQuestionAndUser(Question question, User user);
+
+    Long countByQuestion(Question question);
 }

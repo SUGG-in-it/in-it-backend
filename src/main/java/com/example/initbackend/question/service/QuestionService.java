@@ -8,6 +8,8 @@ import com.example.initbackend.global.jwt.JwtTokenProvider;
 import com.example.initbackend.global.jwt.JwtUtil;
 import com.example.initbackend.global.response.ErrorCode;
 import com.example.initbackend.global.util.GenerateRandomNumber;
+import com.example.initbackend.likes.domain.Likes;
+import com.example.initbackend.likes.repository.LikesRepository;
 import com.example.initbackend.question.domain.Question;
 import com.example.initbackend.question.dto.IssueQuestionIdRequestDto;
 import com.example.initbackend.question.dto.UpdateQuestionRequestDto;
@@ -45,6 +47,8 @@ public class QuestionService {
     private final AnswerRepository answerRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+
+    private final LikesRepository likesRepository;
 
     @Transactional
     public IssueQuestionIdResponseVo issueQuestionId(HttpServletRequest request) {
@@ -108,30 +112,47 @@ public class QuestionService {
     }
 
     @Transactional
-    public GetQuestionResponseVo GetQuestion(Long questionId) {
+    public GetQuestionResponseVo GetQuestion(HttpServletRequest request, Long questionId) {
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        Boolean isLike = false;
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
+        Long likeCount = likesRepository.countByQuestion(question);
         Long userId = question.getUserId();
-        Optional<User> user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         Long answerCount = answerRepository.countByQuestionId(question.getId());
+
+        if (token != null){
+            Long loginUserId = jwtUtil.getPayloadByToken(token);
+            User loginUser = userRepository.findById(loginUserId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+            Likes likes = likesRepository.findByQuestionAndUser(question, loginUser);
+            if (likes != null) {
+                isLike = true;
+            }
+        }
+
         return new GetQuestionResponseVo(
                 question.getId(),
-                user.get().getId(),
+                user.getId(),
                 question.getTitle(),
                 question.getContent(),
-                user.get().getNickname(),
-                user.get().getLevel(),
+                user.getNickname(),
+                user.getLevel(),
                 question.getPoint(),
                 question.getTagList(),
                 question.getType(),
                 question.getCreateDate(),
                 question.getUpdateDate(),
-                Math.toIntExact(answerCount)
+                answerCount,
+                likeCount,
+                isLike
         );
     }
 
     @Transactional
-    public GetQuestionsResponseVo GetQuestions(Pageable pageable, String type) {
+    public GetQuestionsResponseVo GetQuestions(HttpServletRequest request, Pageable pageable, String type) {
+        String token = jwtTokenProvider.resolveAccessToken(request);
+
         List<GetQuestionResponseVo> questionList = new ArrayList<>();
         List<Question> newQuestions = new ArrayList<>();
         Page<Question> questions = new PageImpl<>(newQuestions);
@@ -147,8 +168,21 @@ public class QuestionService {
                 it -> {
                     Optional<Question> optionalQuestion = questionRepository.findById(it.getId());
                     Question question = optionalQuestion.get();
+                    Long likeCount = likesRepository.countByQuestion(question);
                     Long userId = question.getUserId();
                     User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+                    Long answerCount = answerRepository.countByQuestionId(question.getId());
+
+                    Boolean isLike = false;
+                    if (token != null){
+                        Long loginUserId = jwtUtil.getPayloadByToken(token);
+                        User loginUser = userRepository.findById(loginUserId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+                        Likes likes = likesRepository.findByQuestionAndUser(question, loginUser);
+                        if (likes != null) {
+                            isLike = true;
+                        }
+                    }
+
                     GetQuestionResponseVo getQuestionResponse = new GetQuestionResponseVo(
                             question.getId(),
                             user.getId(),
@@ -161,7 +195,9 @@ public class QuestionService {
                             question.getType(),
                             question.getCreateDate(),
                             question.getUpdateDate(),
-                            0
+                            answerCount,
+                            likeCount,
+                            isLike
                     );
                     System.out.println(question.getContent() + " " + user.getId());
                     questionList.add(getQuestionResponse);
@@ -260,7 +296,15 @@ public class QuestionService {
         questions.stream().forEach(
                 it -> {
                     Question question = questionRepository.findById(it.getId()).orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
+                    Long answerCount = answerRepository.countByQuestionId(question.getId());
+                    Long likeCount = likesRepository.countByQuestion(question);
                     User user = userRepository.findById(question.getUserId()).orElseThrow(()-> new CustomException(ErrorCode.DATA_NOT_FOUND));
+
+                    Boolean isLike = false;
+                     Likes likes = likesRepository.findByQuestionAndUser(question, user);
+                     if (likes != null) {
+                         isLike = true;
+                     }
 
                     GetQuestionResponseVo getQuestionResponseVo = new GetQuestionResponseVo(
                             question.getId(),
@@ -274,7 +318,9 @@ public class QuestionService {
                             question.getType(),
                             question.getCreateDate(),
                             question.getUpdateDate(),
-                            0
+                            answerCount,
+                            likeCount,
+                            isLike
                     );
                     questionList.add(getQuestionResponseVo);
                 }

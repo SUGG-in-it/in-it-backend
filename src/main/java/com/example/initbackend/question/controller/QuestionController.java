@@ -49,8 +49,8 @@ public class QuestionController {
     }
 
     @GetMapping({ "/{questionId}" })
-    public SuccessResponse getQuestion(@PathVariable("questionId") Long questionId) {
-        GetQuestionResponseVo getQuestionResponseVo = questionService.GetQuestion(questionId);
+    public SuccessResponse getQuestion(HttpServletRequest request, @PathVariable("questionId") Long questionId) {
+        GetQuestionResponseVo getQuestionResponseVo = questionService.GetQuestion(request, questionId);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)
@@ -62,8 +62,8 @@ public class QuestionController {
     }
 
     @GetMapping({ "" })
-    public SuccessResponse getQuestions(Pageable pageable, @RequestParam("type") String type) {
-        GetQuestionsResponseVo getQuestionsResponse = questionService.GetQuestions(pageable, type);
+    public SuccessResponse getQuestions(HttpServletRequest request, Pageable pageable, @RequestParam("type") String type) {
+        GetQuestionsResponseVo getQuestionsResponse = questionService.GetQuestions(request, pageable, type);
 
         SuccessResponse res = SuccessResponse.builder()
                 .status(StatusEnum.OK)

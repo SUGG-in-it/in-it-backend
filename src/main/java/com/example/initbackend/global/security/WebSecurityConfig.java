@@ -37,6 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "api/like","api/like/**","api/auth","/api/questions/**", "/api/answers/**", "/api/comments/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/api/questions/**", "/api/answers/**", "/api/comments/**").authenticated()
                 .antMatchers(HttpMethod.PUT, "/api/questions/**", "/api/answers/**", "/api/comments/**", "/api/users/profiles").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/questions/").anonymous()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         // JwtAuthenticationFilter를 UsernamePasswordAuthentictaionFilter 전에 적용시킨다.

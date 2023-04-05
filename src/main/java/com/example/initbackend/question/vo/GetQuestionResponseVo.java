@@ -9,37 +9,30 @@ import java.sql.Timestamp;
 @Getter
 @NoArgsConstructor
 public class GetQuestionResponseVo {
-    @JsonProperty
     private Long questionId;
-    @JsonProperty
     private String title;
-    @JsonProperty
     private String content;
 
-    @JsonProperty
     private Long userId;
-    @JsonProperty
     private String nickname;
-    @JsonProperty
     private String level;
-    @JsonProperty
     private String tagList;
 
-    @JsonProperty
     private String type;
 
-    @JsonProperty
     private Timestamp createDate;
 
-    @JsonProperty
     private Timestamp updateDate;
 
-    @JsonProperty
     private Integer point;
 
-    @JsonProperty
-    private Integer answerCount;
-    public GetQuestionResponseVo(Long questionId, Long userId, String title, String content, String nickname, String level, Integer point, String tagList, String type, Timestamp createDate, Timestamp updateDate, Integer answerCount) {
+    private Long answerCount;
+
+    private Long likeCount;
+
+    private Boolean isLike;
+
+    public GetQuestionResponseVo(Long questionId, Long userId, String title, String content, String nickname, String level, Integer point, String tagList, String type, Timestamp createDate, Timestamp updateDate, Long answerCount, Long likeCount, Boolean isLike) {
         this.questionId = questionId;
         this.userId = userId;
         this.title = title;
@@ -52,5 +45,7 @@ public class GetQuestionResponseVo {
         this.createDate = createDate;
         this.updateDate = updateDate;
         this.answerCount = answerCount;
+        this.likeCount = likeCount;
+        this.isLike = isLike;
     }
 }
