@@ -56,7 +56,7 @@
 <summary>🐾 click</summary>
 <div markdown="1">
 
-https://invented-manta-136.notion.site/LIKES-API-e6125d849b1a47dfa1fe637fa281c58e
+https://invented-manta-136.notion.site/IN-IT-API-LIST-8e2a77dc5c824a17b2742e201eef72f8
 
 </div>
 </details>
