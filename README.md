@@ -1,28 +1,15 @@
-# in-it-backend
+# [ Init ] :: 개발자들을 위한 코드리뷰 사이트
+개발자들이 자유롭게 코드리뷰할 수 있고, 정보 공유를 할 수 있도록 서비스 제공하는 웹사이트
 <div align="center">
 <img src="https://user-images.githubusercontent.com/55631147/231536349-8e19d340-5375-483f-bf97-f92d0a389cdb.png" />
 
-👩🏻‍💻 코드리뷰 사이트:in it() 백엔드👩🏻‍💻
-
-개발자들이 자유롭게 코드리뷰할 수 있고, 정보 공유를 할 수 있도록 서비스 제공하는 웹사이트
-
-
-
-<br/>
-
-## 🧸 IN-IT Back-End TEAM 🧸
-
-|김수희|권지형|김준경|
-|:------:|:---:|:---:|
-|BE<br>DevOps|BE<br>DevOps|BE<br>DevOps|
 
 <br/>
 <br/>
 </div>
 
 ## 백엔드 기술 스택
-<details>
-<summary>🐾 click</summary>
+
 <div markdown="1">
 
 <img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=flat-square&logo=SpringBoot&logoColor=white"/>
@@ -33,32 +20,25 @@
 <img src="https://img.shields.io/badge/AMAZON EC2-FEAE00?style=flat-square&logo=AmazonEc2&logoColor=white"/>
 
 </div>
-</details>
 
 <br/>
 
 ## 서비스 아키텍처
 
-<details>
-<summary>🐾 click</summary>
 <div markdown="1">
 
 ![image](https://user-images.githubusercontent.com/55631147/231541145-86539421-518c-4d31-ae8a-d2143617c143.png)
 
 </div>
-</details>
 
 <br/>
 
 ## API LIST
 
-<details>
-<summary>🐾 click</summary>
 <div markdown="1">
 
 https://invented-manta-136.notion.site/IN-IT-API-LIST-8e2a77dc5c824a17b2742e201eef72f8
 
 </div>
-</details>
 
 <br/>
